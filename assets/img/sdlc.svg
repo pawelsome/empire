@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 280" role="img" aria-label="Cykl SDLC: plan, code, review, test, build, deploy, observe, z etapami wspieranymi przez AI i zautomatyzowanymi">
+  <defs>
+    <pattern id="dots-p" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#cfc9be"/>
+    </pattern>
+    <marker id="arr-p" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0L8 4L0 8z" fill="#15171a"/>
+    </marker>
+  </defs>
+  <style>
+    .mono { font-family: "IBM Plex Mono", Consolas, Menlo, monospace; }
+    .stage { fill: #fbfaf7; stroke: #15171a; stroke-width: 1.5; }
+    .ai { fill: #c8471b; }
+    .auto { fill: none; stroke: #15171a; stroke-width: 1.25; }
+  </style>
+  <rect width="1080" height="280" fill="#e9e6df"/>
+  <rect width="1080" height="280" fill="url(#dots-p)"/>
+
+  <text class="mono" x="18" y="38" font-size="10" letter-spacing="1" fill="#6b6f75">SDLC PIPELINE</text>
+  <rect x="846" y="29" width="10" height="10" class="ai"/>
+  <text class="mono" x="862" y="38" font-size="11" fill="#3a3e44">AI-assisted</text>
+  <rect x="966" y="29.5" width="9" height="9" class="auto"/>
+  <text class="mono" x="982" y="38" font-size="11" fill="#3a3e44">automated</text>
+
+  <g class="mono" font-size="13" fill="#15171a" text-anchor="middle">
+    <rect class="stage" x="18" y="70" width="120" height="56" rx="3"/><text x="78" y="103">plan</text>
+    <rect class="stage" x="172" y="70" width="120" height="56" rx="3"/><text x="232" y="103">code</text>
+    <rect class="stage" x="326" y="70" width="120" height="56" rx="3"/><text x="386" y="103">review</text>
+    <rect class="stage" x="480" y="70" width="120" height="56" rx="3"/><text x="540" y="103">test</text>
+    <rect class="stage" x="634" y="70" width="120" height="56" rx="3"/><text x="694" y="103">build</text>
+    <rect class="stage" x="788" y="70" width="120" height="56" rx="3"/><text x="848" y="103">deploy</text>
+    <rect x="942" y="70" width="120" height="56" rx="3" fill="#15171a"/><text x="1002" y="103" fill="#f3f1ec">observe</text>
+  </g>
+
+  <g stroke="#15171a" stroke-width="1.5" marker-end="url(#arr-p)">
+    <path d="M138 98h32"/><path d="M292 98h32"/><path d="M446 98h32"/><path d="M600 98h32"/><path d="M754 98h32"/><path d="M908 98h32"/>
+  </g>
+
+  <!-- chips -->
+  <g class="mono" font-size="11" text-anchor="middle">
+    <rect class="ai" x="28" y="142" width="100" height="22" rx="11"/><text x="78" y="157" fill="#fff">spec draft</text>
+    <rect class="ai" x="182" y="142" width="100" height="22" rx="11"/><text x="232" y="157" fill="#fff">pair coding</text>
+    <rect class="ai" x="336" y="142" width="100" height="22" rx="11"/><text x="386" y="157" fill="#fff">PR review</text>
+    <rect class="ai" x="490" y="142" width="100" height="22" rx="11"/><text x="540" y="157" fill="#fff">test gen</text>
+    <rect class="auto" x="644" y="142" width="100" height="22" rx="11"/><text x="694" y="157" fill="#15171a">CI</text>
+    <rect class="auto" x="798" y="142" width="100" height="22" rx="11"/><text x="848" y="157" fill="#15171a">IaC · CD</text>
+    <rect class="auto" x="952" y="142" width="100" height="22" rx="11"/><text x="1002" y="157" fill="#15171a">alerts</text>
+  </g>
+
+  <!-- feedback loop -->
+  <path d="M1002 170v58H78v-50" fill="none" stroke="#15171a" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#arr-p)"/>
+  <rect x="400" y="218" width="280" height="20" fill="#e9e6df"/>
+  <text class="mono" x="540" y="232" font-size="11" fill="#3a3e44" text-anchor="middle">feedback · metrics · incidents</text>
+</svg>

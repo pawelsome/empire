@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 420" role="img" aria-label="Schemat bezpieczeństwa: ruch sieciowy przez Suricata i reverse proxy, serwery z agentami Wazuh, SIEM i log alertów">
+  <defs>
+    <pattern id="dots-s" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#2a2e33"/>
+    </pattern>
+  </defs>
+  <style>
+    .mono { font-family: "IBM Plex Mono", Consolas, Menlo, monospace; }
+    .host { fill: #111316; stroke: #3a3f46; stroke-width: 1.25; }
+    .link { fill: none; stroke: #4a4f57; stroke-width: 1.25; }
+  </style>
+  <rect width="560" height="420" fill="#1a1d21"/>
+  <rect width="560" height="420" fill="url(#dots-s)"/>
+
+  <text class="mono" x="28" y="44" font-size="10" letter-spacing="1" fill="#8b9098">EDGE</text>
+  <text class="mono" x="532" y="44" font-size="10" letter-spacing="1" fill="#8b9098" text-anchor="end">TRAFFIC →</text>
+
+  <!-- traffic line -->
+  <path class="link" d="M28 84h122M260 84h100M480 84h20v44"/>
+  <g fill="#7f858d"><rect x="40" y="80" width="14" height="8" rx="1"/><rect x="66" y="80" width="14" height="8" rx="1"/><rect x="290" y="80" width="14" height="8" rx="1"/><rect x="316" y="80" width="14" height="8" rx="1"/></g>
+  <rect x="112" y="80" width="14" height="8" rx="1" fill="#e9794f"/>
+  <path d="M134 78l8 12M142 78l-8 12" stroke="#e9794f" stroke-width="1.5"/>
+
+  <rect x="150" y="64" width="110" height="40" rx="3" fill="#111316" stroke="#e9794f" stroke-width="1.5"/>
+  <text class="mono" x="205" y="82" font-size="12" fill="#f1f2f4" text-anchor="middle">suricata</text>
+  <text class="mono" x="205" y="96" font-size="9" fill="#8b9098" text-anchor="middle">IDS / IPS</text>
+
+  <rect x="360" y="64" width="120" height="40" rx="3" class="host"/>
+  <text class="mono" x="420" y="82" font-size="12" fill="#f1f2f4" text-anchor="middle">nginx · WAF</text>
+  <text class="mono" x="420" y="96" font-size="9" fill="#8b9098" text-anchor="middle">TLS · rate limit</text>
+
+  <path class="link" d="M500 128H102v22M280 128v22M458 128v22"/>
+
+  <!-- hosts -->
+  <g>
+    <rect class="host" x="28" y="150" width="148" height="66" rx="3"/>
+    <text class="mono" x="42" y="176" font-size="12" fill="#f1f2f4">web-01</text>
+    <circle cx="160" cy="172" r="4" fill="#e9794f"/>
+    <rect x="42" y="188" width="98" height="18" rx="9" fill="none" stroke="#3a3f46"/>
+    <text class="mono" x="91" y="201" font-size="10" fill="#c9ccd1" text-anchor="middle">wazuh-agent</text>
+
+    <rect class="host" x="206" y="150" width="148" height="66" rx="3"/>
+    <text class="mono" x="220" y="176" font-size="12" fill="#f1f2f4">app-01</text>
+    <circle cx="338" cy="172" r="4" fill="#7f858d"/>
+    <rect x="220" y="188" width="98" height="18" rx="9" fill="none" stroke="#3a3f46"/>
+    <text class="mono" x="269" y="201" font-size="10" fill="#c9ccd1" text-anchor="middle">wazuh-agent</text>
+
+    <rect class="host" x="384" y="150" width="148" height="66" rx="3"/>
+    <text class="mono" x="398" y="176" font-size="12" fill="#f1f2f4">db-01</text>
+    <circle cx="516" cy="172" r="4" fill="#7f858d"/>
+    <rect x="398" y="188" width="98" height="18" rx="9" fill="none" stroke="#3a3f46"/>
+    <text class="mono" x="447" y="201" font-size="10" fill="#c9ccd1" text-anchor="middle">wazuh-agent</text>
+  </g>
+
+  <path d="M102 216v34M280 216v34M458 216v34" stroke="#4a4f57" stroke-width="1.25" stroke-dasharray="3 4"/>
+
+  <!-- SIEM -->
+  <rect x="28" y="250" width="504" height="46" rx="3" fill="#111316" stroke="#3a3f46" stroke-width="1.25"/>
+  <text class="mono" x="44" y="278" font-size="11" font-weight="500" fill="#e9794f">SIEM</text>
+  <text class="mono" x="90" y="278" font-size="11" fill="#c9ccd1">wazuh manager · indexer · dashboard</text>
+  <g fill="#e9794f"><rect x="486" y="266" width="4" height="14"/><rect x="494" y="262" width="4" height="18"/><rect x="502" y="270" width="4" height="10"/><rect x="510" y="258" width="4" height="22"/></g>
+
+  <!-- log -->
+  <rect x="28" y="314" width="504" height="86" rx="3" fill="#0c0e10" stroke="#2c3036"/>
+  <g class="mono" font-size="11">
+    <text x="44" y="340" fill="#8b9098">02:14:07  <tspan fill="#c9ccd1">suricata  ET SCAN nmap SYN sweep</tspan>  <tspan fill="#e9794f">drop</tspan></text>
+    <text x="44" y="362" fill="#8b9098">02:14:31  <tspan fill="#c9ccd1">wazuh     sshd brute force 203.0.113.24</tspan>  <tspan fill="#e9794f">ban</tspan></text>
+    <text x="44" y="384" fill="#8b9098">02:15:02  <tspan fill="#c9ccd1">wazuh     FIM: /var/www/wp-config.php</tspan>  <tspan fill="#e9794f">alert</tspan></text>
+  </g>
+</svg>

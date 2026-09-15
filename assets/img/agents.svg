@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 420" role="img" aria-label="Architektura agenta AI: kanały wejściowe, agent, magistrala MCP do systemów firmy i indeks RAG">
+  <defs>
+    <pattern id="dots-a" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#cfc9be"/>
+    </pattern>
+    <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L8 4L0 8z" fill="#15171a"/>
+    </marker>
+  </defs>
+  <style>
+    .mono { font-family: "IBM Plex Mono", Consolas, Menlo, monospace; }
+    .box { fill: #fbfaf7; stroke: #15171a; stroke-width: 1.5; }
+    .line { fill: none; stroke: #15171a; stroke-width: 1.25; }
+  </style>
+  <rect width="560" height="420" fill="#e9e6df"/>
+  <rect width="560" height="420" fill="url(#dots-a)"/>
+
+  <text class="mono" x="28" y="44" font-size="10" letter-spacing="1" fill="#6b6f75">INPUT</text>
+  <text class="mono" x="180" y="44" font-size="10" letter-spacing="1" fill="#6b6f75">RUNTIME</text>
+  <text class="mono" x="420" y="44" font-size="10" letter-spacing="1" fill="#6b6f75">SYSTEMS</text>
+
+  <!-- inputs -->
+  <g class="mono" font-size="12" fill="#15171a">
+    <rect class="box" x="28" y="90" width="96" height="40" rx="3"/><text x="44" y="115">chat</text>
+    <rect class="box" x="28" y="150" width="96" height="40" rx="3"/><text x="44" y="175">e-mail</text>
+    <rect class="box" x="28" y="210" width="96" height="40" rx="3"/><text x="44" y="235">ticket</text>
+  </g>
+  <path class="line" d="M124 110h28v60M124 230h28v-60M124 170h28"/>
+  <path class="line" d="M152 170h26" marker-end="url(#arr)"/>
+
+  <!-- agent -->
+  <rect x="180" y="90" width="150" height="160" rx="3" fill="#15171a"/>
+  <text class="mono" x="196" y="116" font-size="10" letter-spacing="1" fill="#8b9098">AGENT</text>
+  <circle cx="314" cy="112" r="4" fill="#c8471b"/>
+  <path d="M180 130h150M180 170h150M180 210h150" stroke="#2c3036"/>
+  <g class="mono" font-size="12" fill="#e9e6df">
+    <text x="210" y="155">plan</text>
+    <text x="210" y="195">tool calls</text>
+    <text x="210" y="235">memory</text>
+  </g>
+  <g fill="#c8471b"><rect x="196" y="147" width="6" height="6"/><rect x="196" y="187" width="6" height="6"/><rect x="196" y="227" width="6" height="6"/></g>
+
+  <!-- MCP bus -->
+  <path class="line" d="M330 170h48"/>
+  <path d="M380 76v248" stroke="#c8471b" stroke-width="2.5"/>
+  <text class="mono" x="366" y="68" font-size="11" font-weight="500" fill="#c8471b">MCP</text>
+  <g stroke="#15171a" stroke-width="1.25">
+    <path d="M380 100h40M380 156h40M380 212h40M380 268h40M380 324h40"/>
+  </g>
+  <g fill="#c8471b"><circle cx="380" cy="100" r="3.5"/><circle cx="380" cy="156" r="3.5"/><circle cx="380" cy="170" r="3.5"/><circle cx="380" cy="212" r="3.5"/><circle cx="380" cy="268" r="3.5"/><circle cx="380" cy="324" r="3.5"/></g>
+
+  <g class="mono" font-size="12" fill="#15171a">
+    <rect class="box" x="420" y="80" width="112" height="40" rx="3"/><text x="436" y="105">CRM</text>
+    <rect class="box" x="420" y="136" width="112" height="40" rx="3"/><text x="436" y="161">ERP</text>
+    <rect class="box" x="420" y="192" width="112" height="40" rx="3"/><text x="436" y="217">Git / Jira</text>
+    <rect class="box" x="420" y="248" width="112" height="40" rx="3"/><text x="436" y="273">docs</text>
+    <rect class="box" x="420" y="304" width="112" height="40" rx="3"/><text x="436" y="329">database</text>
+  </g>
+
+  <!-- RAG -->
+  <path class="line" d="M255 252v44" stroke-dasharray="4 4" marker-start="url(#arr)" marker-end="url(#arr)"/>
+  <path d="M195 312v48a60 12 0 0 0 120 0v-48" fill="#fbfaf7" stroke="#15171a" stroke-width="1.5"/>
+  <ellipse cx="255" cy="312" rx="60" ry="12" fill="#fbfaf7" stroke="#15171a" stroke-width="1.5"/>
+  <text class="mono" x="255" y="346" font-size="11" fill="#15171a" text-anchor="middle">vector index</text>
+  <text class="mono" x="136" y="340" font-size="10" letter-spacing="1" fill="#6b6f75">RAG</text>
+  <path class="line" d="M532 268h8v124H255v-20" stroke-dasharray="4 4" marker-end="url(#arr)"/>
+  <rect x="352" y="384" width="80" height="16" fill="#e9e6df"/>
+  <text class="mono" x="392" y="396" font-size="10" fill="#6b6f75" text-anchor="middle">embeddings</text>
+</svg>

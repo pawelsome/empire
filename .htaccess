@@ -1,4 +1,5 @@
 Options -Indexes
+ErrorDocument 404 /404.html
 
 RewriteEngine On
 
@@ -9,7 +10,7 @@ RewriteCond %{SERVER_PORT} !^443$
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
 # pliki repozytorium nie są częścią strony
-RewriteRule ^(README\.md|\.nojekyll)$ - [F,L]
+RewriteRule ^(README\.md|\.nojekyll|ec_korona\.png)$ - [F,L]
 
 <IfModule mod_headers.c>
   Header always set Strict-Transport-Security "max-age=31536000"
@@ -25,6 +26,12 @@ RewriteRule ^(README\.md|\.nojekyll)$ - [F,L]
   ExpiresByType image/png "access plus 1 month"
   ExpiresByType text/css "access plus 1 week"
   ExpiresByType text/html "access plus 10 minutes"
+  ExpiresByType image/x-icon "access plus 1 month"
 </IfModule>
 
 AddType font/woff2 .woff2
+AddType image/x-icon .ico
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/xml image/svg+xml image/x-icon
+</IfModule>

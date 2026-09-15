@@ -148,6 +148,7 @@ def html_to_text(fragment):
 
 def load_posts(today, warnings):
     schedule = json.loads(SCHEDULE.read_text(encoding="utf-8")) if SCHEDULE.exists() else {}
+    position = {slug: i for i, slug in enumerate(schedule)}
     posts = []
     for f in sorted(POSTS_DIR.glob("*.html")):
         raw = f.read_text(encoding="utf-8")
@@ -192,11 +193,13 @@ def load_posts(today, warnings):
             "url": f"{BASE}/blog/{slug}/",
             "path": f"/blog/{slug}/",
             "published": date <= today,
+            "position": position[slug],
         })
     for slug in schedule:
         if not (POSTS_DIR / f"{slug}.html").exists():
             warnings.append(f"schedule.json: '{slug}' has no post file yet")
-    posts.sort(key=lambda p: (p["date"], p["slug"]), reverse=True)
+    # newest first; posts sharing a date keep their schedule order
+    posts.sort(key=lambda p: (-p["date"].toordinal(), p["position"]))
     return posts
 
 

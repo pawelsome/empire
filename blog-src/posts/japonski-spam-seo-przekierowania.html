@@ -1,0 +1,152 @@
+<!--META
+{
+  "slug": "japonski-spam-seo-przekierowania",
+  "title": "Strona przekierowuje na inną stronę? Japoński spam SEO i naprawa",
+  "metaTitle": "Strona przekierowuje na inną stronę: japoński spam SEO",
+  "description": "Strona przekierowuje na inną stronę, a w Google widać japońskie znaki? Sprawdź, gdzie ukrywa się kod, jak go usunąć i jak wyczyścić wyniki wyszukiwania.",
+  "category": "Bezpieczeństwo",
+  "tags": ["SEO spam", "przekierowania", "WordPress", "Google Search Console", "usuwanie malware"],
+  "primaryKeyword": "strona przekierowuje na inną stronę",
+  "tldr": [
+    "Japoński spam SEO i złośliwe przekierowania to skutek włamania, a nie błąd konfiguracji: ktoś dopisał kod do plików albo bazy danych.",
+    "Kod zwykle pokazuje spam tylko Googlebotowi, telefonom lub wejściom z wyszukiwarki i pomija zalogowanych administratorów, dlatego właściciel niczego nie widzi.",
+    "Typowe kryjówki to .htaccess, functions.php motywu, katalog mu-plugins, fałszywe wtyczki oraz tabele wp_options i wp_posts.",
+    "Po czyszczeniu adresy spamu muszą zwracać 404 lub 410; narzędzie Usunięcia w Search Console ukrywa je tylko na około 6 miesięcy.",
+    "Bez znalezienia backdoora i drogi wejścia infekcja wraca, nawet jeśli skaner pokazuje czystą stronę."
+  ],
+  "faq": [
+    {"q": "Dlaczego moja strona przekierowuje na inną stronę tylko na telefonie?", "a": "Złośliwy kod sprawdza nagłówek User-Agent i uruchamia przekierowanie wyłącznie dla urządzeń mobilnych albo dla wejść z wyszukiwarki. Często pomija też zalogowanych użytkowników i zapamiętuje odwiedzających w ciasteczku, żeby nie zdradzić się przy kolejnej wizycie. Testuj stronę w trybie prywatnym, z telefonu na danych komórkowych i narzędziem Sprawdzanie adresu URL w Search Console."},
+    {"q": "Czy japońskie wyniki znikną z Google same po usunięciu wirusa?", "a": "Znikną dopiero wtedy, gdy Google ponownie odwiedzi te adresy i dostanie kod 404 lub 410. Możesz ukryć je szybciej, zgłaszając prefiks adresów w narzędziu Usunięcia, i przesłać poprawną mapę witryny. Jeśli po czyszczeniu spamowe URL-e zwracają stronę główną z kodem 200, mogą długo zostać w indeksie."},
+    {"q": "Czy mogę zablokować spamowe adresy w pliku robots.txt?", "a": "Nie rób tego. Blokada w robots.txt nie pozwala Googlebotowi wejść na adres, więc nie zobaczy, że strona już nie istnieje, i adres może dalej wisieć w wynikach. Google w dokumentacji narzędzia Usunięcia wprost odradza robots.txt jako sposób na usunięcie treści."},
+    {"q": "Czy przeniesienie strony na inny hosting usunie infekcję?", "a": "Nie, bo zainfekowane pliki i baza przenoszą się razem ze stroną. Nowy hosting ma sens dopiero po wyczyszczeniu kodu, wymianie haseł i załataniu luki. Przeprowadzka pomaga głównie wtedy, gdy infekcja przychodziła z innej strony na tym samym koncie hostingowym."},
+    {"q": "Skąd w Search Console nowy właściciel, którego nie dodawałem?", "a": "To częsty element japońskiego spamu: atakujący weryfikuje Twoją domenę na własnym koncie, żeby zarządzać mapami witryny i indeksowaniem. Usuń jego token weryfikacyjny (plik HTML, metatag lub rekord DNS), a potem samego właściciela w ustawieniach Search Console. Sprawdź też mapy witryny, których nie przesyłałeś."}
+  ],
+  "sources": [
+    {"title": "web.dev (Google): Fix the Japanese keyword hack", "url": "https://web.dev/articles/fix-the-japanese-keyword-hack"},
+    {"title": "Pomoc Search Console: raport Problemy dotyczące bezpieczeństwa", "url": "https://support.google.com/webmasters/answer/9044101"},
+    {"title": "Pomoc Search Console: narzędzie Usunięcia", "url": "https://support.google.com/webmasters/answer/9689846"},
+    {"title": "Sucuri: Malware Redirects WordPress Traffic to Harmful Sites (2025)", "url": "https://blog.sucuri.net/2025/01/malware-redirects-wordpress-traffic-to-harmful-sites.html"},
+    {"title": "Sucuri: Hidden Malware Strikes Again: Mu-Plugins Under Attack (2025)", "url": "https://blog.sucuri.net/2025/03/hidden-malware-strikes-again-mu-plugins-under-attack.html"},
+    {"title": "WP-CLI: wp db search", "url": "https://developer.wordpress.org/cli/commands/db/search/"}
+  ],
+  "linkedin": "Jeśli Twoja strona przekierowuje klientów na obcą domenę, a Ty tego nie widzisz, to nie przypadek. Tak działa cloaking w infekcjach typu japoński spam SEO.\n\nCo sprawdzić:\n- kod często uruchamia się tylko dla telefonów, wejść z Google albo Googlebota i pomija zalogowanych administratorów,\n- kryje się w .htaccess, functions.php, mu-plugins i tabeli wp_options,\n- atakujący potrafi dodać się jako właściciel w Search Console i podmienić mapę witryny,\n- narzędzie Usunięcia ukrywa adresy tylko na około 6 miesięcy, trwałe usunięcie wymaga kodów 404 lub 410,\n- bez usunięcia backdoora spam wraca.\n\nPełna procedura krok po kroku: {url}\n\n#cyberbezpieczeństwo #WordPress #SEO #malware"
+}
+META-->
+<p>Jeśli strona przekierowuje na inną stronę albo w Google pod Twoją domeną widać tytuły z japońskimi znakami, masz do czynienia z włamaniem typu SEO spam. Atakujący dopisał kod, który podmienia treść lub przekierowuje wybranych odwiedzających. Usuń ten kod, zamknij drogę, którą wszedł, i wyczyść indeks Google.</p>
+
+<h2>Po czym poznać japoński spam SEO i złośliwe przekierowania</h2>
+<p>Ta infekcja rzadko psuje stronę w oczywisty sposób. Właściciel zwykle dowiaduje się o niej od klienta, z wiadomości od Google albo przypadkiem, wpisując nazwę firmy w wyszukiwarkę. Typowe objawy:</p>
+<ul>
+<li>w wynikach Google pod Twoją domeną pojawiają się strony z japońskim tekstem, często z linkami do sklepów z podróbkami markowych produktów,</li>
+<li>goście wchodzący z telefonu albo z wyników wyszukiwania lądują na obcej stronie (loterie, fałszywe aktualizacje przeglądarki, podejrzane sklepy), a Ty na komputerze widzisz normalną witrynę,</li>
+<li>w Search Console rośnie liczba zaindeksowanych stron, a w raporcie skuteczności pojawiają się zapytania niezwiązane z Twoją ofertą,</li>
+<li>raport „Problemy dotyczące bezpieczeństwa” pokazuje zhakowaną treść: wstrzyknięty kod, treść albo adresy URL,</li>
+<li>w ustawieniach Search Console jest zweryfikowany właściciel, którego nie znasz, albo mapa witryny, której nie przesyłałeś.</li>
+</ul>
+
+<h3>Przejrzyj wyniki operatorem site:</h3>
+<p>Wpisz w Google <code>site:twojadomena.pl</code> i przejrzyj kilka stron wyników, nie tylko pierwszą. Spam często siedzi w losowo nazwanych katalogach. Dokumentacja Google podaje przykład adresu w stylu <code>/ltjmnjp/341.html</code>. Możesz też dopisać do zapytania japońskie słowo z tytułów, które już zauważyłeś, żeby zobaczyć skalę problemu.</p>
+
+<h3>Dlaczego administrator nie widzi problemu</h3>
+<p>Kod stosuje cloaking, czyli pokazuje różną treść różnym odwiedzającym. Sprawdza nagłówek User-Agent, adres IP, stronę, z której ktoś przyszedł (Referer), a czasem to, czy jesteś zalogowany. W przypadku opisanym przez Sucuri w styczniu 2025 roku złośliwy kod w <code>functions.php</code> nie uruchamiał się dla zalogowanych użytkowników WordPressa, dla robotów wyszukiwarek ani dla przeglądarek, które miały już określone ciasteczko.</p>
+<p>Najpewniejszy test to narzędzie Sprawdzanie adresu URL w Search Console z testem na żywo. Pokazuje HTML, który dostał Googlebot, a żądanie wychodzi z prawdziwej infrastruktury Google, więc cloaking nie ma jak go odróżnić. Uzupełnij to porównaniem z terminala:</p>
+<pre><code class="language-bash"># Zwykła przeglądarka: kod odpowiedzi i ewentualny adres przekierowania
+curl -s -o /dev/null -w "%{http_code} %{redirect_url}\n" https://twojadomena.pl/
+
+# Telefon wchodzący z wyników Google
+curl -s -o /dev/null -w "%{http_code} %{redirect_url}\n" \
+  -A "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148" \
+  -e "https://www.google.com/" \
+  https://twojadomena.pl/
+
+# Porównanie HTML dla przeglądarki i udawanego Googlebota
+curl -s https://twojadomena.pl/ -o zwykly.html
+curl -s -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" https://twojadomena.pl/ -o googlebot.html
+diff zwykly.html googlebot.html | head -50</code></pre>
+<p>Brak różnic niczego nie dowodzi. Część infekcji sprawdza, czy żądanie naprawdę pochodzi z adresów Google, a przekierowania w JavaScripcie curl w ogóle nie wykona. W takim przypadku szukaj w pobranym HTML obcych domen i zaciemnionych skryptów.</p>
+
+<h2>Gdzie ukrywa się kod przekierowania i spamu</h2>
+<p>Przykłady dotyczą WordPressa, ale te same kategorie miejsc (konfiguracja serwera, szablon, rozszerzenia, baza danych) sprawdzisz w każdym CMS-ie.</p>
+<table>
+<thead>
+<tr><th>Miejsce</th><th>Czego szukać</th></tr>
+</thead>
+<tbody>
+<tr><td><code>.htaccess</code> w katalogu głównym i podkatalogach</td><td>Reguły <code>RewriteCond</code> sprawdzające <code>HTTP_USER_AGENT</code> lub <code>HTTP_REFERER</code>, przekierowania na obce domeny, przepisywanie losowych adresów na jeden plik PHP generujący spam</td></tr>
+<tr><td><code>functions.php</code> motywu</td><td>Kod doklejony na początku lub końcu pliku, warunkowe <code>wp_redirect</code>, <code>eval</code>, długie ciągi base64</td></tr>
+<tr><td><code>wp-content/mu-plugins</code></td><td>Pliki, których nie dodawałeś. Wtyczki typu must-use ładują się automatycznie i nie widać ich na zwykłej liście wtyczek</td></tr>
+<tr><td>Fałszywe wtyczki</td><td>Nazwy udające narzędzia bezpieczeństwa lub cache, brak w repozytorium WordPress.org, ukrywanie się w panelu</td></tr>
+<tr><td>Tabela <code>wp_options</code></td><td>Podmienione <code>siteurl</code> i <code>home</code>, skrypty w widżetach i w opcjach wtyczek do wstawiania kodu</td></tr>
+<tr><td>Tabela <code>wp_posts</code></td><td>Masowo dodane wpisy lub strony ze spamem, wstrzyknięte <code>&lt;script&gt;</code> w treści</td></tr>
+<tr><td><code>index.php</code>, <code>wp-config.php</code>, <code>.user.ini</code></td><td>Dołączanie plików z katalogu uploads, dyrektywa <code>auto_prepend_file</code></td></tr>
+</tbody>
+</table>
+<p>W marcu 2025 roku Sucuri opisało infekcję, w której w <code>mu-plugins</code> siedziały jednocześnie trzy pliki: przekierowanie na fałszywą aktualizację, web shell i skrypt podmieniający treść. To dobry powód, żeby po znalezieniu pierwszego pliku nie kończyć poszukiwań. Mechanizm fałszywych aktualizacji opisaliśmy we wpisie o <a href="/blog/socgholish-falszywa-aktualizacja-przegladarki/">SocGholish</a>.</p>
+
+<h3>Polecenia do szybkiego przeglądu</h3>
+<p>Uruchamiaj WP-CLI z flagami <code>--skip-plugins --skip-themes</code>. Bez nich narzędzie ładuje WordPressa razem z zainfekowanym kodem, który wtedy się wykona.</p>
+<pre><code class="language-bash"># Reguły .htaccess zależne od przeglądarki lub źródła wejścia albo kierujące na zewnątrz
+find /sciezka/do/strony -name ".htaccess" -exec grep -HniE "HTTP_USER_AGENT|HTTP_REFERER|RewriteRule.*https?://" {} \;
+
+# Adres strony zapisany w bazie
+wp option get siteurl --skip-plugins --skip-themes
+wp option get home --skip-plugins --skip-themes
+
+# Skrypty zapisane w bazie danych, we wszystkich tabelach
+wp db search '&lt;script' --all-tables --stats --skip-plugins --skip-themes
+
+# Wtyczki must-use i konta administratorów
+wp plugin list --status=must-use --skip-plugins --skip-themes
+wp user list --role=administrator --fields=ID,user_login,user_email,user_registered --skip-plugins --skip-themes</code></pre>
+<p>Przekierowanie z HTTP na HTTPS też zawiera <code>RewriteRule</code> z adresem, a wiele motywów legalnie trzyma skrypty w bazie. Wynik tych poleceń to lista do ręcznego przejrzenia, nie gotowy werdykt.</p>
+
+<h2>Jak usunąć przekierowanie i spam krok po kroku</h2>
+<aside class="callout"><p>Zanim cokolwiek usuniesz, zrób pełną kopię plików i bazy w obecnym stanie i odłóż ją poza serwer. Posłuży do ustalenia, skąd przyszedł atak. Nie przywracaj też na ślepo starej kopii zapasowej: bez znajomości daty włamania możesz wgrać wersję, która już zawierała backdoor.</p></aside>
+<ol>
+<li><strong>Ogranicz szkody.</strong> Jeśli klienci trafiają na oszustwa, włącz tryb serwisowy albo tymczasowo zablokuj ruch z zewnątrz.</li>
+<li><strong>Zmień dane dostępowe.</strong> Hasła do hostingu, SFTP, SSH, bazy danych i kont administratorów oraz klucze w <code>wp-config.php</code> (polecenie <code>wp config shuffle-salts</code> przy okazji wyloguje wszystkich). Rób to z komputera, co do którego masz pewność, że jest czysty.</li>
+<li><strong>Wymień rdzeń i rozszerzenia.</strong> Pobierz świeżego WordPressa, wtyczki i motywy z oficjalnych źródeł, a nieużywane usuń. Wynik sprawdź poleceniem <code>wp core verify-checksums</code>.</li>
+<li><strong>Przejrzyj miejsca z tabeli.</strong> Porównaj <code>.htaccess</code> z domyślnym, wyczyść <code>functions.php</code>, usuń nieznane pliki z <code>mu-plugins</code> i wszystkie pliki PHP z katalogu uploads.</li>
+<li><strong>Posprzątaj bazę.</strong> Usuń wpisy ze spamem i wstrzyknięte skrypty, przywróć poprawne <code>siteurl</code> i <code>home</code>. Nieznane konta administratorów skasuj.</li>
+<li><strong>Odzyskaj Search Console.</strong> Usuń obcych właścicieli razem z ich tokenami weryfikacyjnymi (nieznane pliki <code>google*.html</code> w katalogu głównym, metatagi, rekordy DNS) oraz mapy witryny, których nie dodawałeś.</li>
+<li><strong>Znajdź drogę wejścia.</strong> Typowe przyczyny to nieaktualna wtyczka, wykradzione hasło albo inna strona na tym samym koncie hostingowym. Jak szukać ukrytego dostępu, opisaliśmy w artykule o <a href="/blog/backdoor-web-shell-php/">backdoorach i web shellach PHP</a>.</li>
+<li><strong>Zweryfikuj efekt.</strong> Powtórz testy curl, sprawdź kilka adresów spamu w narzędziu Sprawdzanie adresu URL i otwórz stronę z telefonu na danych komórkowych.</li>
+</ol>
+<p>Jeśli to Twoja pierwsza infekcja, przeczytaj też, <a href="/blog/zainfekowany-wordpress-objawy/">co zrobić w pierwszej godzinie po wykryciu włamania do WordPressa</a>.</p>
+
+<h2>Jak usunąć japońskie wyniki z Google</h2>
+<p>Wyczyszczona strona to połowa pracy. Google nadal trzyma w indeksie śmieciowe adresy i pokazuje je, dopóki ich ponownie nie odwiedzi.</p>
+
+<h3>Kod 404 albo 410 dla adresów spamu</h3>
+<p>Każdy adres spamu powinien zwracać 404 (nie znaleziono) lub 410 (usunięto na stałe). Sprawdź, czy po czyszczeniu nie dostajesz kodu 200 ze stroną główną, bo wtedy Google widzi działającą podstronę. Jeśli spam miał powtarzalny wzorzec adresów, możesz zwracać 410 regułą w <code>.htaccess</code>:</p>
+<pre><code class="language-apacheconf"># Przykład: 410 dla adresów w stylu /ltjmnjp/341.html
+# Dopasuj wzorzec do własnego spamu, żeby nie objął prawdziwych podstron
+RewriteEngine On
+RewriteRule ^[a-z]{5,10}/[0-9]+\.html$ - [G,L]</code></pre>
+<p>Nie blokuj tych adresów w <code>robots.txt</code>. Googlebot nie wejdzie wtedy na stronę, więc nie zobaczy, że już jej nie ma. Dokumentacja narzędzia Usunięcia wprost to odradza.</p>
+
+<h3>Narzędzie Usunięcia w Search Console</h3>
+<p>Narzędzie ukrywa adresy w wynikach na około 6 miesięcy. Obsługuje prefiksy, więc jednym zgłoszeniem ukryjesz cały katalog, na przykład <code>https://twojadomena.pl/ltjmnjp/</code>. To rozwiązanie tymczasowe: jeśli po tym czasie adres nadal zwraca treść, wróci do wyników.</p>
+
+<h3>Mapa witryny i prośba o ponowne sprawdzenie</h3>
+<p>Usuń mapy witryny dodane przez atakującego i prześlij ponownie swoją. Jeśli raport „Problemy dotyczące bezpieczeństwa” zawiera zgłoszenie, po wyczyszczeniu całej witryny poproś w nim o sprawdzenie i opisz, co było nie tak oraz co naprawiłeś. Google podaje, że weryfikacja trwa zwykle od kilku dni do kilku tygodni, a ponowne wysyłanie prośby przed decyzją tylko ją opóźnia. Jeśli przeglądarki pokazują czerwone ostrzeżenie, zajrzyj do wpisu o <a href="/blog/ostrzezenie-google-strona-niebezpieczna/">komunikacie „strona niebezpieczna”</a>.</p>
+
+<h2>Dlaczego przekierowania wracają po czyszczeniu</h2>
+<p>Typowy scenariusz: skaner usuwa widoczny kod, strona przez jakiś czas działa normalnie, po czym spam wraca, czasem w innym miejscu. Zwykle stoi za tym jedna z trzech przyczyn.</p>
+<ul>
+<li>Atakujący zostawił backdoor, czyli osobny kawałek kodu pozwalający wrócić. Bywa ich kilka w różnych katalogach.</li>
+<li>Luka, przez którą wszedł, nadal jest otwarta: ta sama wtyczka w starej wersji albo to samo hasło.</li>
+<li>Na tym samym koncie hostingowym działa inna, zapomniana strona, z której infekcja przechodzi z powrotem.</li>
+</ul>
+<p>Sprawdź też zadania cron na serwerze i w WordPressie (<code>crontab -l</code> oraz <code>wp cron event list --skip-plugins --skip-themes</code>). Zdarza się, że to zadanie harmonogramu albo zmodyfikowany plik rdzenia odtwarza usunięte elementy.</p>
+
+<h2>Jak zabezpieczyć stronę przed kolejnym spamem SEO</h2>
+<ul>
+<li>Aktualizuj rdzeń, wtyczki i motywy, a nieużywane rozszerzenia usuwaj zamiast je wyłączać.</li>
+<li>Włącz uwierzytelnianie dwuskładnikowe dla wszystkich kont administratorów i dla panelu hostingu.</li>
+<li>Wyłącz edycję plików z panelu (<code>DISALLOW_FILE_EDIT</code>) i zablokuj wykonywanie PHP w katalogu uploads.</li>
+<li>Trzymaj każdą stronę na osobnym koncie albo przynajmniej na osobnym użytkowniku systemowym.</li>
+<li>Monitoruj integralność plików, żeby zmiana w <code>.htaccess</code> czy <code>functions.php</code> wywołała alert jeszcze tego samego dnia.</li>
+<li>Upewnij się, że powiadomienia z Search Console trafiają do skrzynki, którą ktoś czyta, i co jakiś czas przeglądaj listę właścicieli oraz map witryny.</li>
+</ul>
+<p>Pełną listę kontrolną znajdziesz we wpisie <a href="/blog/zabezpieczenie-wordpress-checklista/">zabezpieczenie WordPress: checklista</a>. Jeśli wolisz oddać czyszczenie i analizę przyczyny komuś, kto robi to zawodowo, <a href="/#bezpieczenstwo">zajmujemy się tym w ramach usług bezpieczeństwa</a>.</p>

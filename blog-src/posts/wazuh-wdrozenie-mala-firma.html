@@ -1,0 +1,157 @@
+<!--META
+{
+  "slug": "wazuh-wdrozenie-mala-firma",
+  "title": "Wdrożenie Wazuh w małej firmie: architektura, tuning i typowe błędy",
+  "metaTitle": "Wdrożenie Wazuh w małej firmie: praktyczny poradnik",
+  "description": "Wdrożenie Wazuh krok po kroku: architektura, wymagania sprzętowe, rollout agentów, strojenie reguł, hardening i integracja z Suricatą oraz Slackiem.",
+  "category": "Bezpieczeństwo",
+  "tags": ["Wazuh", "SIEM", "XDR", "monitoring bezpieczeństwa", "hardening", "open source"],
+  "primaryKeyword": "wdrożenie Wazuh",
+  "tldr": [
+    "Dla kilkudziesięciu hostów wystarczy instalacja all-in-one; dokumentacja Wazuh 4.14 podaje 8 vCPU i 8 GiB RAM dla 50-100 agentów przy 90 dniach retencji.",
+    "Klaster indexera planuj od trzech węzłów, bo dwa nie przetrwają awarii jednego z nich.",
+    "Rejestrację agentów zabezpiecz hasłem, a wersję agenta przypnij, żeby nie wyprzedziła managera.",
+    "Szum ograniczaj regułami potomnymi z poziomem 0 dla konkretnych źródeł, zamiast wyłączać całe reguły.",
+    "Sam Wazuh wymaga hardeningu: zmiana haseł, TLS, dashboard i API tylko z sieci administracyjnej, alert na rozłączonego agenta."
+  ],
+  "faq": [
+    {"q": "Czy Wazuh jest darmowy?", "a": "Wazuh jest oprogramowaniem open source i za instalację na własnej infrastrukturze nie płacisz licencji. Realne koszty to serwer, miejsce na dane oraz czas ludzi na wdrożenie, strojenie reguł i przegląd alertów. Producent oferuje też płatną usługę chmurową i wsparcie."},
+    {"q": "Ile agentów obsłuży jeden serwer Wazuh?", "a": "Dokumentacja Wazuh 4.14 podaje dla instalacji all-in-one zakres do 100 agentów przy 8 vCPU, 8 GiB RAM i 200 GB dysku na 90 dni danych. Powyżej tego progu rozdziel komponenty na osobne maszyny. Faktyczne zapotrzebowanie zależy od liczby zdarzeń, więc zweryfikuj je po kilku tygodniach pracy."},
+    {"q": "Czy Wazuh zastępuje antywirusa albo EDR?", "a": "Nie traktuj go jako zamiennika. Wazuh dobrze sprawdza się w analizie logów, monitorowaniu integralności plików, wykrywaniu podatności i ocenie konfiguracji, ale ochrona stacji roboczych przed złośliwym oprogramowaniem to osobna warstwa. W praktyce Wazuh zbiera też alerty z tych narzędzi i pokazuje je w jednym miejscu."},
+    {"q": "Jak długo trwa wdrożenie Wazuh w małej firmie?", "a": "Instalację all-in-one skryptem z dokumentacji zrobisz w jeden dzień roboczy razem z przygotowaniem serwera. Dłużej trwa rollout agentów falami i strojenie reguł, które wymaga kilku tygodni obserwacji realnego ruchu. Zaplanuj też stały czas na przegląd alertów po wdrożeniu."},
+    {"q": "Czy Wazuh wykrywa podatności w zainstalowanym oprogramowaniu?", "a": "Tak. Moduł vulnerability detection porównuje inwentarz pakietów zebrany przez agenty z bazą CVE i pokazuje w dashboardzie, które hosty mają podatne wersje. W Wazuh 4.14 moduł konfigurujesz blokiem vulnerability-detection w pliku ossec.conf managera."}
+  ],
+  "sources": [
+    {"title": "Wazuh documentation: Quickstart (wymagania sprzętowe, instalacja)", "url": "https://documentation.wazuh.com/current/quickstart.html"},
+    {"title": "Wazuh documentation: Wazuh indexer, wymagania i szacowanie dysku", "url": "https://documentation.wazuh.com/current/installation-guide/wazuh-indexer/index.html"},
+    {"title": "Wazuh documentation: Password management", "url": "https://documentation.wazuh.com/current/user-manual/user-administration/password-management.html"},
+    {"title": "Wazuh documentation: Custom rules", "url": "https://documentation.wazuh.com/current/user-manual/ruleset/rules/custom.html"},
+    {"title": "Wazuh documentation: Network IDS integration (Suricata)", "url": "https://documentation.wazuh.com/current/proof-of-concept-guide/integrate-network-ids-suricata.html"},
+    {"title": "Wazuh documentation: Integration with external APIs", "url": "https://documentation.wazuh.com/current/user-manual/manager/integration-with-external-apis.html"},
+    {"title": "Wazuh 4.14.7 release notes", "url": "https://documentation.wazuh.com/current/release-notes/release-4-14-7.html"},
+    {"title": "Wazuh releases na GitHubie", "url": "https://github.com/wazuh/wazuh/releases"}
+  ],
+  "linkedin": "Wazuh instaluje się jednym skryptem. Problemy zaczynają się tydzień później, gdy kanał z alertami ma kilka tysięcy wiadomości i nikt ich nie czyta.\n\nCo sprawdza się przy wdrożeniu w małej firmie:\n- instalacja all-in-one wystarczy do około 100 agentów (dokumentacja 4.14: 8 vCPU, 8 GiB RAM, 200 GB na 90 dni),\n- klaster indexera od trzech węzłów, nigdy dwóch,\n- hasło rejestracji agentów i przypięta wersja agenta,\n- wyciszanie konkretnych źródeł regułą z poziomem 0 zamiast wyłączania całych reguł,\n- dashboard i API tylko z sieci administracyjnej, alert na rozłączonego agenta.\n\nPełny poradnik z konfiguracją, integracją z Suricatą i listą typowych błędów:\n{url}\n\n#Wazuh #SIEM #cyberbezpieczeństwo #opensource #bezpieczeństwoIT"
+}
+META-->
+<p>Wdrożenie Wazuh w małej firmie to najczęściej jeden serwer all-in-one (indexer, server i dashboard) obsługujący kilkadziesiąt agentów, instalowany oficjalnym skryptem. Sama instalacja jest prosta. Właściwa praca to rozsądny rollout agentów, strojenie reguł, żeby alerty nie zamieniły się w szum, i zabezpieczenie samego Wazuha.</p>
+
+<aside class="callout"><p>Stan na wrzesień 2026: stabilna gałąź to Wazuh 4.14 (wydanie 4.14.7 z 29 lipca 2026). Wazuh 5.0 jest nadal w fazie beta, więc na produkcję instaluj 4.14, a przed przejściem na nową główną wersję przeczytaj notatki wydania. Polecenia i ścieżki w tym tekście dotyczą gałęzi 4.14.</p></aside>
+
+<h2>Co robi Wazuh i czego nie zrobi za ciebie</h2>
+<p>Wazuh to otwarta platforma SIEM/XDR. Agent na serwerze lub laptopie zbiera zdarzenia, serwer (manager) dekoduje je i porównuje z regułami, wynik trafia do indexera, a ty oglądasz go w dashboardzie. W jednym narzędziu dostajesz kilka funkcji:</p>
+<ul>
+<li><strong>Analiza logów</strong>: syslog, dzienniki Windows, logi serwerów WWW i aplikacji. Reguły wychwytują m.in. próby logowania na nieistniejące konta, eskalację uprawnień czy serie nieudanych uwierzytelnień.</li>
+<li><strong>File Integrity Monitoring (FIM)</strong>: moduł syscheck śledzi zmiany plików, uprawnień i sum kontrolnych. Na serwerze WWW to jeden z najszybszych sposobów, żeby zauważyć podrzucony plik, o czym więcej w tekście <a href="/blog/backdoor-web-shell-php/">o backdoorach i web shellach PHP</a>.</li>
+<li><strong>Wykrywanie podatności</strong>: inwentarz pakietów z agentów jest porównywany z bazą CVE.</li>
+<li><strong>Security Configuration Assessment (SCA)</strong>: ocena konfiguracji systemów według polityk opartych m.in. na benchmarkach CIS.</li>
+<li><strong>Active response</strong>: automatyczna reakcja na alert, np. czasowe zablokowanie adresu IP na firewallu hosta.</li>
+</ul>
+<p>Wazuh nie zastąpi człowieka, który czyta alerty. Dostajesz silnik detekcji i magazyn danych, ale decyzję, co jest incydentem, podejmuje ktoś z zespołu albo zewnętrzny partner. Jeśli nikt nie ma na to czasu, ustal to przed instalacją.</p>
+
+<h2>Architektura Wazuh: all-in-one czy instalacja rozproszona</h2>
+<p>Wazuh składa się z agentów i trzech komponentów centralnych:</p>
+<ul>
+<li><strong>Wazuh indexer</strong>: silnik wyszukiwania oparty na OpenSearch, przechowuje alerty i zdarzenia (API na porcie 9200).</li>
+<li><strong>Wazuh server</strong>: odbiera dane od agentów (1514/TCP), rejestruje nowe agenty (1515/TCP), analizuje zdarzenia i wystawia API na porcie 55000.</li>
+<li><strong>Wazuh dashboard</strong>: interfejs webowy, domyślnie na porcie 443.</li>
+</ul>
+<p>Instalacja all-in-one stawia te trzy komponenty na jednej maszynie. Dla firmy z kilkudziesięcioma hostami to rozsądny wybór: jedna maszyna do kopii zapasowych, aktualizacji i nadzoru. Wadą jest brak odporności na awarię, bo gdy serwer stoi, tracisz jednocześnie zbieranie danych i wgląd w historię.</p>
+
+<h3>Kiedy rozdzielić komponenty i klastrować indexer</h3>
+<p>Rozdziel komponenty, gdy indexer zaczyna zabierać managerowi pamięć i dysk albo gdy liczba agentów wychodzi poza zakres, dla którego dokumentacja podaje parametry pojedynczej maszyny. Klaster indexera ma sens wtedy, gdy kilka godzin bez dostępu do danych bezpieczeństwa jest dla ciebie nie do przyjęcia.</p>
+<p>Jeśli klastrujesz, planuj trzy węzły indexera, nie dwa. Indexer dziedziczy po OpenSearch mechanizm kworum: decyzje o stanie klastra wymagają większości węzłów uprawnionych do głosowania, więc para węzłów nie przetrwa awarii jednego z nich. Szczegóły wyjaśnia tekst <a href="/blog/monitoring-logow-elk-grafana/">o monitoringu logów w ELK, OpenSearch i Grafanie</a>. Klaster managerów to osobna decyzja, zwykle potrzebna dopiero przy większej skali.</p>
+
+<h2>Wymagania sprzętowe Wazuh: ile zasobów zaplanować</h2>
+<p>Dokumentacja Wazuh 4.14 podaje dla instalacji all-in-one z 90 dniami indeksowanych danych takie parametry:</p>
+<table>
+<thead>
+<tr><th>Liczba agentów</th><th>vCPU</th><th>RAM</th><th>Dysk (90 dni)</th></tr>
+</thead>
+<tbody>
+<tr><td>1-25</td><td>4</td><td>8 GiB</td><td>50 GB</td></tr>
+<tr><td>25-50</td><td>8</td><td>8 GiB</td><td>100 GB</td></tr>
+<tr><td>50-100</td><td>8</td><td>8 GiB</td><td>200 GB</td></tr>
+</tbody>
+</table>
+<p>Dla samego indexera dokumentacja podaje minimum 4 GB RAM i 2 rdzenie, a rekomendowane 16 GB RAM i 8 rdzeni. Zajętość dysku szacuje według liczby alertów na sekundę: około 3,7 GB na 90 dni dla serwera, 1,5 GB dla stacji roboczej i 7,4 GB dla urządzenia sieciowego. Przykład z dokumentacji: 80 stacji, 10 serwerów i 10 urządzeń sieciowych to około 231 GB.</p>
+<p>Traktuj te liczby jako punkt startowy. Zajętość rośnie, gdy włączysz archiwizację wszystkich zdarzeń, a nie tylko alertów, albo podepniesz głośne źródła, takie jak firewall czy Suricata z logowaniem przepływów. Po dwóch tygodniach sprawdź faktyczny przyrost indeksów i dopiero wtedy ustal retencję.</p>
+
+<h2>Jak wdrożyć agentów Wazuh bez chaosu</h2>
+<ol>
+<li><strong>Zacznij od pilota.</strong> Wybierz kilka hostów różnego typu: serwer WWW, serwer plików, dwa laptopy. Przez tydzień obserwuj, co generują.</li>
+<li><strong>Włącz hasło rejestracji.</strong> Bez niego każdy, kto dotrze do portu 1515, może zarejestrować agenta.</li>
+<li><strong>Grupuj agenty.</strong> Grupy, np. <code>linux-web</code> czy <code>windows-stacje</code>, pozwalają rozsyłać wspólną konfigurację przez <code>agent.conf</code> zamiast edytować każdy host osobno.</li>
+<li><strong>Przypnij wersję.</strong> Dokumentacja gwarantuje zgodność tylko wtedy, gdy manager jest w tej samej lub nowszej wersji niż agent. Zablokuj pakiet albo wyłącz repozytorium Wazuh po instalacji.</li>
+<li><strong>Rozszerzaj falami.</strong> Najpierw serwery, potem stacje robocze. Każda fala to nowe źródła szumu do wystrojenia.</li>
+</ol>
+<p>Na managerze włącz uwierzytelnianie hasłem, dodając w <code>/var/ossec/etc/ossec.conf</code> blok <code>&lt;auth&gt;&lt;use_password&gt;yes&lt;/use_password&gt;&lt;/auth&gt;</code>. Dalej wygląda to tak (Wazuh 4.14, Debian/Ubuntu z dodanym repozytorium Wazuh, polecenia jako root):</p>
+<pre><code class="language-bash"># na managerze
+echo "TwojeHasloRejestracji" &gt; /var/ossec/etc/authd.pass
+chmod 640 /var/ossec/etc/authd.pass
+chown root:wazuh /var/ossec/etc/authd.pass
+systemctl restart wazuh-manager
+
+# na monitorowanym hoście
+WAZUH_MANAGER="10.0.0.2" WAZUH_REGISTRATION_PASSWORD="TwojeHasloRejestracji" \
+  WAZUH_AGENT_GROUP="linux-web" apt-get install wazuh-agent
+systemctl daemon-reload
+systemctl enable --now wazuh-agent
+apt-mark hold wazuh-agent</code></pre>
+<p>Hasło podane w linii poleceń zostaje w historii powłoki. Przy wdrożeniu przez Ansible trzymaj je w zaszyfrowanym vaulcie, a na Windows przekaż te same zmienne do instalatora MSI w narzędziu do dystrybucji oprogramowania.</p>
+
+<h2>Strojenie reguł Wazuh: jak ograniczyć szum alertów</h2>
+<p>Po pierwszym tygodniu zobaczysz, że większość alertów pochodzi z kilku reguł. Typowe źródła: skanery podatności i monitoringu, zadania cron, konta serwisowe logujące się co minutę, kopie zapasowe zmieniające tysiące plików. Nie wyłączaj całych reguł. Wycisz konkretny, znany przypadek.</p>
+<p>Własne reguły trzymaj w <code>/var/ossec/etc/rules/local_rules.xml</code>, bo ten plik przetrwa aktualizację, i nadawaj im identyfikatory od 100000 do 120000. Reguła potomna z poziomem 0 wycisza alert tylko dla wskazanego źródła:</p>
+<pre><code class="language-xml">&lt;group name="local,sshd,"&gt;
+  &lt;rule id="100100" level="0"&gt;
+    &lt;if_sid&gt;5710&lt;/if_sid&gt;
+    &lt;srcip&gt;10.0.5.20&lt;/srcip&gt;
+    &lt;description&gt;Skaner 10.0.5.20: ignoruj logowania na nieistniejące konta&lt;/description&gt;
+  &lt;/rule&gt;
+&lt;/group&gt;</code></pre>
+<p>Żeby zmienić poziom istniejącej reguły, skopiuj ją do <code>local_rules.xml</code> z tym samym ID i atrybutem <code>overwrite="yes"</code>. Dokumentacja zaznacza, że tą metodą nie nadpiszesz pól <code>if_sid</code>, <code>if_group</code> i pokrewnych. Każdą zmianę sprawdź narzędziem <code>/var/ossec/bin/wazuh-logtest</code> na przykładowej linii logu, a potem zrestartuj managera.</p>
+<p>Druga dźwignia to FIM. Nie monitoruj w czasie rzeczywistym katalogów, które z natury ciągle się zmieniają: cache, sesji, logów. Pilnuj kodu aplikacji, konfiguracji i binariów, a zmienne podkatalogi wyklucz opcją <code>ignore</code>.</p>
+<p>Ustal też próg powiadomień. Reguły Wazuh mają poziomy od 0 do 15, więc powiadomienia na e-mail czy Slacka ustaw od wysokiego poziomu, a resztę przeglądaj w dashboardzie. Wyciszenia trzymaj w repozytorium Git z krótkim uzasadnieniem, bo za pół roku nikt nie będzie pamiętał, po co powstała reguła 100100.</p>
+
+<h2>Hardening Wazuh: zabezpiecz narzędzie, które widzi wszystko</h2>
+<p>Wazuh ma dostęp do logów całej firmy, a jego API potrafi uruchamiać akcje na agentach. Przejęty serwer SIEM to dla atakującego mapa sieci i sposób na zatarcie śladów. Zadbaj o minimum:</p>
+<ul>
+<li><strong>Hasła.</strong> Asystent instalacji generuje losowe hasła i zapisuje je w pliku <code>wazuh-passwords.txt</code> w archiwum instalacyjnym. Przenieś je do menedżera haseł i usuń archiwum z serwera. Wdrożenie w Dockerze startuje z domyślnym hasłem opisanym w dokumentacji, więc zmień je przed pierwszym uruchomieniem w sieci. Służy do tego <code>wazuh-passwords-tool.sh</code>.</li>
+<li><strong>Certyfikaty TLS.</strong> Komponenty komunikują się po TLS z certyfikatami z własnego CA, generowanymi przez <code>wazuh-certs-tool.sh</code>. Klucz prywatny CA nie powinien zostawać na serwerze produkcyjnym.</li>
+<li><strong>Dostęp sieciowy.</strong> Dashboard i API (55000) udostępnij tylko z sieci administracyjnej lub przez VPN. Port 9200 indexera nie powinien być osiągalny spoza serwerów Wazuh. Porty 1514 i 1515 otwieraj tylko dla sieci, w których są agenty.</li>
+<li><strong>Konta i role.</strong> Każda osoba ma własne konto, bez współdzielonego <code>admin</code>. Analityk przeglądający alerty nie potrzebuje uprawnień do zmiany konfiguracji.</li>
+<li><strong>Aktualizacje i kopie.</strong> Śledź wydania 4.14.x, rób snapshoty indeksów i kopię katalogu <code>/var/ossec/etc</code> z regułami i konfiguracją.</li>
+<li><strong>Nadzór nad nadzorem.</strong> Alert o rozłączonym agencie traktuj poważnie. Wyłączenie agenta to jeden z pierwszych kroków, jakie wykonuje intruz.</li>
+</ul>
+
+<h2>Integracje Wazuh: Suricata, e-mail i Slack</h2>
+<p>Wazuh widzi hosty, a nie ruch sieciowy. Uzupełnieniem jest Suricata: agent na maszynie z sensorem czyta jej log <code>eve.json</code>, a wbudowany dekoder JSON rozkłada pola bez pisania własnego dekodera. Jak postawić sam sensor, opisuje <a href="/blog/suricata-ids-ips-poradnik/">poradnik Suricata IDS/IPS</a>. Na agencie dodaj:</p>
+<pre><code class="language-xml">&lt;ossec_config&gt;
+  &lt;localfile&gt;
+    &lt;log_format&gt;json&lt;/log_format&gt;
+    &lt;location&gt;/var/log/suricata/eve.json&lt;/location&gt;
+  &lt;/localfile&gt;
+&lt;/ossec_config&gt;</code></pre>
+<p>Powiadomienia na Slacka konfigurujesz blokiem <code>integration</code> w <code>ossec.conf</code> managera. Ustaw próg poziomu, inaczej kanał szybko utonie w wiadomościach:</p>
+<pre><code class="language-xml">&lt;integration&gt;
+  &lt;name&gt;slack&lt;/name&gt;
+  &lt;hook_url&gt;https://hooks.slack.com/services/XXX/YYY/ZZZ&lt;/hook_url&gt;
+  &lt;level&gt;10&lt;/level&gt;
+  &lt;alert_format&gt;json&lt;/alert_format&gt;
+&lt;/integration&gt;</code></pre>
+<p>Z e-mailem jest haczyk: Wazuh nie obsługuje serwerów SMTP wymagających uwierzytelnienia, takich jak Gmail. Dokumentacja zaleca lokalny relay, np. Postfix, który loguje się do właściwego serwera pocztowego. Adresy ustawiasz w sekcji <code>global</code>, a minimalny poziom alertu w <code>email_alert_level</code> sekcji <code>alerts</code>.</p>
+<p>Wbudowane integracje obejmują też PagerDuty, VirusTotal, Shuffle i Maltiverse, a własne skrypty podpinasz pod nazwą zaczynającą się od <code>custom-</code>.</p>
+
+<h2>Najczęstsze błędy przy wdrożeniu Wazuh</h2>
+<ul>
+<li>Instalacja na próbę na maszynie z 4 GB RAM, która potem po cichu zostaje produkcją.</li>
+<li>Brak planu retencji. Gdy dysk indexera się zapełnia, indeksy przechodzą w tryb tylko do odczytu i nowe alerty przestają się zapisywać.</li>
+<li>Active response włączone dla wszystkich agentów bez listy wyjątków. Pierwszy fałszywy alarm blokuje serwer monitoringu albo bramę. Dokumentacja wprost każe skonfigurować <code>white_list</code> i testować reguły przed automatyzacją reakcji.</li>
+<li>Wyłączanie całych reguł zamiast wyciszania konkretnych źródeł.</li>
+<li>Dashboard i API wystawione do internetu ze współdzielonym kontem administratora.</li>
+<li>Agent nowszy niż manager po automatycznej aktualizacji systemu.</li>
+<li>Brak osoby odpowiedzialnej za przegląd alertów. Bez tego Wazuh jest drogim archiwum logów. Jeśli IT w firmie działa bardziej na gaszeniu pożarów niż według planu, zacznij od tekstu <a href="/blog/chaos-w-it-jak-opanowac/">o opanowaniu chaosu w IT</a>.</li>
+<li>Brak weryfikacji detekcji. <a href="/blog/test-penetracyjny-jak-wyglada/">Test penetracyjny</a> albo choćby kontrolowana symulacja pokaże, czy przy realnym ataku alerty w ogóle się pojawiają.</li>
+</ul>
+<p>Firmom bez własnego zespołu bezpieczeństwa zwykle najlepiej służy model, w którym wdrożenie i strojenie robi ktoś z doświadczeniem, a przegląd alertów odbywa się regularnie po stronie firmy lub partnera. Takie wdrożenia prowadzimy w ramach <a href="/#bezpieczenstwo">usług bezpieczeństwa</a>.</p>

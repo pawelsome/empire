@@ -1,0 +1,120 @@
+<!--META
+{
+  "slug": "lumma-stealer-infostealery",
+  "title": "Infostealer: jak działają Lumma, StealC i Vidar i co zrobić po infekcji",
+  "metaTitle": "Infostealer: Lumma, StealC, Vidar. Co zrobić po infekcji",
+  "description": "Infostealer kradnie hasła, ciasteczka sesyjne i portfele kryptowalut. Zobacz, jak działają Lumma, StealC i Vidar, w jakiej kolejności resetować konta i jak to wykryć.",
+  "category": "Bezpieczeństwo",
+  "tags": ["infostealer", "Lumma Stealer", "StealC", "Vidar", "kradzież sesji", "MFA"],
+  "primaryKeyword": "infostealer",
+  "tldr": [
+    "Infostealer kopiuje z komputera hasła zapisane w przeglądarce, ciasteczka sesyjne, dane kart, portfele kryptowalut oraz dane VPN, poczty i FTP, a potem wysyła je przestępcom.",
+    "Najczęstsze drogi infekcji to fałszywe CAPTCHY (ClickFix), crackowane programy i cheaty do gier, reklamy w wynikach wyszukiwania oraz przejęte strony internetowe.",
+    "Akcja przeciw Lumma z maja 2025 r. nie zakończyła problemu: aktywność wróciła w ciągu kilku tygodni, a w pierwszej połowie 2026 r. Vidar, StealC i Lumma były najczęściej spotykanymi rodzinami.",
+    "Po infekcji sama zmiana hasła nie wystarcza, bo skradzione ciasteczka omijają MFA. Z czystego urządzenia zmień hasło, wyloguj wszystkie sesje i sprawdź metody logowania, zaczynając od poczty.",
+    "Firma wykrywa infostealery przez monitoring stacji roboczych, anomalie logowania i kontrolę, czy dane pracowników nie pojawiają się w wyciekach z logów stealerów."
+  ],
+  "faq": [
+    {"q": "Czy antywirus usunie infostealera?", "a": "Często usunie plik, ale nie cofnie kradzieży. Dane mogą zostać wysłane, zanim antywirus zareaguje, więc nawet po udanym skanowaniu trzeba zmienić hasła i unieważnić sesje z innego urządzenia. Jeśli razem ze stealerem mógł zostać zainstalowany trojan zdalnego dostępu, bezpieczniej przeinstalować system."},
+    {"q": "Czy MFA chroni przed infostealerem?", "a": "Chroni przed samym hasłem, ale nie przed skradzionym ciasteczkiem sesji. Ciasteczko reprezentuje logowanie, które już przeszło weryfikację dwuetapową, więc przestępca może wejść na konto bez kodu. Dlatego po infekcji trzeba wylogować wszystkie sesje."},
+    {"q": "Skąd mam wiedzieć, że moje dane są w logach stealera?", "a": "Sygnałami są powiadomienia o logowaniu z nieznanych miejsc, zmiany ustawień konta, nowe reguły przekierowania poczty i próby resetu hasła. Firmy mogą korzystać z usług monitorujących logi stealerów pod kątem swojej domeny. Brak powiadomień nie oznacza jednak, że wycieku nie było."},
+    {"q": "Czy infostealery atakują też macOS i telefony?", "a": "Na macOS tak, znane są m.in. kampanie z Atomic macOS Stealer rozpowszechniane fałszywymi CAPTCHAMI. Lumma, StealC i Vidar to jednak głównie złośliwe oprogramowanie na Windows. Telefon nie jest automatycznie bezpieczny, bo loguje się do tych samych kont, których sesje mogły wyciec z komputera."},
+    {"q": "Czy Lumma Stealer nadal działa w 2026 roku?", "a": "Tak. Po przejęciu infrastruktury w maju 2025 r. operatorzy odbudowali działalność, a w raporcie Flashpoint za pierwsze półrocze 2026 r. Lumma była w pierwszej trójce najczęściej spotykanych infostealerów, obok Vidar i StealC."}
+  ],
+  "sources": [
+    {"title": "Microsoft On the Issues: Disrupting Lumma Stealer (05.2025)", "url": "https://blogs.microsoft.com/on-the-issues/2025/05/21/microsoft-leads-global-action-against-favored-cybercrime-tool/"},
+    {"title": "Microsoft Security Blog: Lumma Stealer: Breaking down the delivery techniques and capabilities of a prolific infostealer (05.2025)", "url": "https://www.microsoft.com/en-us/security/blog/2025/05/21/lumma-stealer-breaking-down-the-delivery-techniques-and-capabilities-of-a-prolific-infostealer/"},
+    {"title": "Trend Micro: Back to Business: Lumma Stealer Returns with Stealthier Methods (07.2025)", "url": "https://www.trendaisecurity.com/en-us/resources-insights/trendai-security-blog/lumma-stealer-returns"},
+    {"title": "Trend Micro: Shifts in the Underground: The Impact of Water Kurita's (Lumma Stealer) Doxxing (10.2025)", "url": "https://www.trendmicro.com/en_us/research/25/j/the-impact-of-water-kurita-lumma-stealer-doxxing.html"},
+    {"title": "Infosecurity Magazine: Infostealers Harvest 1.7 Billion Credentials in Six Months (raport Flashpoint, 08.2026)", "url": "https://www.infosecurity-magazine.com/news/infostealers-17-billion/"},
+    {"title": "Eurojust: Operation Endgame continues: international coalition takes malware offline (06.2026)", "url": "https://www.eurojust.europa.eu/news/operation-endgame-continues-international-coalition-takes-malware-offline"},
+    {"title": "Microsoft Learn: Revoke user access in an emergency in Microsoft Entra ID", "url": "https://learn.microsoft.com/en-us/entra/identity/users/users-revoke-access"},
+    {"title": "Help Net Security: To counter cookie theft, Chrome ships device-bound session credentials (04.2026)", "url": "https://www.helpnetsecurity.com/2026/04/10/google-chrome-device-bound-session-credentials/"}
+  ],
+  "linkedin": "Zmieniłeś hasło po infekcji infostealerem? To dopiero połowa roboty.\n\nInfostealery takie jak Lumma, StealC i Vidar kradną nie tylko hasła, ale też ciasteczka sesyjne. A skradziona sesja to logowanie, które już przeszło MFA.\n\nCo z tego wynika w praktyce:\n\n- Hasła zmieniaj z czystego urządzenia, nigdy z zainfekowanego komputera.\n- Zacznij od poczty e-mail, bo przez nią resetuje się resztę kont.\n- Po każdej zmianie hasła wyloguj wszystkie sesje i sprawdź, czy nikt nie dodał własnej metody MFA.\n- Nie zapominaj o kluczach API, tokenach GitHuba i danych do hostingu.\n- Przejęcie infrastruktury Lumma w maju 2025 r. nie rozwiązało problemu: według Flashpoint w pierwszej połowie 2026 r. infostealery zebrały 1,7 mld danych logowania.\n\nPełna kolejność działań i sposoby wykrywania w firmie:\n\n{url}\n\n#cyberbezpieczeństwo #infostealer #MFA #bezpieczeństwoIT"
+}
+META-->
+<p>Infostealer to złośliwe oprogramowanie, które kopiuje z komputera zapisane hasła, ciasteczka sesyjne, dane kart i portfele kryptowalut, a potem wysyła je przestępcom. Najczęściej spotykane rodziny to Vidar, StealC i Lumma. Po infekcji nie wystarczy zmienić hasła: z czystego urządzenia trzeba też unieważnić wszystkie aktywne sesje.</p>
+
+<h2>Co to jest infostealer i czym różni się od „zwykłego” wirusa?</h2>
+<p>Klasyczny trojan zostaje w systemie, żeby dać przestępcy stały dostęp. Infostealer ma prostsze zadanie: zebrać wszystko, co cenne, i wysłać paczkę danych, tzw. log, na serwer operatora. Część rodzin od razu po tym kończy działanie, inne doinstalowują kolejne narzędzia.</p>
+<p>Większość popularnych stealerów działa w modelu malware-as-a-service. Twórca utrzymuje kod i panel, a „klienci” kupują subskrypcję i sami organizują dystrybucję. Microsoft opisywał, że Lumma była sprzedawana co najmniej od 2022 r. w pakietach od 250 do 20 000 dolarów. Zebrane logi trafiają potem na fora i kanały w komunikatorach, gdzie kupują je kolejne grupy, także te od ransomware.</p>
+<p>Skala jest duża. Według raportu Flashpoint za pierwsze półrocze 2026 r. infostealery zebrały w tym czasie 1,7 mld danych logowania z 7,4 mln zainfekowanych urządzeń, o 27% więcej urządzeń niż w poprzednich sześciu miesiącach.</p>
+
+<h2>Co dokładnie kradnie infostealer?</h2>
+<p>Zakres zależy od rodziny i konfiguracji, ale lista z analizy Lumma Stealer opublikowanej przez Microsoft dobrze oddaje typowy zestaw:</p>
+<table>
+<thead><tr><th>Rodzaj danych</th><th>Przykłady</th><th>Co z tym robi przestępca</th></tr></thead>
+<tbody>
+<tr><td>Hasła i autouzupełnianie z przeglądarek</td><td>Chrome, Edge, Firefox i inne przeglądarki oparte na Chromium</td><td>Loguje się do poczty, sklepów, paneli firmowych</td></tr>
+<tr><td>Ciasteczka i tokeny sesji</td><td>Zalogowane sesje Microsoft 365, Google, serwisów SaaS</td><td>Przejmuje konto bez hasła i bez kodu MFA</td></tr>
+<tr><td>Portfele kryptowalut</td><td>Rozszerzenia i aplikacje typu MetaMask, Electrum, Exodus</td><td>Wyprowadza środki, zwykle bez możliwości odzyskania</td></tr>
+<tr><td>Dane płatnicze</td><td>Karty zapisane w przeglądarce</td><td>Wykorzystuje w oszustwach lub sprzedaje</td></tr>
+<tr><td>Konfiguracje aplikacji</td><td>VPN, klienty poczty, FTP, Telegram</td><td>Wchodzi do sieci firmy, na serwery i strony internetowe</td></tr>
+<tr><td>Pliki i informacje o systemie</td><td>Dokumenty PDF i DOCX, lista programów, wersja systemu</td><td>Ocenia, czy ofiara jest warta dalszego ataku</td></tr>
+</tbody>
+</table>
+<p>Z punktu widzenia firmy najgroźniejsze są dwa wiersze: sesje i dane dostępowe do infrastruktury. Hasło do FTP, panelu hostingu czy WordPressa zapisane na laptopie jednej osoby wystarczy, żeby ktoś wgrał na firmową stronę złośliwy kod. Tak koło się zamyka: przejęta strona serwuje fałszywą weryfikację, która instaluje kolejne stealery. Więcej o tym, jak rozpoznać taką stronę, piszę w tekście o <a href="/blog/zainfekowany-wordpress-objawy/">objawach zainfekowanego WordPressa</a>.</p>
+
+<h2>Jak rozprzestrzeniają się infostealery?</h2>
+<p>Microsoft i Trend Micro opisały w 2025 r. podobny zestaw kanałów dystrybucji. Żaden z nich nie wymaga luki w systemie, wszystkie opierają się na tym, że użytkownik sam coś uruchomi.</p>
+<ul>
+<li><strong>Fałszywe CAPTCHY (ClickFix).</strong> Strona prosi o wklejenie polecenia w oknie Win+R „w ramach weryfikacji”. Mechanizm opisuję szczegółowo we wpisie o <a href="/blog/clickfix-falszywa-captcha/">ClickFix i fałszywej CAPTCHY</a>.</li>
+<li><strong>Crackowane programy i cheaty do gier.</strong> Trend Micro opisał automatycznie tworzone repozytoria na GitHubie z opisami generowanymi przez AI oraz filmy na YouTube i posty na Facebooku reklamujące cracki.</li>
+<li><strong>Reklamy w wyszukiwarce.</strong> Microsoft podawał przykład reklam przy zapytaniach typu „Notepad++ download”, prowadzących do sklonowanych stron producentów.</li>
+<li><strong>Przejęte strony internetowe.</strong> Wstrzyknięty JavaScript pokazuje fałszywą aktualizację lub weryfikację. Przykładem jest kampania opisana w tekście o <a href="/blog/socgholish-falszywa-aktualizacja-przegladarki/">SocGholish i fałszywej aktualizacji przeglądarki</a>.</li>
+<li><strong>Phishing.</strong> Maile podszywające się pod hotele, kurierów czy kontrahentów z linkiem do strony z ładunkiem.</li>
+<li><strong>Inne złośliwe oprogramowanie.</strong> Loadery doinstalowują stealera jako kolejny etap.</li>
+</ul>
+
+<h2>Co stało się z Lumma Stealer po akcji z maja 2025 r.?</h2>
+<p>Lumma przez długi czas była najpopularniejszym infostealerem na rynku. W maju 2025 r. Microsoft uzyskał nakaz sądowy i razem z Departamentem Sprawiedliwości USA, europejskim centrum EC3 Europolu i japońskim JC3 przejął lub zablokował około 2300 domen infrastruktury. Microsoft podał, że między 16 marca a 16 maja 2025 r. Lumma zainfekowała ponad 394 000 komputerów z Windows.</p>
+<table>
+<thead><tr><th>Okres</th><th>Co się wydarzyło</th><th>Źródło</th></tr></thead>
+<tbody>
+<tr><td>Maj 2025</td><td>Przejęcie ok. 2300 domen, ponad 1300 przekierowanych do serwerów Microsoftu</td><td>Microsoft</td></tr>
+<tr><td>Czerwiec–lipiec 2025</td><td>Liczba atakowanych kont wraca do zwykłego poziomu, operatorzy przenoszą się do rosyjskich dostawców hostingu</td><td>Trend Micro</td></tr>
+<tr><td>Sierpień–październik 2025</td><td>Ujawnienie danych rzekomych członków grupy, przejęcie jej kont na Telegramie, wyraźny spadek aktywności i odpływ klientów do Vidar i StealC</td><td>Trend Micro</td></tr>
+<tr><td>Czerwiec 2026</td><td>Kolejna faza Operacji Endgame wymierzona m.in. w StealC i Amadey: 326 serwerów i 142 domeny unieszkodliwione, 27 mln zestawów skradzionych danych odzyskanych</td><td>Eurojust</td></tr>
+<tr><td>Styczeń–czerwiec 2026</td><td>Vidar, StealC i Lumma to trzy najczęściej spotykane rodziny infostealerów</td><td>Flashpoint</td></tr>
+</tbody>
+</table>
+<p>Wniosek dla obrońców jest prosty. Akcje organów ścigania realnie utrudniają przestępcom życie, ale klienci przenoszą się do konkurencyjnych usług, a znane marki wracają. Nazwa rodziny ma znaczenie dla analityka, dla ofiary procedura po infekcji jest ta sama.</p>
+
+<h2>Co zrobić po infekcji infostealerem? Kolejność ma znaczenie</h2>
+<p>Skradziona sesja to logowanie, które już przeszło weryfikację dwuetapową. Jeśli zmienisz tylko hasło, przestępca z aktywnym ciasteczkiem może nadal być zalogowany. Dokumentacja Microsoft Entra zwraca uwagę na jeszcze jeden szczegół: aplikacje wydające własne tokeny sesji muszą je unieważnić same, bo centralny dostawca tożsamości nie zrobi tego za nie.</p>
+<aside class="callout"><p>Wszystkie poniższe kroki wykonuj z innego, czystego urządzenia. Hasło wpisane na zainfekowanym komputerze trafi do przestępcy tak samo jak poprzednie.</p></aside>
+<ol>
+<li><strong>Odetnij zainfekowany komputer od sieci</strong> i przestań go używać do logowania.</li>
+<li><strong>Poczta e-mail.</strong> Zmień hasło, wyloguj wszystkie sesje, usuń nieznane urządzenia, sprawdź reguły przekierowania i filtry, hasła aplikacji oraz metody MFA. Przez pocztę resetuje się wszystko inne.</li>
+<li><strong>Menedżer haseł.</strong> Zmień hasło główne i wyloguj inne urządzenia. Jeśli sejf był otwarty na zainfekowanym komputerze, traktuj jego zawartość jako ujawnioną.</li>
+<li><strong>Bank, płatności, giełdy kryptowalut.</strong> Zmień dane logowania, zastrzeż karty zapisane w przeglądarce, przenieś kryptowaluty do nowego portfela utworzonego na czystym urządzeniu.</li>
+<li><strong>Konta firmowe.</strong> Administrator powinien wyłączyć lub zabezpieczyć konto, zmienić hasło i unieważnić sesje (w Microsoft Entra: przycisk <em>Revoke sessions</em> albo polecenie <code>Revoke-MgUserSignInSession</code>), a potem przejrzeć logowania z ostatnich dni.</li>
+<li><strong>Infrastruktura i dane techniczne.</strong> Hosting, rejestrator domen, panel strony, SFTP, VPN, klucze SSH, tokeny GitHuba i klucze API do chmury. Te dane rzadko są chronione przez MFA.</li>
+<li><strong>Media społecznościowe i pozostałe serwisy</strong>, zaczynając od tych, w których zapisana jest karta płatnicza.</li>
+<li><strong>Przeinstaluj system</strong> na zainfekowanym komputerze. Stealer bywa tylko pierwszym etapem, a loader mógł doinstalować coś trwalszego.</li>
+<li><strong>Obserwuj konta przez kolejne tygodnie.</strong> Logi są odsprzedawane, więc próby logowania mogą pojawić się z opóźnieniem.</li>
+</ol>
+<p>Przy okazji zmian przejdź na metody MFA odporne na phishing, czyli klucze bezpieczeństwa i passkeys. Nie zatrzymają one skradzionego ciasteczka, ale utrudnią przejęcie konta innymi drogami. Na kradzież sesji odpowiedzią jest mechanizm Device Bound Session Credentials: od Chrome 146 na Windows sesja może być powiązana z kluczem w module TPM, więc skopiowane ciasteczko szybko traci ważność. Działa to jednak tylko w serwisach, które wdrożyły obsługę po swojej stronie.</p>
+
+<h2>Jak firma może wykryć infostealera?</h2>
+<p>Stealer działa krótko i często w pamięci, dlatego pojedynczy antywirus łatwo go przeoczy. Lepiej łączyć kilka źródeł sygnałów:</p>
+<ul>
+<li><strong>Stacje robocze.</strong> PowerShell, <code>mshta</code> lub <code>rundll32</code> uruchomione z okna Uruchom, proces spoza przeglądarki odczytujący pliki haseł i ciasteczek przeglądarki, nowe zadania harmonogramu i wpisy autostartu. Taką telemetrię daje EDR albo Sysmon z centralnym zbieraniem logów.</li>
+<li><strong>Sieć.</strong> Połączenia do świeżo zarejestrowanych domen, nietypowe wysyłki danych zaraz po uruchomieniu nieznanego procesu, zapytania DNS do domen z list zagrożeń.</li>
+<li><strong>Tożsamość.</strong> Logowania z nowych krajów i sieci przy tej samej sesji, dodanie nowej metody MFA, nowe reguły skrzynki, zgody na aplikacje OAuth.</li>
+<li><strong>Wywiad o zagrożeniach.</strong> Usługi monitorujące logi stealerów pod kątem firmowej domeny potrafią ostrzec, zanim ktoś użyje danych.</li>
+</ul>
+<p>W małej firmie dobrym punktem startu jest darmowy SIEM. Jak to zrobić rozsądnym kosztem, opisuję w tekstach o <a href="/blog/wazuh-wdrozenie-mala-firma/">wdrożeniu Wazuh w małej firmie</a> i o <a href="/blog/monitoring-logow-elk-grafana/">monitoringu logów w ELK i Grafanie</a>.</p>
+
+<h2>Jak ograniczyć ryzyko infekcji w firmie?</h2>
+<ul>
+<li>Nie zapisuj haseł w przeglądarce. Menedżer haseł z automatycznym blokowaniem sejfu zmniejsza łup.</li>
+<li>Odbierz pracownikom uprawnienia administratora lokalnego i wprowadź listę dozwolonych aplikacji tam, gdzie to możliwe.</li>
+<li>Zablokuj okno Uruchom i PowerShell dla osób, które ich nie potrzebują, i włącz logowanie bloków skryptów PowerShell.</li>
+<li>Wprowadź jasną zasadę: żadnych crackowanych programów ani „darmowych wersji” z przypadkowych stron, także na prywatnych komputerach używanych do pracy.</li>
+<li>Oddziel konta administracyjne (hosting, domeny, chmura) od codziennej przeglądarki, najlepiej na osobnym profilu lub urządzeniu.</li>
+<li>Skróć czas życia sesji w usługach firmowych i wymagaj zgodnego, zarządzanego urządzenia przy dostępie do danych.</li>
+<li>Pokaż zespołowi, jak wygląda fałszywa CAPTCHA i fałszywa aktualizacja przeglądarki. Rozpoznanie przynęty to najtańsza ochrona.</li>
+</ul>
+<p>Jeśli infekcja już się wydarzyła i nie wiesz, które dane wyciekły, pomagamy przejść przez analizę i unieważnianie dostępów w ramach <a href="/#bezpieczenstwo">usług bezpieczeństwa</a>.</p>

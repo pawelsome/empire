@@ -1,0 +1,130 @@
+<!--META
+{
+  "slug": "chaos-w-it-jak-opanowac",
+  "title": "Chaos w IT firmy: jak go opanować, zanim coś się zepsuje",
+  "metaTitle": "Chaos w organizacji IT: porządek w 4 krokach",
+  "description": "Chaos w organizacji IT: objawy, plan w 4 krokach (inwentaryzacja, hasła i MFA, dokumentacja, właściciel) i lista rzeczy do spisania w pierwszym tygodniu.",
+  "category": "Technologia i zarządzanie",
+  "tags": ["porządek w IT", "zarządzanie IT", "kopie zapasowe", "MFA", "NIS2", "dokumentacja"],
+  "primaryKeyword": "chaos w organizacji IT",
+  "tldr": [
+    "Chaos w IT to zwykle problem organizacyjny: brak spisu zasobów, właściciela i procedur, a technologia ujawnia go dopiero przy awarii.",
+    "Zacznij od inwentaryzacji domen, serwerów, kont, narzędzi SaaS, umów i dostępów; zapomniane usługi najszybciej znajdziesz w fakturach i wyciągach z kart.",
+    "Podstawy to firmowy menedżer haseł, MFA na kontach administracyjnych, lista kroków offboardingu i kopie zapasowe z regularnym testem odtworzenia.",
+    "Runbooki, Infrastructure as Code i CI/CD zmniejszają zależność od jednej osoby, a stały rytm przeglądów nie pozwala, by porządek się zestarzał.",
+    "Nowelizacja ustawy o KSC wdrażająca NIS2 obowiązuje od 3 kwietnia 2026 r.; objęte nią firmy składają wniosek o wpis do wykazu do 3 października 2026 r."
+  ],
+  "faq": [
+    {"q": "Jak zrobić inwentaryzację IT w małej firmie?", "a": "Załóż wspólny arkusz lub stronę w wiki i spisz domeny, serwery, konta pocztowe, aplikacje SaaS, repozytoria kodu, kopie zapasowe, umowy z dostawcami i dostępy osób. Przy każdej pozycji zapisz właściciela, koszt i datę wygaśnięcia. Zapomniane usługi znajdziesz w fakturach i wyciągach z kart firmowych z ostatnich 12 miesięcy."},
+    {"q": "Co oznacza bus factor równy 1?", "a": "To sytuacja, w której wiedza o systemie lub dostęp do niego ma tylko jedna osoba. Jej urlop, choroba albo odejście zatrzymuje wdrożenia i utrudnia usuwanie awarii. Bus factor podnosisz dokumentacją w formie runbooków, konfiguracją opisaną kodem i przekazywaniem dostępów co najmniej dwóm osobom."},
+    {"q": "Jak często testować odtwarzanie kopii zapasowych?", "a": "CISA zaleca regularne testy odtwarzania, zarówno pełnego, jak i częściowego, oraz możliwość cofnięcia danych o co najmniej siedem dni. W praktyce ustal stały termin, na przykład raz na kwartał, i dodatkowo testuj po każdej większej zmianie infrastruktury. Datę ostatniego testu zapisuj w inwentarzu."},
+    {"q": "Czy mała firma podlega NIS2?", "a": "Zwykle nie, bo ustawa o KSC obejmuje wybrane sektory, a status zależy w większości przypadków także od wielkości firmy. Są jednak wyjątki niezależne od wielkości, np. dostawcy usług DNS i rejestratorzy domen. Mała firma może też odczuć przepisy pośrednio, gdy klienci objęci ustawą zaczną weryfikować bezpieczeństwo swoich dostawców ICT."},
+    {"q": "Czym jest shadow IT i jak go ograniczyć?", "a": "Shadow IT to narzędzia i usługi, z których pracownicy korzystają bez wiedzy osób odpowiedzialnych za IT, np. prywatne konta w aplikacjach SaaS czy czatach AI. Zamiast zakazywać wszystkiego, przygotuj listę zatwierdzonych narzędzi, zasady dotyczące danych, które wolno do nich wprowadzać, i prostą ścieżkę zgłaszania nowych potrzeb."}
+  ],
+  "sources": [
+    {"title": "CERT Polska: Zadbaj o bezpieczne hasła i logowanie", "url": "https://cert.pl/bezpieczne-hasla/"},
+    {"title": "CISA: Back Up Business Data", "url": "https://www.cisa.gov/audiences/small-and-medium-businesses/secure-your-business/back-up-business-data"},
+    {"title": "Gov.pl: Nowelizacja ustawy o krajowym systemie cyberbezpieczeństwa", "url": "https://www.gov.pl/web/baza-wiedzy/nowelizacja-ustawy-o-krajowym-systemie-cyberbezpieczenstwa"},
+    {"title": "Biznes.gov.pl: NIS2 w Polsce – nowe obowiązki firm w ustawie o KSC", "url": "https://www.biznes.gov.pl/pl/portal/005120"}
+  ],
+  "linkedin": "Hasła w arkuszu, domena na prywatnej karcie i jeden administrator, który wie wszystko. Tak zwykle wygląda chaos w IT firmy, zanim coś się zepsuje.\n\nPlan na uporządkowanie nie wymaga wielkiego wdrożenia:\n- spisz domeny, serwery, konta SaaS, umowy i to, kto ma do czego dostęp (faktury z 12 miesięcy pokażą zapomniane usługi),\n- wdróż menedżer haseł, MFA na kontach administracyjnych i listę kroków przy odejściu pracownika lub dostawcy,\n- sprawdź, czy kopię zapasową da się faktycznie odtworzyć,\n- zamień wiedzę z głowy na runbooki i konfigurację opisaną kodem,\n- wyznacz właściciela i comiesięczny przegląd.\n\nDo tego NIS2: nowelizacja ustawy o KSC obowiązuje od 3 kwietnia 2026 r., a wnioski o wpis do wykazu trzeba złożyć do 3 października.\n\nCały plan z tabelą „co spisać w pierwszym tygodniu”: {url}\n\n#IT #cyberbezpieczeństwo #NIS2 #zarządzanieIT"
+}
+META-->
+<p>Chaos w organizacji IT opanujesz w czterech krokach: spisz, co masz (serwery, domeny, konta, umowy i dostępy), zabezpiecz podstawy (menedżer haseł, MFA, offboarding, sprawdzone kopie), udokumentuj i zautomatyzuj powtarzalne zadania, a potem wyznacz właściciela i stały rytm przeglądów. Pierwszy tydzień wystarczy, żeby zobaczyć skalę problemu.</p>
+<p>Porządek w IT firmy rzadko psuje się jednego dnia. Bałagan rośnie razem z firmą: serwer postawiony „na chwilę”, domena kupiona na prywatną kartę, abonament założony przez osobę, która dawno odeszła. Ten tekst to plan dla właściciela lub menedżera, który chce to uporządkować bez wielkiego projektu wdrożeniowego.</p>
+
+<h2>Po czym poznać chaos w organizacji IT</h2>
+<p>Do wstępnej diagnozy nie potrzebujesz audytu. Przejdź przez poniższą listę i policz, ile punktów pasuje do Twojej firmy.</p>
+<ul>
+<li><strong>Nikt nie wie, co jest w użyciu.</strong> Brakuje listy serwerów, domen, licencji i abonamentów SaaS. O odnowieniu domeny dowiadujesz się, kiedy strona przestaje działać.</li>
+<li><strong>Hasła w arkuszu albo w notatkach.</strong> Wspólne konta, jedno hasło do kilku systemów, plik „hasla.xlsx” na dysku sieciowym.</li>
+<li><strong>Bus factor równy 1.</strong> Jeden programista lub administrator wie, jak wszystko działa. Gdy idzie na urlop, wdrożenia stoją.</li>
+<li><strong>Brak dokumentacji.</strong> Konfiguracja serwera istnieje tylko w głowie osoby, która go stawiała.</li>
+<li><strong>Shadow IT i przypadkowe narzędzia AI.</strong> Zespoły same zakładają konta w aplikacjach SaaS i wklejają dane firmy do czatów AI, o których nikt nie wie.</li>
+<li><strong>Kopie zapasowe, których nikt nie przywracał.</strong> Backup „się robi”, ale nikt nie sprawdził, czy da się z niego odtworzyć system.</li>
+<li><strong>Byli dostawcy z dostępem administratora.</strong> Software house skończył projekt dwa lata temu, a jego konta w panelu hostingu nadal działają.</li>
+<li><strong>Gaszenie pożarów zamiast planu.</strong> Tydzień zaczyna się od awarii, a zmiany wprowadza się ręcznie, na produkcji, w piątek po południu.</li>
+</ul>
+<p>Jeśli pasują trzy punkty lub więcej, masz przede wszystkim problem organizacyjny, nie techniczny. Technologia pokazuje go dopiero przy awarii, odejściu pracownika albo incydencie bezpieczeństwa.</p>
+
+<h2>Dlaczego „jakoś działa” to za mało</h2>
+<p>Chaos kosztuje po cichu. Płacisz za licencje, z których nikt nie korzysta, i za godziny szukania haseł. Najdroższe są jednak sytuacje wyjątkowe: odejście jedynej osoby, która zna infrastrukturę, wygasła domena z pocztą firmową albo włamanie przez konto byłego współpracownika.</p>
+<p>Drugi problem to zależność od ludzi i dostawców. Jeśli tylko zewnętrzna firma ma dostęp do serwera i kodu, trudno negocjować z nią warunki, a jeszcze trudniej ją zmienić. Uporządkowane IT daje Ci swobodę decyzji.</p>
+
+<h2>Krok 1: inwentaryzacja, czyli co właściwie masz</h2>
+<p>Zacznij od spisu, nie od zakupów. Nowe narzędzie do zarządzania IT nic nie da, jeśli nie wiesz, co do niego wpisać. Na start wystarczy wspólny arkusz lub strona w wiki z jasno określonym właścicielem.</p>
+<p>Dla każdej pozycji zapisz: co to jest, do czego służy, kto za to odpowiada, kto ma dostęp, ile kosztuje i kiedy wygasa. Ostatnia kolumna uchroni Cię przed niespodziewanym wyłączeniem domeny lub certyfikatu.</p>
+<h3>Co spisać w pierwszym tygodniu</h3>
+<table>
+<thead>
+<tr><th>Obszar</th><th>Co zapisać</th><th>Gdzie szukać informacji</th></tr>
+</thead>
+<tbody>
+<tr><td>Domeny i DNS</td><td>Nazwa, rejestrator, konto, data wygaśnięcia, kto zarządza strefą DNS</td><td>Faktury, panel rejestratora</td></tr>
+<tr><td>Serwery i hosting</td><td>Dostawca, rola (produkcja, test), system, kto ma dostęp administratora</td><td>Faktury od dostawców chmury i hostingu</td></tr>
+<tr><td>Poczta i konta firmowe</td><td>Google Workspace lub Microsoft 365, lista administratorów, konta współdzielone</td><td>Panel administracyjny usługi</td></tr>
+<tr><td>Aplikacje SaaS i narzędzia AI</td><td>Nazwa, właściciel biznesowy, liczba użytkowników, jakie dane trafiają do narzędzia</td><td>Wyciągi z kart firmowych, logowanie przez konto Google lub Microsoft</td></tr>
+<tr><td>Kod i repozytoria</td><td>Gdzie leży kod, kto jest właścicielem organizacji w GitHub lub GitLab, czy firma ma prawa do kodu</td><td>Umowy z wykonawcami, ustawienia repozytoriów</td></tr>
+<tr><td>Kopie zapasowe</td><td>Co jest kopiowane, dokąd, jak często, data ostatniego testu odtworzenia</td><td>Konfiguracja backupu, panel hostingu</td></tr>
+<tr><td>Umowy i dostawcy</td><td>Zakres, okres wypowiedzenia, SLA, dostępy dostawcy</td><td>Księgowość, dokumenty zarządu</td></tr>
+<tr><td>Dostępy osób</td><td>Kto (pracownik, freelancer, firma) ma dostęp do czego i na jakim poziomie</td><td>Panele administracyjne, listy członków zespołów</td></tr>
+</tbody>
+</table>
+<p>Zapomniane usługi najszybciej znajdziesz w wyciągach z kart i fakturach z ostatnich 12 miesięcy. Tam widać każdą subskrypcję, także tę, o której nikt nie pamięta.</p>
+
+<h2>Krok 2: zabezpiecz podstawy</h2>
+<p>Po inwentaryzacji zobaczysz dziury. Nie łataj wszystkiego naraz. Zacznij od czterech rzeczy, które najczęściej decydują o tym, czy drobny incydent zamieni się w kryzys.</p>
+<h3>Menedżer haseł zamiast arkusza</h3>
+<p>Wdróż firmowy menedżer haseł ze współdzielonymi sejfami dla zespołów. Przenieś do niego hasła z arkuszy, a arkusze usuń. CERT Polska zaleca menedżery haseł, osobne hasła do różnych usług i hasła liczące co najmniej 14 znaków. Przypomina też, że okresowa zmiana hasła bez podejrzenia wycieku nie jest potrzebna.</p>
+<h3>MFA wszędzie, gdzie się da</h3>
+<p>Włącz uwierzytelnianie wieloskładnikowe na poczcie, u rejestratora domen, w panelu chmury, w repozytoriach kodu i w bankowości. Przez te konta atakujący przejmuje resztę. Zacznij od administratorów, potem rozszerz wymóg na wszystkich.</p>
+<h3>Offboarding z listą kontrolną</h3>
+<p>Przygotuj listę kroków na odejście pracownika lub koniec współpracy z dostawcą: blokada kont, odebranie dostępów, zmiana haseł do kont współdzielonych, przekazanie własności plików i repozytoriów. Od razu przejrzyj dostępy byłych wykonawców, bo to częsty i łatwy do zamknięcia problem.</p>
+<h3>Kopie zapasowe, które da się odtworzyć</h3>
+<p>Stosuj zasadę 3-2-1, którą opisuje m.in. amerykańska agencja CISA: trzy kopie danych, dwa różne nośniki, jedna kopia poza siedzibą firmy. CISA zaleca też testy odtwarzania, pełnego i częściowego, oraz możliwość cofnięcia danych o co najmniej siedem dni. Ustal stały termin testu, na przykład raz na kwartał, i zapisuj jego datę w inwentarzu.</p>
+<aside class="callout"><p>Kopia zapasowa na tym samym serwerze albo dostępna z tego samego konta administratora nie chroni przed ransomware. Jeśli napastnik przejmie konto, usunie również backup. Trzymaj przynajmniej jedną kopię offline lub w miejscu z osobnymi danymi logowania.</p></aside>
+<p>Jeśli firmowa strona działa na WordPressie, przejdź też przez naszą <a href="/blog/zabezpieczenie-wordpress-checklista/">checklistę zabezpieczenia WordPressa</a>.</p>
+
+<h2>Krok 3: dokumentuj i automatyzuj</h2>
+<p>Dokumentacja nie musi być grubym podręcznikiem. Potrzebujesz runbooków, czyli krótkich instrukcji na konkretne sytuacje, które wykona ktoś inny niż autor, bez dzwonienia do autora.</p>
+<p>Na początek opisz:</p>
+<ul>
+<li>jak wdrożyć nową wersję aplikacji i jak ją wycofać,</li>
+<li>jak odtworzyć system z kopii zapasowej,</li>
+<li>co zrobić, gdy strona lub poczta przestaje działać: kogo powiadomić i co sprawdzić,</li>
+<li>jak nadać i odebrać dostęp nowej osobie,</li>
+<li>jak odnowić domenę i certyfikat, jeśli nie odnawiają się automatycznie.</li>
+</ul>
+<p>Najlepsza dokumentacja to taka, która sama się wykonuje. Konfigurację serwerów opisz jako kod (Infrastructure as Code), na przykład w Ansible lub Terraform, a środowisko aplikacji zamknij w kontenerach Dockera. Wtedy odtworzenie serwera oznacza uruchomienie playbooka, a nie odtwarzanie z pamięci kroków sprzed trzech lat.</p>
+<p>Wdrożenia przenieś do pipeline’u CI/CD. Każda zmiana przechodzi te same testy i ten sam proces, a historia wdrożeń zostaje zapisana. Znika też pokusa, żeby „na szybko” poprawić plik bezpośrednio na produkcji.</p>
+<p>Kiedy infrastruktura jest opisana kodem, dużo łatwiej dołożyć monitoring i wykrywanie zagrożeń. Dobrym kolejnym krokiem jest <a href="/blog/monitoring-logow-elk-grafana/">monitoring logów w ELK i Grafanie</a>.</p>
+
+<h2>Krok 4: wyznacz właściciela i rytm przeglądów</h2>
+<p>Spis i zabezpieczenia zestarzeją się w kilka miesięcy, jeśli nikt za nie nie odpowiada. Wyznacz jedną osobę jako właściciela obszaru IT. W małej firmie może to być menedżer operacyjny, pod warunkiem że ma czas i wsparcie techniczne.</p>
+<p>Ustal stały rytm:</p>
+<ul>
+<li><strong>co miesiąc:</strong> przegląd dostępów, nowych narzędzi, zbliżających się odnowień i incydentów z ostatnich tygodni,</li>
+<li><strong>co kwartał:</strong> test odtworzenia kopii, przegląd kosztów chmury i licencji, aktualizacja runbooków,</li>
+<li><strong>co pół roku:</strong> aktualizacja roadmapy technologicznej i przegląd umów z dostawcami.</li>
+</ul>
+<p>Roadmapa technologiczna może być prostą listą: co zmieniasz w najbliższych kwartałach, po co i ile to kosztuje. Pozwala oddzielić pilne od ważnego i przestać reagować wyłącznie na awarie.</p>
+<p>Jeśli w firmie nie ma nikogo, kto technicznie udźwignie tę rolę, rozważ <a href="/blog/zewnetrzny-cto-kiedy-sie-oplaca/">zewnętrznego CTO</a> na kilka dni w miesiącu. Taka osoba poprowadzi inwentaryzację, ustali priorytety i będzie pilnować dostawców.</p>
+
+<h2>Czy porządek w IT to wymóg prawny? NIS2 i ustawa o KSC</h2>
+<p>Dla części firm tak. Nowelizacja ustawy o krajowym systemie cyberbezpieczeństwa, która wdraża unijną dyrektywę NIS2, obowiązuje od 3 kwietnia 2026 r. Obejmuje wybrane sektory, m.in. usługi ICT, komunikację elektroniczną, produkcję, produkcję żywności i gospodarkę odpadami.</p>
+<p>O tym, czy jesteś podmiotem kluczowym lub ważnym, decydujesz w samoocenie na podstawie sektora działalności z załączników do ustawy i, w większości przypadków, wielkości firmy. Niektóre podmioty, np. dostawcy usług DNS i rejestratorzy domen, podlegają przepisom niezależnie od wielkości. Według serwisu gov.pl najbliższe terminy to:</p>
+<ul>
+<li>3 października 2026 r.: wniosek o wpis do wykazu podmiotów,</li>
+<li>3 kwietnia 2027 r.: wdrożenie systemu zarządzania bezpieczeństwem informacji.</li>
+</ul>
+<p>Ustawa przewiduje kary pieniężne, także dla kierownika podmiotu. Nawet jeśli Twoja firma nie jest objęta przepisami, możesz je odczuć pośrednio: firmy objęte ustawą muszą uwzględniać ryzyka związane z dostawcami ICT i zaczną pytać Cię o zabezpieczenia. Inwentaryzacja, MFA, offboarding i testowane kopie to dobry punkt wyjścia do takich rozmów. To, czy ustawa Cię obejmuje, potwierdź z prawnikiem.</p>
+
+<h2>Najczęstsze błędy przy porządkowaniu IT</h2>
+<ul>
+<li><strong>Zakup narzędzia przed spisem.</strong> System do zarządzania zasobami bez danych to kolejna nieużywana licencja.</li>
+<li><strong>Jednorazowa akcja bez właściciela.</strong> Po trzech miesiącach arkusz jest nieaktualny, a hasła wracają do notatek.</li>
+<li><strong>Zakaz zamiast listy dozwolonych narzędzi.</strong> Blokada wszystkich aplikacji AI kończy się tym, że ludzie używają ich na prywatnych kontach. Lepiej wskazać zatwierdzone narzędzia i zasady, jakie dane wolno do nich wklejać. Więcej piszemy o tym w tekście <a href="/blog/jak-wdrozyc-ai-w-firmie/">jak wdrożyć AI w firmie</a>.</li>
+<li><strong>Dokumentacja pisana dla siebie.</strong> Runbook, którego nie zrozumie nowa osoba, nie poprawia bus factor.</li>
+<li><strong>Pominięcie dostawców.</strong> Firma zewnętrzna często ma najszersze uprawnienia i najrzadziej ktoś je weryfikuje.</li>
+</ul>
+<p>Porządkowanie IT, przeglądy dostępów i automatyzację środowisk robimy zawodowo, więc jeśli wolisz przejść przez ten proces z kimś z zewnątrz, zajrzyj do <a href="/#uslugi">naszych usług</a>. Niezależnie od tego zacznij od domen: ich spisanie zajmie godzinę i pokaże, jak głęboki jest problem.</p>

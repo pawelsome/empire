@@ -1,0 +1,146 @@
+<!--META
+{
+  "slug": "agent-ai-skrzynka-email",
+  "title": "Agent AI do obsługi e-maili: jak to działa i jak wdrożyć",
+  "metaTitle": "Agent AI do obsługi maili: jak działa i jak wdrożyć",
+  "description": "AI do obsługi maili w praktyce: podłączenie Gmaila i Microsoft 365, klasyfikacja, dane do CRM i ERP, szkice odpowiedzi oraz ochrona przed prompt injection.",
+  "category": "AI w firmie",
+  "tags": ["agent AI", "automatyzacja e-maili", "Gmail API", "Microsoft 365", "RAG", "prompt injection"],
+  "primaryKeyword": "AI do obsługi maili",
+  "tldr": [
+    "Agent AI do maili klasyfikuje wiadomości, wyciąga dane do CRM, ERP lub helpdesku i przygotowuje szkice odpowiedzi, a wysyłkę w większości spraw zatwierdza człowiek.",
+    "W Gmail API zakresy gmail.compose i gmail.modify pozwalają także wysyłać pocztę, więc zakaz wysyłki trzeba wymusić w kodzie agenta.",
+    "W Microsoft 365 uprawnienie aplikacyjne Mail.Read obejmuje wszystkie skrzynki w organizacji; zawęź je do wybranych skrzynek przez RBAC for Applications w Exchange Online.",
+    "Każdy przychodzący mail jest niezaufanymi danymi i potencjalnym nośnikiem prompt injection, dlatego rozdziel czytanie, dostęp do danych i możliwość wysyłki.",
+    "Efekty mierz czasem odpowiedzi, trafnością klasyfikacji i odsetkiem szkiców wysłanych bez zmian, porównując je z okresem sprzed wdrożenia."
+  ],
+  "faq": [
+    {"q": "Czy AI może samo odpowiadać na maile klientów?", "a": "Może, ale bezpiecznie tylko w wąskich przypadkach, np. przy potwierdzeniu przyjęcia zgłoszenia z gotowego szablonu. Reklamacje, ceny, umowy i sprawy dotyczące danych osobowych powinny przechodzić przez szkic zatwierdzany przez pracownika. Automatyczna wysyłka zwiększa też skutki udanego ataku prompt injection."},
+    {"q": "Jakie uprawnienia Gmail API są potrzebne dla agenta AI?", "a": "Do odczytu treści wystarczy gmail.readonly, do tworzenia szkiców potrzebny jest gmail.compose, a do etykiet gmail.labels. Zakresy gmail.compose i gmail.modify pozwalają również wysyłać wiadomości, więc blokadę wysyłki trzeba zrobić w kodzie. Unikaj pełnego zakresu mail.google.com, który obejmuje trwałe usuwanie poczty."},
+    {"q": "Czy n8n wystarczy do automatycznej obsługi maili z AI?", "a": "Do prototypu i prostych scenariuszy często tak: węzły Gmail Trigger, Text Classifier i Information Extractor pokrywają pobieranie, klasyfikację i ekstrakcję danych. Przy wielu regułach, wymaganiach audytowych i integracjach z nietypowymi systemami lepiej sprawdza się własny agent z testami i wersjonowaniem promptów."},
+    {"q": "Czy przetwarzanie firmowych maili przez AI jest zgodne z RODO?", "a": "Może być, jeśli masz podstawę prawną, umowę powierzenia z dostawcą modelu, wiesz, gdzie dane są przetwarzane i jak długo przechowywane, oraz ograniczasz zakres przesyłanych danych. Zaktualizuj rejestr czynności przetwarzania i ustal retencję logów. Konkretny przepływ skonsultuj z IOD lub prawnikiem."},
+    {"q": "Jak ograniczyć aplikację AI w Microsoft 365 do jednej skrzynki pocztowej?", "a": "Uprawnienia aplikacyjne Mail.Read i Mail.ReadWrite w Microsoft Graph domyślnie obejmują wszystkie skrzynki w organizacji. W Exchange Online zawęzisz je do wybranych skrzynek przez RBAC for Applications, który zastępuje starsze Application Access Policies."}
+  ],
+  "sources": [
+    {"title": "Google for Developers: Choose Gmail API scopes", "url": "https://developers.google.com/workspace/gmail/api/auth/scopes"},
+    {"title": "Microsoft Learn: Microsoft Graph permissions reference", "url": "https://learn.microsoft.com/en-us/graph/permissions-reference"},
+    {"title": "Microsoft Learn: Role Based Access Control for Applications in Exchange Online", "url": "https://learn.microsoft.com/en-us/exchange/permissions-exo/application-rbac"},
+    {"title": "Google: Gmail is entering the Gemini era", "url": "https://blog.google/products-and-platforms/products/gmail/gmail-is-entering-the-gemini-era/"},
+    {"title": "Google Workspace Updates: Create AI agents with Google Workspace Studio", "url": "https://workspaceupdates.googleblog.com/2025/12/workspace-studio.html"},
+    {"title": "n8n Docs: Information Extractor node", "url": "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.information-extractor/"},
+    {"title": "OWASP GenAI Security Project: LLM01 Prompt Injection", "url": "https://genai.owasp.org/llmrisk/llm01-prompt-injection/"},
+    {"title": "arXiv: EchoLeak, the first real-world zero-click prompt injection exploit in a production LLM system", "url": "https://arxiv.org/abs/2509.10540"}
+  ],
+  "linkedin": "Agent AI do obsługi maili nie powinien sam wysyłać odpowiedzi klientom. Powinien za to zdjąć z zespołu sortowanie i przepisywanie danych.\n\nCo działa w praktyce:\n- klasyfikacja maili ze skrzynek współdzielonych: faktury, reklamacje, leady, zgłoszenia serwisowe,\n- ekstrakcja danych do JSON-a z walidacją w kodzie, zanim cokolwiek trafi do ERP,\n- szkice odpowiedzi z bazy wiedzy i CRM, zatwierdzane przez pracownika,\n- minimalne uprawnienia: w Gmail API nawet zakres do szkiców pozwala wysyłać pocztę, więc blokadę trzeba zrobić samemu,\n- ochrona przed prompt injection, bo każdego maila pisze ktoś z zewnątrz.\n\nCały przepływ krok po kroku, z przykładowym JSON-em i listą metryk: {url}\n\n#AI #automatyzacja #AgenciAI #cyberbezpieczenstwo"
+}
+META-->
+<p>AI do obsługi maili to agent, który przez API Gmaila lub Microsoft 365 czyta nowe wiadomości, przypisuje im kategorię, wyciąga dane do CRM, ERP albo helpdesku i przygotowuje szkic odpowiedzi na podstawie Twojej bazy wiedzy. Wysyłkę zatwierdza człowiek, a agent ma tylko te uprawnienia, których naprawdę potrzebuje.</p>
+<p>Poniżej znajdziesz konkretny przepływ, od uprawnień OAuth po pomiar efektów, oraz miejsca, w których takie wdrożenia najczęściej się sypią.</p>
+
+<h2>Co agent AI robi ze skrzynką e-mail w praktyce</h2>
+<p>Najlepiej sprawdzają się skrzynki współdzielone: biuro@, faktury@, reklamacje@, sprzedaz@. Ruch jest tam powtarzalny, a większość pracy polega na przeczytaniu wiadomości, rozpoznaniu sprawy i przeniesieniu danych do innego systemu.</p>
+<ul>
+<li><strong>Klasyfikacja</strong>: lead sprzedażowy, faktura, reklamacja, zgłoszenie serwisowe, pytanie ogólne, spam lub phishing.</li>
+<li><strong>Ekstrakcja danych</strong>: numer zamówienia, NIP, kwoty i terminy płatności z faktur, numer seryjny urządzenia z reklamacji.</li>
+<li><strong>Zakładanie rekordów</strong>: nowy lead w CRM, zgłoszenie w helpdesku, dokument do zaksięgowania w ERP.</li>
+<li><strong>Szkice odpowiedzi</strong>: z odwołaniem do regulaminu, cennika, statusu zamówienia i historii klienta.</li>
+<li><strong>Eskalacja</strong>: przekazanie sprawy właściwej osobie razem z krótkim streszczeniem wątku.</li>
+</ul>
+<p>Agent nie zastępuje działu obsługi klienta. Odbiera ludziom sortowanie i przepisywanie, a decyzje zostawia im.</p>
+
+<h2>Wbudowane AI w Gmailu i Outlooku, n8n czy własny agent?</h2>
+<p>Zanim zlecisz budowę, sprawdź, czy nie wystarczy to, co już masz. W styczniu 2026 Google ogłosił w Gmailu podsumowania wątków (AI Overviews), Help Me Write i Suggested Replies, zaczynając od użytkowników w USA i języka angielskiego. Copilot w Outlooku streszcza wątki, pisze szkice i oferuje funkcję Prioritize my inbox. Firmy na Google Workspace mają też Workspace Studio, w którym bez programowania zbudujesz prostego agenta, np. do oznaczania maili z zadaniami do wykonania.</p>
+<table>
+<thead><tr><th>Opcja</th><th>Kiedy wystarczy</th><th>Ograniczenia</th></tr></thead>
+<tbody>
+<tr><td>AI wbudowane w Gmail lub Outlook</td><td>Pojedynczy użytkownik, streszczenia, pomoc w pisaniu</td><td>Nie zapisze danych w Twoim CRM ani ERP; dostępność zależy od planu, języka i regionu</td></tr>
+<tr><td>Workspace Studio</td><td>Proste agenty, gdy praca odbywa się głównie w Gmailu, Arkuszach i Dysku</td><td>Mniejsza kontrola nad logiką, testami i integracjami z systemami spoza Google</td></tr>
+<tr><td>n8n lub Make</td><td>Kilka kategorii, gotowe konektory, szybki prototyp</td><td>Przy dużej skali trudniej o testy regresji, wersjonowanie promptów i szczegółowy audyt</td></tr>
+<tr><td>Własny agent (kod + API modelu)</td><td>Nietypowe systemy, wiele reguł, wysokie wymagania bezpieczeństwa</td><td>Wyższy koszt startu i potrzeba utrzymania</td></tr>
+</tbody>
+</table>
+<p>Wiele firm zaczyna od n8n: Gmail Trigger cyklicznie sprawdza skrzynkę, węzeł Text Classifier przypisuje kategorię, a Information Extractor zwraca dane według zdefiniowanego schematu JSON. Własny agent ma sens, gdy prototyp działa, a Ty potrzebujesz testów, kontroli uprawnień i śladu każdej decyzji. Więcej podobnych scenariuszy opisujemy we wpisie <a href="/blog/automatyzacje-ai-2026-przyklady/">Automatyzacje AI w 2026: przykłady</a>.</p>
+
+<h2>Jak podłączyć agenta do Gmaila i Microsoft 365</h2>
+<p>Agent dostaje minimalny zestaw uprawnień i dostęp tylko do skrzynek, które obsługuje. Skrzynka zarządu czy kadr nie powinna być w zasięgu bota od faktur.</p>
+<h3>Gmail API</h3>
+<p>Google dzieli zakresy OAuth na niewrażliwe, wrażliwe i ograniczone (restricted). Do czytania treści wystarczy <code>gmail.readonly</code>, do tworzenia szkiców potrzebujesz <code>gmail.compose</code>, a do etykiet <code>gmail.labels</code>. Uważaj: zarówno <code>gmail.compose</code>, jak i <code>gmail.modify</code> pozwalają też wysyłać wiadomości. Zakaz wysyłki egzekwujesz więc po swojej stronie, po prostu nie dając modelowi takiego narzędzia.</p>
+<p>Omijaj zakres <code>https://mail.google.com/</code>, który daje pełny dostęp łącznie z trwałym usuwaniem poczty. Aplikacja wewnętrzna w Twojej organizacji Workspace nie przechodzi dodatkowej weryfikacji Google. Jeśli jednak budujesz produkt dla innych firm i przechowujesz dane z zakresów ograniczonych na serwerach, czeka Cię ocena bezpieczeństwa.</p>
+<h3>Microsoft 365 (Microsoft Graph)</h3>
+<p>W Graph wybierasz między uprawnieniami delegowanymi (agent działa w imieniu zalogowanego użytkownika) a aplikacyjnymi (działa jako usługa w tle). Aplikacyjne <code>Mail.Read</code> oznacza odczyt wszystkich skrzynek w organizacji i wymaga zgody administratora. Zawęź je do konkretnych skrzynek przez RBAC for Applications w Exchange Online, który zastępuje starsze Application Access Policies.</p>
+<p>Do szkiców potrzebujesz <code>Mail.ReadWrite</code>. Nie przydzielaj <code>Mail.Send</code>, dopóki nie pojawi się przypadek, który naprawdę wymaga automatycznej wysyłki.</p>
+<p>Nowe wiadomości pobierzesz przez powiadomienia push (Cloud Pub/Sub w Gmailu, subskrypcje w Graph) albo cyklicznym odpytywaniem. Niezależnie od metody zapisuj identyfikatory przetworzonych wiadomości, żeby po awarii nie obsłużyć tego samego maila dwa razy.</p>
+
+<h2>Przykładowy przepływ wiadomości krok po kroku</h2>
+<p>Tak wygląda typowy przepływ dla współdzielonej skrzynki firmy handlowej. Kolejność ma znaczenie: tanie, deterministyczne filtry idą przed modelem językowym.</p>
+<table>
+<thead><tr><th>Krok</th><th>Co się dzieje</th><th>Kto wykonuje</th></tr></thead>
+<tbody>
+<tr><td>1. Odbiór</td><td>Wiadomość trafia do kolejki z nagłówkami, treścią i listą załączników</td><td>Integracja z API</td></tr>
+<tr><td>2. Filtry wstępne</td><td>Odrzucenie spamu, sprawdzenie wyników SPF, DKIM i DMARC, rozpoznanie znanych nadawców</td><td>Reguły w kodzie</td></tr>
+<tr><td>3. Klasyfikacja</td><td>Kategoria i poziom pewności: lead, faktura, reklamacja, wsparcie, inne</td><td>Model językowy</td></tr>
+<tr><td>4. Ekstrakcja</td><td>Dane według schematu JSON dla danej kategorii, także z załącznika PDF</td><td>Model i walidacja w kodzie</td></tr>
+<tr><td>5. Kontekst</td><td>Klient z CRM, status zamówienia, fragmenty bazy wiedzy</td><td>Narzędzia tylko do odczytu</td></tr>
+<tr><td>6. Akcja</td><td>Rekord w CRM lub helpdesku, szkic odpowiedzi, etykieta w skrzynce</td><td>Agent w granicach uprawnień</td></tr>
+<tr><td>7. Przegląd</td><td>Pracownik poprawia i wysyła szkic albo przejmuje sprawę</td><td>Człowiek</td></tr>
+<tr><td>8. Log</td><td>Kategoria, dane, wersja promptu, decyzja człowieka</td><td>System</td></tr>
+</tbody>
+</table>
+<p>Gdy pewność klasyfikacji jest niska albo walidacja danych nie przechodzi, wiadomość ląduje w kolejce do ręcznej weryfikacji. To normalny element systemu, a nie dowód, że wdrożenie się nie udało.</p>
+
+<h2>Wyciąganie danych z maili do CRM i ERP</h2>
+<p>Ekstrakcja daje najszybszy i najłatwiej mierzalny efekt. Zamiast prosić model o „opis faktury”, zdefiniuj schemat i wymuś zgodną z nim odpowiedź. API modeli, m.in. Anthropic i OpenAI, obsługują tzw. structured outputs, czyli odpowiedź zgodną z podanym JSON Schema.</p>
+<p>Przykładowy wynik dla maila z fakturą (wszystkie dane są fikcyjne):</p>
+<pre><code class="language-json">{
+  "category": "invoice",
+  "confidence": 0.94,
+  "vendor": {
+    "name": "Przykładowa Hurtownia Sp. z o.o.",
+    "tax_id": "0000000000"
+  },
+  "invoice_number": "FV/2026/09/0147",
+  "issue_date": "2026-09-10",
+  "due_date": "2026-09-24",
+  "currency": "PLN",
+  "net_amount": 1200.00,
+  "gross_amount": 1476.00,
+  "purchase_order": "ZAM-55812",
+  "attachments_processed": ["faktura_0147.pdf"],
+  "needs_human_review": false,
+  "review_reasons": []
+}</code></pre>
+<p>Model nie jest tu ostatnią instancją. Kod sprawdza sumę kontrolną NIP, porównuje kwotę brutto z netto i stawką VAT, weryfikuje, czy zamówienie istnieje w ERP i czy dostawca jest w kartotece. Każda niezgodność ustawia <code>needs_human_review</code> na <code>true</code> i dopisuje powód.</p>
+<p>Pole <code>confidence</code> traktuj ostrożnie. To sygnał pomocniczy, a nie gwarancja poprawności, więc progi ustalaj na podstawie testów na własnych, oznaczonych przez ludzi mailach.</p>
+
+<h2>Szkice odpowiedzi z bazy wiedzy i zasady eskalacji</h2>
+<p>Dobry szkic powstaje z trzech źródeł: treści wątku, danych z CRM (kim jest klient, co kupił, jakie ma otwarte sprawy) i bazy wiedzy (regulamin, polityka zwrotów, FAQ, cennik). Bazę wiedzy podłączasz przez wyszukiwanie semantyczne, opisane we wpisie <a href="/blog/czym-jest-rag/">Czym jest RAG</a>. Dostęp do CRM czy ERP wystawiasz agentowi jako narzędzia, np. przez <a href="/blog/czym-jest-mcp-model-context-protocol/">serwer MCP</a>.</p>
+<p>Ustal na piśmie, kiedy agent tylko proponuje, a kiedy działa sam:</p>
+<ul>
+<li><strong>Zawsze szkic</strong>: reklamacje, pytania o ceny i rabaty, wszystko, co dotyczy umów, danych osobowych i płatności.</li>
+<li><strong>Automatycznie, w wąskim zakresie</strong>: potwierdzenie przyjęcia zgłoszenia z numerem, informacja o godzinach pracy, odesłanie do formularza. Treść jest wtedy szablonem, a model wybiera tylko wariant.</li>
+<li><strong>Natychmiastowa eskalacja</strong>: zapowiedź sporu prawnego, wzmianka o wycieku danych, zgłoszenie podatności, klient z listy kluczowych kont, trzecia wiadomość w tej samej sprawie.</li>
+</ul>
+<p>Przy każdym szkicu pokazuj pracownikowi dokumenty, z których agent skorzystał. Łatwiej wtedy wyłapać odpowiedź opartą na nieaktualnym cenniku.</p>
+
+<h2>Prompt injection w mailach i RODO</h2>
+<p>E-mail może napisać każdy, więc treść wiadomości traktuj jako niezaufane dane. Atakujący ukrywa w mailu polecenie dla modelu, np. białym tekstem albo w komentarzu HTML. OWASP opisuje to jako pośrednie prompt injection (LLM01). Podatność EchoLeak (CVE-2025-32711) w Microsoft 365 Copilot pokazała, że jeden spreparowany mail mógł doprowadzić do wycieku danych bez żadnej interakcji użytkownika.</p>
+<aside class="callout"><p>Agent czytający maile z zewnątrz nie może jednocześnie mieć dostępu do wrażliwych danych i swobodnej możliwości wysyłania czegokolwiek na zewnątrz. Rozdziel te uprawnienia: etap klasyfikacji nie ma narzędzi, etap pisania szkicu nie ma funkcji wysyłki, a linki i obrazy w szkicach są filtrowane.</p></aside>
+<ul>
+<li>Oddziel treść maila od instrukcji systemowych i oznacz ją wprost jako dane, nie polecenia.</li>
+<li>Waliduj każdy wynik schematem i regułami biznesowymi.</li>
+<li>Daj agentowi narzędzia tylko do odczytu, a zapis realizuj przez kontrolowane funkcje z listą dozwolonych pól.</li>
+<li>Regularnie testuj agenta mailami zawierającymi próby ataku.</li>
+</ul>
+<p>Mechanikę tych ataków rozkładamy na części we wpisie <a href="/blog/prompt-injection-bezpieczenstwo-agentow-ai/">Prompt injection i bezpieczeństwo agentów AI</a>.</p>
+<p>Po stronie RODO dostawca modelu jest zwykle podmiotem przetwarzającym, więc potrzebujesz umowy powierzenia oraz informacji, gdzie dane są przetwarzane i jak długo przechowywane. Wysyłaj do modelu tylko to, co jest potrzebne do zadania, maskuj numery PESEL i rachunków, jeśli nie są wymagane, i ustal retencję logów. Zaktualizuj też rejestr czynności przetwarzania.</p>
+
+<h2>Jak zmierzyć, czy agent do maili się sprawdza</h2>
+<p>Zanim uruchomisz agenta, zbieraj dane o obecnym stanie przez dwa, trzy tygodnie. Bez punktu odniesienia nie porównasz wyników.</p>
+<ul>
+<li><strong>Czas do pierwszej odpowiedzi</strong> i czas do zamknięcia sprawy, osobno dla każdej kategorii.</li>
+<li><strong>Trafność klasyfikacji</strong> na próbce oznaczonej przez ludzi, liczona co tydzień.</li>
+<li><strong>Odsetek szkiców</strong> wysłanych bez zmian, z poprawkami i odrzuconych.</li>
+<li><strong>Błędy ekstrakcji</strong> zatrzymane przez walidację oraz te, które przedostały się do ERP.</li>
+<li><strong>Udział kolejki ręcznej</strong>: zbyt wysoki wskazuje na słaby prompt lub schemat, podejrzanie niski może oznaczać zbyt luźne progi.</li>
+</ul>
+<p>Zacznij od jednej skrzynki i dwóch, trzech kategorii, najlepiej faktur i zgłoszeń serwisowych. Zakres rozszerzaj dopiero wtedy, gdy liczby są stabilne przez kilka tygodni. Jeśli chcesz, żeby ktoś zaprojektował i wdrożył takiego agenta pod Twoje systemy, zobacz <a href="/#uslugi">nasze usługi</a>.</p>

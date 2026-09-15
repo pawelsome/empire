@@ -1,0 +1,119 @@
+<!--META
+{
+  "slug": "czym-jest-rag",
+  "title": "Czym jest RAG i jak podłączyć AI do dokumentów firmy",
+  "metaTitle": "Czym jest RAG? Jak podłączyć AI do dokumentów firmy",
+  "description": "RAG w praktyce: jak podłączyć AI do dokumentów firmy, jak działa chunking, embeddingi i wyszukiwanie hybrydowe, jak pilnować uprawnień i oceniać odpowiedzi.",
+  "category": "AI w firmie",
+  "tags": ["RAG", "AI w firmie", "wyszukiwanie wektorowe", "baza wiedzy", "LLM", "agentic RAG"],
+  "primaryKeyword": "RAG",
+  "tldr": [
+    "RAG polega na tym, że przed odpowiedzią system wyszukuje pasujące fragmenty dokumentów firmy i każe modelowi odpowiadać wyłącznie na ich podstawie, z cytatami.",
+    "O jakości RAG decyduje głównie wyszukiwanie: przygotowanie dokumentów, sensowny podział na fragmenty, wyszukiwanie hybrydowe (wektory plus BM25) i reranking.",
+    "Uprawnienia trzeba egzekwować na etapie wyszukiwania, na podstawie tożsamości użytkownika, a nie instrukcją w prompcie.",
+    "Zanim zaczniesz poprawiać system, zbuduj zestaw prawdziwych pytań testowych i mierz osobno trafność wyszukiwania i wierność odpowiedzi.",
+    "Fine-tuning nie zastępuje RAG przy wiedzy, która się zmienia, a przy małej bazie dokumentów czasem wystarczy długie okno kontekstu."
+  ],
+  "faq": [
+    {"q": "Czy RAG całkowicie eliminuje halucynacje AI?", "a": "Nie. RAG wyraźnie ogranicza zmyślanie, bo model dostaje konkretne fragmenty dokumentów, ale nadal może je źle zinterpretować albo dopowiedzieć coś od siebie. Dlatego odpowiedzi powinny zawierać cytaty, a system musi umieć odpowiedzieć „nie znalazłem tego w dokumentach”."},
+    {"q": "Czy do RAG potrzebna jest osobna baza wektorowa?", "a": "Niekoniecznie. Jeśli firma używa PostgreSQL, rozszerzenie pgvector obsługuje wyszukiwanie wektorowe i można je łączyć z pełnotekstowym wyszukiwaniem Postgresa. Elasticsearch i OpenSearch też obsługują wektory. Osobną bazę wybierz dopiero wtedy, gdy obecna infrastruktura przestanie wystarczać."},
+    {"q": "Czy dokumenty firmy trafiają do trenowania modelu?", "a": "W samym RAG dokumenty nie służą do trenowania, tylko są wklejane do kontekstu konkretnego zapytania. To, czy dostawca modelu może użyć tych danych do innych celów, zależy od umowy i planu. Przy danych firmowych korzystaj z API lub planów biznesowych, w których trenowanie na danych klienta jest domyślnie wyłączone."},
+    {"q": "Ile trwa wdrożenie RAG w firmie?", "a": "Prototyp na jednym, uporządkowanym zbiorze dokumentów da się zbudować w kilka tygodni. Najwięcej czasu zajmuje zwykle uporządkowanie źródeł, uprawnień i przygotowanie pytań testowych, a nie samo programowanie. Wdrożenie produkcyjne z synchronizacją i monitoringiem to już projekt na miesiące."},
+    {"q": "Czy RAG dobrze działa z dokumentami po polsku?", "a": "Tak, pod warunkiem że dobierzesz wielojęzyczny model embeddingów i zadbasz o wyszukiwanie słów kluczowych z uwzględnieniem polskiej fleksji, np. przez analizator języka polskiego w Elasticsearch. Bez tego zapytanie o „umowę” może nie znaleźć dokumentu, w którym występuje tylko słowo „umowy”."}
+  ],
+  "sources": [
+    {"title": "Lewis i in. (2020): Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks", "url": "https://arxiv.org/abs/2005.11401"},
+    {"title": "Anthropic: Introducing Contextual Retrieval", "url": "https://www.anthropic.com/news/contextual-retrieval"},
+    {"title": "Liu i in.: Lost in the Middle, How Language Models Use Long Contexts", "url": "https://arxiv.org/abs/2307.03172"},
+    {"title": "OWASP Top 10 for LLM 2025: LLM08 Vector and Embedding Weaknesses", "url": "https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/"},
+    {"title": "Ragas: dostępne metryki oceny RAG", "url": "https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/"},
+    {"title": "pgvector: wyszukiwanie wektorowe w PostgreSQL", "url": "https://github.com/pgvector/pgvector"},
+    {"title": "Elasticsearch: wtyczka analizy języka polskiego Stempel", "url": "https://www.elastic.co/docs/reference/elasticsearch/plugins/analysis-stempel"}
+  ],
+  "linkedin": "Model AI nie zna Twoich procedur, umów ani dokumentacji. Kiedy o nie pytasz, zgaduje. RAG to sposób, żeby przestał.\n\nNajważniejsze wnioski z wdrożeń RAG:\n- jakość zależy głównie od wyszukiwania, a nie od wyboru modelu,\n- samo wyszukiwanie wektorowe gubi numery umów i kody produktów, dlatego potrzebne jest wyszukiwanie hybrydowe,\n- uprawnienia egzekwuje się przy wyszukiwaniu, a nie zdaniem w prompcie,\n- skany PDF i tabele to najczęstsze źródło złych odpowiedzi,\n- bez zestawu prawdziwych pytań testowych każda poprawka to strzał w ciemno.\n\nOpisałem, jak działa RAG krok po kroku, porównanie z fine-tuningiem i realistyczny plan wdrożenia:\n{url}\n\n#RAG #AI #LLM #bazaWiedzy #AIwFirmie"
+}
+META-->
+<p><strong>RAG (Retrieval-Augmented Generation) to technika, w której system AI przed udzieleniem odpowiedzi wyszukuje pasujące fragmenty Twoich dokumentów i każe modelowi odpowiadać na ich podstawie.</strong> Dzięki temu asystent zna aktualne procedury, umowy i dokumentację firmy, a każdą odpowiedź popiera odnośnikiem do źródła.</p>
+<p>Nazwa pochodzi z publikacji zespołu Patricka Lewisa z 2020 roku. Od tamtej pory RAG stał się najczęstszym sposobem łączenia modeli językowych z wiedzą firmową. Poniżej znajdziesz opis działania, porównanie z alternatywami i plan wdrożenia bez marketingowych obietnic.</p>
+
+<h2>Dlaczego AI zmyśla, gdy pytasz o dane firmy</h2>
+<p>Model językowy uczył się na danych publicznych do określonej daty. Nie widział Twojego regulaminu reklamacji, cennika z tego kwartału ani notatek z projektu. Zapytany o nie, generuje tekst, który brzmi prawdopodobnie, bo do tego służy. Nie ma wbudowanego mechanizmu, który powiedziałby mu „tej informacji nie znasz”.</p>
+<p>Efekt znasz, jeśli testowałeś czat AI na pytaniach o własną firmę: pewnym tonem podany termin zwrotu, który nie istnieje, albo procedura z innej branży. RAG zmienia zadanie modelu. Zamiast przypominać sobie, model czyta dostarczone fragmenty i streszcza je z odnośnikami. Nie usuwa to błędów całkowicie, ale czyni je sprawdzalnymi.</p>
+
+<h2>Jak działa RAG krok po kroku</h2>
+<p>System RAG składa się z dwóch części: przygotowania wiedzy (dzieje się raz i przy każdej zmianie dokumentów) oraz obsługi zapytania (dzieje się przy każdym pytaniu).</p>
+<h3>1. Pozyskanie i przygotowanie dokumentów</h3>
+<p>Konektory pobierają dokumenty ze źródeł: SharePointa, Dysku Google, Confluence, udziałów sieciowych, systemu zgłoszeń. Z każdego pliku wyciągasz tekst i metadane: tytuł, datę, wersję, właściciela, dział i listę osób lub grup z dostępem. Na tym etapie usuwasz duplikaty i nieaktualne wersje. Śmieci wpuszczone do indeksu wrócą w odpowiedziach.</p>
+<h3>2. Podział na fragmenty (chunking)</h3>
+<p>Dokumenty dzielisz na fragmenty, bo do modelu trafia tylko kilka najlepiej pasujących kawałków, a nie całe archiwum. Dziel według struktury: rozdziałów, paragrafów umowy, sekcji procedury. Podział co stałą liczbę znaków potrafi przeciąć tabelę albo oddzielić warunek od wyjątku.</p>
+<p>Fragment wyrwany z kontekstu bywa bezużyteczny. Zdanie „termin wynosi 14 dni” nic nie znaczy bez informacji, o jaki dokument i jaki termin chodzi. Dlatego do każdego fragmentu dołącz tytuł dokumentu i nagłówek sekcji. Anthropic opisał rozwinięcie tej idei pod nazwą Contextual Retrieval: model dopisuje do fragmentu krótkie zdanie wyjaśniające jego kontekst, zanim fragment trafi do indeksu.</p>
+<h3>3. Embeddingi i baza wektorowa</h3>
+<p>Każdy fragment zamieniasz na embedding, czyli wektor liczb opisujący jego znaczenie. Fragmenty o podobnej treści mają podobne wektory, nawet gdy używają innych słów. Wektory trafiają do bazy, która umie szybko znaleźć najbliższych sąsiadów. Nie musi to być nowy produkt: PostgreSQL z rozszerzeniem pgvector, Elasticsearch czy OpenSearch obsługują takie wyszukiwanie.</p>
+<p>Dla dokumentów po polsku wybierz model embeddingów, który dobrze radzi sobie z tym językiem. Pamiętaj też, że zmiana modelu embeddingów oznacza ponowne przeliczenie całego indeksu.</p>
+<h3>4. Wyszukiwanie hybrydowe i reranking</h3>
+<p>Samo wyszukiwanie wektorowe słabo radzi sobie z dokładnymi ciągami: numerem umowy, kodem błędu, symbolem produktu, NIP-em. Tu wygrywa klasyczne wyszukiwanie pełnotekstowe, np. algorytm BM25. Wyszukiwanie hybrydowe uruchamia oba i łączy wyniki, na przykład metodą Reciprocal Rank Fusion. Przy polskich tekstach zadbaj o analizę fleksji, bo „umowa”, „umowy” i „umowie” to dla prostego indeksu trzy różne słowa.</p>
+<p>Reranking to drugi etap: osobny model ocenia kilkadziesiąt kandydatów pod kątem trafności względem pytania i wybiera kilka najlepszych. Ten krok zwykle wyraźnie poprawia jakość, kosztem dodatkowego opóźnienia.</p>
+<h3>5. Generowanie odpowiedzi z cytatami</h3>
+<p>Wybrane fragmenty trafiają do promptu razem z pytaniem i instrukcją: odpowiadaj wyłącznie na podstawie załączonych fragmentów, przy każdym stwierdzeniu podaj źródło, a gdy fragmenty nie zawierają odpowiedzi, powiedz to wprost. Interfejs powinien pokazywać cytowane fragmenty z linkiem do oryginału, żeby użytkownik mógł sprawdzić odpowiedź jednym kliknięciem.</p>
+<h3>Agentic RAG</h3>
+<p>W klasycznym RAG wyszukiwanie odbywa się raz, dokładnie na treści pytania. W agentic RAG agent sam decyduje, czy i czego szukać: przeformułowuje zapytanie, wykonuje kilka wyszukiwań, sięga po inne narzędzia (np. zapytanie do bazy danych) i sprawdza, czy zebrał wystarczająco informacji. Radzi sobie z pytaniami złożonymi, ale jest wolniejszy, droższy i trudniejszy do testowania. Wyszukiwarkę dokumentów możesz udostępnić agentowi jako narzędzie na <a href="/blog/czym-jest-mcp-model-context-protocol/">serwerze MCP</a>.</p>
+
+<h2>RAG, fine-tuning czy długie okno kontekstu</h2>
+<p>To trzy różne narzędzia i często myli się ich zastosowania. Porównanie w najważniejszych dla firmy aspektach:</p>
+<table>
+<thead>
+<tr><th>Kryterium</th><th>RAG</th><th>Fine-tuning</th><th>Długie okno kontekstu</th></tr>
+</thead>
+<tbody>
+<tr><td>Do czego służy</td><td>Odpowiedzi na podstawie dużego, zmieniającego się zbioru dokumentów</td><td>Zmiana stylu, formatu lub zachowania modelu w wąskim zadaniu</td><td>Analiza jednego lub kilku dokumentów wklejonych do zapytania</td></tr>
+<tr><td>Aktualność wiedzy</td><td>Po ponownym zaindeksowaniu dokumentu</td><td>Wymaga ponownego treningu</td><td>Zawsze aktualna, bo dokument dołączasz przy każdym pytaniu</td></tr>
+<tr><td>Cytowanie źródeł</td><td>Naturalne</td><td>Praktycznie niemożliwe</td><td>Możliwe</td></tr>
+<tr><td>Kontrola uprawnień</td><td>Filtrowanie przy wyszukiwaniu</td><td>Brak kontroli nad tym, co model zapamiętał</td><td>Kontrolujesz, co dołączasz</td></tr>
+<tr><td>Główny koszt</td><td>Budowa i utrzymanie indeksu</td><td>Przygotowanie danych treningowych i powtarzanie treningu</td><td>Rośnie z długością każdego zapytania</td></tr>
+<tr><td>Słaby punkt</td><td>Jakość zależy od wyszukiwania</td><td>Nie nadaje się do przechowywania faktów</td><td>Modele gorzej wykorzystują informacje ze środka długiego kontekstu</td></tr>
+</tbody>
+</table>
+<p>Ostatni wiersz opiera się na badaniu „Lost in the Middle”, w którym skuteczność modeli spadała, gdy potrzebna informacja leżała w środku długiego kontekstu. Nowsze modele radzą sobie lepiej, ale nie zakładaj tego bez testu na własnych danych.</p>
+<p>Przy małych bazach wiedzy RAG bywa zbędny. Anthropic sugeruje, że jeśli cała baza ma mniej niż około 200 tysięcy tokenów (według firmy to około 500 stron), można ją w całości umieścić w prompcie i skorzystać z cache'owania promptów.</p>
+
+<h2>Uprawnienia: każdy widzi tylko swoje dokumenty</h2>
+<p>To najczęściej pomijany element pierwszych wdrożeń. Jeśli do jednego indeksu trafią procedury ogólne, umowy z klientami i dokumenty kadrowe, asystent odpowie na pytanie o wynagrodzenia każdemu, kto je zada. OWASP w liście ryzyk dla aplikacji LLM wymienia wprost wyciek kontekstu między użytkownikami i grupami, które współdzielą bazę wektorową.</p>
+<ul>
+<li>Przy indeksowaniu zapisuj przy każdym fragmencie listę uprawnionych użytkowników lub grup, pobraną z systemu źródłowego.</li>
+<li>Filtruj wyniki na etapie wyszukiwania, na podstawie tożsamości zalogowanego użytkownika. Model nie powinien nigdy zobaczyć fragmentu, do którego pytający nie ma dostępu.</li>
+<li>Synchronizuj zmiany uprawnień, a nie tylko treści. Osoba odsunięta od projektu traci dostęp także w asystencie.</li>
+<li>Usunięcie dokumentu w źródle musi usuwać go z indeksu. Ma to też znaczenie przy realizacji żądań z RODO.</li>
+<li>Pamiętaj, że logi zapytań i odpowiedzi zawierają te same wrażliwe dane co dokumenty.</li>
+</ul>
+<aside class="callout">Instrukcja w prompcie typu „nie pokazuj dokumentów kadrowych osobom spoza HR” nie jest zabezpieczeniem. Model można do tego nakłonić, a treść dokumentów może zawierać wstrzyknięte polecenia. Więcej o tym zagrożeniu w artykule o <a href="/blog/prompt-injection-bezpieczenstwo-agentow-ai/">prompt injection i bezpieczeństwie agentów AI</a>.</aside>
+
+<h2>Jak ocenić, czy RAG działa dobrze</h2>
+<p>Bez pomiaru każda zmiana podziału na fragmenty, modelu czy promptu to zgadywanie. Zacznij od zestawu testowego: kilkudziesięciu do stu prawdziwych pytań od przyszłych użytkowników, z oczekiwanym dokumentem źródłowym i wzorcową odpowiedzią przygotowaną przez eksperta.</p>
+<p>Mierz dwie rzeczy osobno, bo mają różne przyczyny i różne naprawy:</p>
+<ul>
+<li><strong>Jakość wyszukiwania</strong>: czy właściwy fragment znalazł się wśród zwróconych wyników i jak wysoko. Jeśli nie, problem leży w przygotowaniu danych, podziale na fragmenty albo metodzie wyszukiwania.</li>
+<li><strong>Wierność odpowiedzi</strong>: czy każde stwierdzenie w odpowiedzi wynika z dostarczonych fragmentów i czy odpowiedź dotyczy pytania. Jeśli wyszukiwanie działa, a odpowiedź jest zła, poprawiasz prompt lub model.</li>
+</ul>
+<p>Biblioteki takie jak Ragas mają gotowe metryki: context precision i context recall dla wyszukiwania oraz faithfulness i response relevancy dla odpowiedzi. Część z nich używa modelu językowego jako oceniającego, więc na początku porównaj jego oceny z ocenami człowieka. Po starcie monitoruj też produkcję: pytania bez wyników, odpowiedzi „nie wiem” i oceny użytkowników.</p>
+
+<h2>Najczęstsze problemy z RAG i jak ich uniknąć</h2>
+<h3>Zły podział na fragmenty</h3>
+<p>Fragmenty zbyt krótkie gubią kontekst, zbyt długie rozmywają dopasowanie. Przecięta tabela albo oddzielony od paragrafu wyjątek dają odpowiedzi formalnie oparte na źródle i jednocześnie błędne. Przeglądaj próbki fragmentów ręcznie, zanim zaczniesz stroić parametry.</p>
+<h3>Nieaktualne dane</h3>
+<p>Trzy wersje tej samej procedury w indeksie to przepis na sprzeczne odpowiedzi. Potrzebujesz synchronizacji ze źródłem, metadanych „obowiązuje od” i właściciela treści, który odpowiada za archiwizację starych wersji.</p>
+<h3>Skany PDF i OCR</h3>
+<p>Zeskanowany dokument bez warstwy tekstowej jest dla indeksu pustą stroną. OCR odzyska tekst, ale z błędami, zwłaszcza przy pieczątkach, słabej jakości skanach i piśmie odręcznym. Sprawdź, jaki odsetek Twoich dokumentów to skany, zanim obiecasz komukolwiek termin.</p>
+<h3>Tabele i dane liczbowe</h3>
+<p>Spłaszczona do tekstu tabela traci związek między wierszem a kolumną. Zamieniaj tabele na strukturę (np. Markdown lub HTML) albo opisuj każdy wiersz osobno. Pytania typu „ile umów wygasa w tym kwartale” w ogóle nie są zadaniem dla RAG. Wymagają zliczenia danych, więc lepiej obsłuży je zapytanie do bazy lub system raportowy, o czym piszemy w tekście o <a href="/blog/automatyczne-raporty-ai/">automatycznych raportach z AI</a>.</p>
+
+<h2>Jak wdrożyć RAG w firmie: realistyczny plan</h2>
+<ol>
+<li><strong>Wybierz jeden obszar i jedną grupę użytkowników.</strong> Na przykład dział obsługi klienta i bazę procedur. „Wszystkie dokumenty dla wszystkich” to najczęstszy powód porażek.</li>
+<li><strong>Zbierz pytania testowe.</strong> Poproś przyszłych użytkowników o pytania, które naprawdę zadają, i przygotuj wzorcowe odpowiedzi.</li>
+<li><strong>Zrób audyt źródeł.</strong> Gdzie leżą dokumenty, ile jest wersji, kto jest właścicielem, jak wyglądają uprawnienia, ile jest skanów.</li>
+<li><strong>Zbuduj prototyp z pomiarem.</strong> Przygotowanie dokumentów, wyszukiwanie hybrydowe, cytaty i automatyczny test na zestawie pytań od pierwszego dnia.</li>
+<li><strong>Uruchom pilotaż.</strong> Niewielka grupa użytkowników, możliwość oceny każdej odpowiedzi, cotygodniowy przegląd błędów.</li>
+<li><strong>Przygotuj produkcję.</strong> Synchronizacja treści i uprawnień, monitoring, zasady retencji logów, właściciel merytoryczny bazy.</li>
+<li><strong>Rozszerzaj stopniowo.</strong> Kolejne źródła i działy dodawaj dopiero wtedy, gdy wyniki testów na pierwszym obszarze są stabilne.</li>
+</ol>
+<p>RAG to zwykle jeden z pierwszych projektów w szerszym planie, dlatego warto osadzić go w strategii opisanej w przewodniku <a href="/blog/jak-wdrozyc-ai-w-firmie/">jak wdrożyć AI w firmie</a>. Jeśli chcesz, żeby ktoś z doświadczeniem przeprowadził audyt źródeł i zbudował prototyp z pomiarem jakości, zajmujemy się tym w ramach <a href="/#uslugi">naszych usług</a>.</p>

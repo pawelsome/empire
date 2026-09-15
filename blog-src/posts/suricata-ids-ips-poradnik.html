@@ -1,0 +1,166 @@
+<!--META
+{
+  "slug": "suricata-ids-ips-poradnik",
+  "title": "Suricata IDS/IPS: poradnik wdrożenia, reguły i integracja z SIEM",
+  "metaTitle": "Suricata IDS/IPS: poradnik wdrożenia i konfiguracji",
+  "description": "Suricata IDS w praktyce: IDS czy IPS, gdzie postawić sensor, reguły ET Open i suricata-update, logi EVE JSON, integracja z Wazuh i ELK, fałszywe alarmy.",
+  "category": "Bezpieczeństwo",
+  "tags": ["Suricata", "IDS", "IPS", "bezpieczeństwo sieci", "EVE JSON", "Wazuh"],
+  "primaryKeyword": "Suricata IDS",
+  "tldr": [
+    "Zacznij od trybu IDS na kopii ruchu z portu SPAN lub TAP; tryb IPS włączaj dopiero po wystrojeniu reguł.",
+    "ET Open to bezpłatny zestaw reguł od Proofpoint, pobierany domyślnie przez suricata-update; ET Pro wymaga płatnej subskrypcji.",
+    "Logi EVE JSON zawierają alerty i metadane protokołów, a Wazuh czy Elastic Agent czytają je bez pisania parserów.",
+    "Wydajność sprawdzaj licznikiem capture.kernel_drops; zgubione pakiety oznaczają ślepe plamy w detekcji.",
+    "Fałszywe alarmy wyciszaj punktowo: disable.conf dla zbędnych reguł, suppress w pliku progów dla konkretnych hostów."
+  ],
+  "faq": [
+    {"q": "Czy Suricata jest darmowa?", "a": "Tak. Suricatę rozwija fundacja OISF i udostępnia ją jako open source na licencji GPLv2. Za darmo dostępny jest też zestaw reguł ET Open. Płacisz ewentualnie za komercyjne zestawy reguł, sprzęt i czas na wdrożenie oraz strojenie."},
+    {"q": "Czym Suricata różni się od Snorta?", "a": "Oba silniki analizują ruch według reguł o podobnej składni, a Suricata obsługuje dużą część reguł w formacie znanym ze Snorta. Suricata od początku projektowana była jako wielowątkowa i ma rozbudowane logowanie metadanych protokołów w EVE JSON. Przy wyborze sprawdź wsparcie dla zestawu reguł, którego chcesz używać, i integrację z twoim SIEM."},
+    {"q": "Czy Suricata widzi ruch szyfrowany TLS?", "a": "Nie widzi treści zaszyfrowanej komunikacji bez jej odszyfrowania. Analizuje natomiast metadane: nazwę serwera z handshake TLS, certyfikaty, adresy, porty i wzorce przepływów. To wystarcza do wykrycia wielu znanych serwerów command and control i podejrzanych połączeń."},
+    {"q": "Ile zasobów potrzebuje Suricata?", "a": "Zależy to od przepustowości łącza, liczby włączonych reguł i zakresu logowania. Dla małego biura sensor na maszynie wirtualnej z kilkoma rdzeniami często wystarcza, ale jedyną wiarygodną miarą jest licznik zgubionych pakietów capture.kernel_drops. Jeśli rośnie, dodaj wątki, wyłącz zbędne reguły albo zmniejsz zakres logów."},
+    {"q": "Jak często aktualizować reguły Suricaty?", "a": "Uruchamiaj suricata-update codziennie, np. z timera systemd lub crona, a potem przeładuj reguły bez restartu poleceniem suricatasc -c reload-rules. Po każdej aktualizacji obserwuj, czy nie pojawiła się nowa fala fałszywych alarmów, szczególnie w trybie IPS."}
+  ],
+  "sources": [
+    {"title": "Suricata 8.0.6 documentation: Quickstart guide", "url": "https://docs.suricata.io/en/suricata-8.0.6/quickstart.html"},
+    {"title": "Suricata documentation: Rule Management with Suricata-Update", "url": "https://docs.suricata.io/en/latest/rule-management/suricata-update.html"},
+    {"title": "Suricata 8.0.0 documentation: Setting up IPS/inline for Linux", "url": "https://docs.suricata.io/en/suricata-8.0.0/setting-up-ipsinline-for-linux.html"},
+    {"title": "Suricata 8.0.6 documentation: High Performance Configuration", "url": "https://docs.suricata.io/en/suricata-8.0.6/performance/high-performance-config.html"},
+    {"title": "Suricata 8.0.6 and 7.0.17 Released (OISF)", "url": "https://suricata.io/2026/07/09/suricata-8-0-6-and-7-0-17-released/"},
+    {"title": "Emerging Threats Open ruleset: LICENSE", "url": "https://rules.emergingthreats.net/open/suricata-7.0.3/LICENSE"},
+    {"title": "Wazuh documentation: Network IDS integration", "url": "https://documentation.wazuh.com/current/proof-of-concept-guide/integrate-network-ids-suricata.html"},
+    {"title": "Elastic integrations: Suricata", "url": "https://www.elastic.co/docs/reference/integrations/suricata"}
+  ],
+  "linkedin": "Suricata potrafi zablokować atak w locie. Potrafi też zablokować księgowość, jeśli włączysz tryb IPS pierwszego dnia.\n\nJak wdrażać Suricatę rozsądnie:\n- start w trybie IDS na kopii ruchu z portu SPAN lub TAP,\n- reguły ET Open przez suricata-update, aktualizowane codziennie z przeładowaniem bez restartu,\n- logi EVE JSON prosto do Wazuh albo Elastic Agent, bez pisania parserów,\n- regularna kontrola licznika capture.kernel_drops, bo zgubione pakiety to ślepe plamy,\n- fałszywe alarmy wyciszane punktowo, a do IPS tylko reguły o wysokiej pewności.\n\nPoradnik z minimalną konfiguracją dla Suricaty 8.0:\n{url}\n\n#Suricata #IDS #cyberbezpieczeństwo #bezpieczeństwoSieci #opensource"
+}
+META-->
+<p>Suricata IDS to otwarty silnik fundacji OISF, który analizuje ruch sieciowy według reguł i zapisuje alerty oraz metadane protokołów w formacie EVE JSON. W trybie IDS obserwuje kopię ruchu, w trybie IPS stoi w linii i może odrzucać pakiety. Na start wystarczy port SPAN, reguły ET Open i wysyłka logów do SIEM.</p>
+
+<aside class="callout"><p>Stan na wrzesień 2026: stabilna gałąź to Suricata 8.0 (wydanie 8.0.6 z lipca 2026), równolegle utrzymywana jest gałąź 7.0. Przykłady w tym tekście dotyczą Suricaty 8.0 na Ubuntu z pakietów PPA OISF. W innych dystrybucjach ścieżki mogą się różnić.</p></aside>
+
+<h2>IDS czy IPS: czym różnią się tryby pracy Suricaty</h2>
+<p>W trybie <strong>IDS</strong> Suricata dostaje kopię ruchu i tylko generuje alerty. Jej awaria czy przeciążenie nie zatrzymuje sieci, ale też niczego nie blokuje. To tryb, od którego zaczniesz w każdej firmie.</p>
+<p>W trybie <strong>IPS</strong> ruch przechodzi przez Suricatę, a reguły z akcją <code>drop</code> naprawdę odrzucają pakiety. Ceną jest ryzyko: fałszywy alarm blokuje legalny ruch, a zatrzymany proces może odciąć sieć. Na Linuksie masz dwie główne drogi:</p>
+<ul>
+<li><strong>NFQ</strong>: iptables lub nftables przekazują pakiety do kolejki netfilter, z której czyta Suricata. Działa na hoście lub na bramie routującej ruch.</li>
+<li><strong>AF_PACKET w trybie IPS</strong>: dwa interfejsy, a Suricata kopiuje pakiety z jednego na drugi (<code>copy-mode: ips</code>). Nie wymaga reguł firewalla, ale MTU obu interfejsów musi być równe, a offloading typu GRO, LRO czy TSO powoduje gubienie pakietów.</li>
+</ul>
+<p>Suricata 8.0 wprowadziła też eksperymentalny tryb firewall z domyślną polityką odrzucania ruchu. Na produkcji w małej firmie trzymaj się na razie klasycznego IDS lub IPS.</p>
+<p>Rozsądna ścieżka wygląda tak: kilka tygodni w trybie IDS, wystrojenie reguł, potem IPS tylko dla wybranych reguł o wysokiej pewności. Pozostałe reguły mogą dalej jedynie alarmować.</p>
+
+<h2>Gdzie postawić sensor Suricata</h2>
+<h3>Port SPAN lub TAP w sieci biurowej</h3>
+<p>Najprostszy wariant to przełącznik zarządzalny z portem lustrzanym (SPAN), na który kopiujesz ruch z portu uplinku do routera lub firewalla. Sensor widzi wtedy ruch między siecią firmową a internetem. Przy dużym obciążeniu przełącznik potrafi gubić kopiowane pakiety, więc tam, gdzie liczy się kompletność, lepszy jest sprzętowy TAP.</p>
+<p>Sensor powinien mieć dwa interfejsy: jeden zarządzający z adresem IP i drugi do nasłuchu, bez adresu. Dzięki temu sam sensor nie jest łatwo osiągalny z monitorowanego segmentu.</p>
+<h3>Inline przy bramie</h3>
+<p>Jeśli brama to serwer z Linuksem, Suricata w trybie NFQ może działać na nim bezpośrednio. Zaplanuj zachowanie przy awarii. Opcja <code>--queue-bypass</code> reguły NFQUEUE sprawia, że gdy żaden proces nie czyta kolejki, pakiety są przepuszczane zamiast odrzucane. Wybierasz wtedy dostępność kosztem ochrony.</p>
+<h3>Chmura</h3>
+<p>W chmurze nie ma portu SPAN. Masz dwie opcje: usługi kopiowania ruchu (w AWS VPC Traffic Mirroring, w Google Cloud Packet Mirroring) albo Suricatę uruchomioną na samej maszynie wirtualnej i nasłuchującą na jej interfejsie. Druga opcja jest prostsza i tańsza przy kilku serwerach. Pamiętaj, że w obu przypadkach ruch TLS pozostaje zaszyfrowany, więc Suricata analizuje głównie metadane: nazwę serwera, certyfikaty i przepływy.</p>
+
+<h2>Reguły Suricaty: ET Open, ET Pro i suricata-update</h2>
+<p>Silnik bez reguł niczego nie wykryje. Podstawowe źródła:</p>
+<ul>
+<li><strong>ET Open</strong>: bezpłatny zestaw Emerging Threats rozwijany przez Proofpoint. Według pliku licencji reguły ET są na licencji BSD, a część starszych reguł na GPLv2. Obejmuje m.in. znane serwery C2, ruch złośliwego oprogramowania, w tym <a href="/blog/lumma-stealer-infostealery/">infostealerów</a>, skanowanie i exploity.</li>
+<li><strong>ET Pro</strong>: komercyjna subskrypcja Proofpoint, która zastępuje ET Open i wymaga kodu dostępu.</li>
+<li><strong>Inne źródła</strong>: listę pokaże <code>suricata-update list-sources</code>. Przed włączeniem sprawdź licencję i warunki użycia komercyjnego.</li>
+</ul>
+<p>Narzędzie <code>suricata-update</code> pobiera wybrane zestawy, stosuje twoje zmiany i scala wszystko do jednego pliku <code>/var/lib/suricata/rules/suricata.rules</code>. Bez skonfigurowanych źródeł pobiera ET Open. Swoje wyjątki trzymasz w plikach <code>/etc/suricata/disable.conf</code>, <code>enable.conf</code>, <code>modify.conf</code> i <code>drop.conf</code>, więc przetrwają kolejne aktualizacje.</p>
+
+<h2>Minimalna konfiguracja Suricata IDS krok po kroku</h2>
+<p>Instalacja na Ubuntu z oficjalnego PPA (Suricata 8.0):</p>
+<pre><code class="language-bash">sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:oisf/suricata-stable
+sudo apt update
+sudo apt install suricata jq</code></pre>
+<p>W <code>/etc/suricata/suricata.yaml</code> zmień poniższe fragmenty. To nie jest kompletny plik, tylko sekcje, które edytujesz w domyślnej konfiguracji z pakietu:</p>
+<pre><code class="language-yaml">vars:
+  address-groups:
+    HOME_NET: "[192.168.10.0/24,10.20.0.0/16]"
+    EXTERNAL_NET: "!$HOME_NET"
+
+af-packet:
+  - interface: eth1          # interfejs podpięty do portu SPAN
+    cluster-id: 99
+    cluster-type: cluster_flow
+    defrag: yes
+    tpacket-v3: yes
+
+default-rule-path: /var/lib/suricata/rules
+rule-files:
+  - suricata.rules
+
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      community-id: true
+      types:
+        - alert
+        - dns
+        - tls
+        - http
+        - flow</code></pre>
+<p>W pliku <code>/etc/default/suricata</code> sprawdź też, na którym interfejsie usługa startuje. Następnie pobierz reguły, zweryfikuj konfigurację i uruchom sensor:</p>
+<pre><code class="language-bash">sudo suricata-update
+sudo suricata -T -c /etc/suricata/suricata.yaml -v
+sudo systemctl restart suricata
+
+# test: ta strona zwraca treść, którą wykrywa reguła sid 2100498
+curl http://testmynids.org/uid/index.html
+sudo tail -f /var/log/suricata/eve.json | jq 'select(.event_type=="alert")'
+
+# późniejsze aktualizacje reguł bez restartu
+sudo suricata-update &amp;&amp; sudo suricatasc -c reload-rules</code></pre>
+<p>Zmienna <code>HOME_NET</code> ma znaczenie dla jakości detekcji. Wiele reguł sprawdza kierunek ruchu między <code>HOME_NET</code> a <code>EXTERNAL_NET</code>, więc zbyt wąska lub zbyt szeroka definicja daje i przeoczenia, i fałszywe alarmy. Wpisz wszystkie sieci lokalne, także VPN i sieci serwerowe.</p>
+
+<h2>EVE JSON: co zawierają logi Suricaty</h2>
+<p>EVE to strumień zdarzeń JSON, po jednym w linii. Pole <code>event_type</code> mówi, czym jest wpis: <code>alert</code>, <code>dns</code>, <code>http</code>, <code>tls</code>, <code>flow</code>, <code>fileinfo</code>, <code>anomaly</code> czy <code>stats</code>. Skrócony przykład alertu:</p>
+<pre><code class="language-json">{
+  "timestamp": "2026-09-10T09:14:02.511+0200",
+  "flow_id": 1289934512776340,
+  "in_iface": "eth1",
+  "event_type": "alert",
+  "src_ip": "192.168.10.23",
+  "src_port": 52144,
+  "dest_ip": "203.0.113.50",
+  "dest_port": 80,
+  "proto": "TCP",
+  "community_id": "1:...",
+  "alert": {
+    "action": "allowed",
+    "gid": 1,
+    "signature_id": 2100498,
+    "rev": 7,
+    "signature": "GPL ATTACK_RESPONSE id check returned root",
+    "category": "Potentially Bad Traffic",
+    "severity": 2
+  }
+}</code></pre>
+<p>Pole <code>flow_id</code> łączy alert z wpisami <code>dns</code>, <code>tls</code> i <code>flow</code> tego samego połączenia, więc przy analizie od razu widzisz kontekst. <code>community_id</code> pozwala skorelować zdarzenie z logami innych narzędzi sieciowych, które liczą ten sam identyfikator.</p>
+<p>Uważaj na wolumen. Logi <code>flow</code> i <code>dns</code> potrafią być wielokrotnie większe niż same alerty. Jeśli wysyłasz wszystko do SIEM, zaplanuj retencję osobno dla alertów i metadanych.</p>
+
+<h2>Integracja Suricaty z Wazuh i Elastic Stack</h2>
+<p><strong>Wazuh.</strong> Zainstaluj agenta Wazuh na sensorze i dodaj w jego <code>ossec.conf</code> blok <code>localfile</code> z formatem <code>json</code> i ścieżką <code>/var/log/suricata/eve.json</code>. Wbudowany dekoder JSON rozkłada pola, a alerty znajdziesz w dashboardzie filtrem <code>rule.groups:suricata</code>. Całe wdrożenie Wazuha opisuje tekst <a href="/blog/wazuh-wdrozenie-mala-firma/">o wdrożeniu Wazuh w małej firmie</a>.</p>
+<p><strong>Elastic Stack.</strong> Elastic ma gotową integrację Suricata dla Elastic Agent, która czyta <code>eve.json</code> i mapuje pola na wspólny schemat. Użytkownik, na którym działa agent, musi mieć prawo odczytu pliku i katalogu <code>/var/log/suricata</code>. Dokumentacja ostrzega, że mocno zmodyfikowany format EVE może psuć parsowanie.</p>
+<p><strong>OpenSearch lub Grafana Loki.</strong> Tu wysyłasz <code>eve.json</code> dowolnym kolektorem obsługującym JSON. Co wybrać do centralnych logów, porównuje tekst <a href="/blog/monitoring-logow-elk-grafana/">o monitoringu logów: ELK, OpenSearch i Grafana</a>.</p>
+
+<h2>Wydajność Suricaty: od czego zacząć</h2>
+<ul>
+<li><strong>Mierz gubienie pakietów.</strong> Licznik <code>capture.kernel_drops</code> w statystykach (<code>stats.log</code> lub zdarzenia <code>stats</code> w EVE) pokazuje, ile pakietów nie trafiło do analizy. Każdy zgubiony pakiet to potencjalnie przeoczony atak.</li>
+<li><strong>Wątki i klastrowanie.</strong> Dokumentacja wydajnościowa zaleca runmode <code>workers</code> z AF_PACKET. Przy prostszych kartach 1 Gb/s używaj <code>cluster_flow</code>, przy kartach z RSS rozważ <code>cluster_qm</code>.</li>
+<li><strong>Offloading karty sieciowej.</strong> Funkcje sklejające pakiety (GRO, LRO) zniekształcają to, co widzi silnik. Sprawdź je poleceniem <code>ethtool -k eth1</code> i wyłącz na interfejsie nasłuchowym.</li>
+<li><strong>Tylko potrzebne reguły.</strong> Wyłącz kategorie, które nie dotyczą twojej infrastruktury. Mniej reguł oznacza mniej pracy procesora i mniej szumu.</li>
+<li><strong>Zakres logowania.</strong> Pełne logowanie przepływów obciąża dysk i SIEM. Zacznij od alertów, DNS i TLS, resztę dodawaj świadomie.</li>
+</ul>
+
+<h2>Fałszywe alarmy w Suricata: jak je ograniczać</h2>
+<p>Pierwsze dni po uruchomieniu przynoszą setki alertów o niskiej wartości: ruch aplikacji aktualizujących się po HTTP, zapytania DNS do usług reklamowych, wewnętrzne skanery. Zanim cokolwiek wyciszysz, sprawdź w EVE, jaki host i jaki ruch uruchamia regułę.</p>
+<p>Regułę, która w twojej sieci nie ma sensu, wyłącz w <code>disable.conf</code>. Jeśli reguła jest przydatna, ale jeden host generuje fałszywe trafienia, wycisz tylko ten host w pliku progów wskazanym w opcji <code>threshold-file</code> (w pakietach zwykle <code>/etc/suricata/threshold.config</code>):</p>
+<pre><code class="language-bash"># /etc/suricata/disable.conf: wyłączenie po SID lub wyrażeniu regularnym
+2100498
+re:games
+
+# plik progów: wyciszenie reguły tylko dla wewnętrznego skanera
+suppress gen_id 1, sig_id 2100498, track by_src, ip 192.168.10.5</code></pre>
+<p>Po zmianach uruchom <code>suricata-update</code> i przeładuj reguły. Pliki z wyjątkami trzymaj w repozytorium Git, a do <code>drop.conf</code> w trybie IPS trafiają wyłącznie reguły, które przez kilka tygodni nie dały fałszywego trafienia. Jeśli potrzebujesz pomocy przy doborze architektury sensora lub strojeniu, zajmujemy się tym w ramach <a href="/#bezpieczenstwo">usług bezpieczeństwa</a>.</p>

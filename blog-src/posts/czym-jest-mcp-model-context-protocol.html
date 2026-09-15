@@ -1,0 +1,173 @@
+<!--META
+{
+  "slug": "czym-jest-mcp-model-context-protocol",
+  "title": "Czym jest MCP (Model Context Protocol)? Serwer MCP w praktyce",
+  "metaTitle": "MCP (Model Context Protocol): czym jest serwer MCP",
+  "description": "MCP Model Context Protocol wyjaśniony prosto: jak działa serwer MCP, kto go wspiera w 2026, przykłady dla firm, kod w TypeScript i zasady bezpieczeństwa.",
+  "category": "AI w firmie",
+  "tags": ["MCP", "Model Context Protocol", "serwer MCP", "agenci AI", "integracje AI", "bezpieczeństwo AI"],
+  "primaryKeyword": "MCP Model Context Protocol",
+  "tldr": [
+    "MCP to otwarty standard łączenia aplikacji AI z narzędziami i danymi: jeden serwer MCP działa z wieloma klientami, m.in. Claude, ChatGPT i Copilotem.",
+    "Architektura ma trzy role (host, klient, serwer), a serwer udostępnia narzędzia, zasoby i prompty przez stdio lub Streamable HTTP.",
+    "Od grudnia 2025 MCP rozwija się w Agentic AI Foundation pod Linux Foundation, a specyfikacja 2026-07-28 uczyniła protokół bezstanowym.",
+    "Największe ryzyka to złośliwe serwery (tool poisoning), zbyt szerokie uprawnienia i prompt injection w zwracanych danych.",
+    "MCP nie jest potrzebny, gdy masz jedną aplikację z kilkoma stałymi funkcjami albo proces, który da się opisać sztywnymi regułami."
+  ],
+  "faq": [
+    {"q": "Czy MCP jest darmowy i otwarty?", "a": "Tak. Specyfikacja jest publiczna, a oficjalne SDK są udostępniane jako open source (SDK TypeScript na licencji MIT). Od grudnia 2025 projekt rozwija się w Agentic AI Foundation działającej w ramach Linux Foundation, więc nie należy do jednego dostawcy modeli."},
+    {"q": "Czym MCP różni się od zwykłego REST API?", "a": "REST API jest projektowane dla programistów, którzy czytają dokumentację i piszą kod integracji. MCP opisuje narzędzia w sposób zrozumiały dla modelu językowego (nazwa, opis, schemat parametrów) i ujednolica sposób ich wykrywania i wywoływania. Serwer MCP bardzo często jest cienką warstwą nad istniejącym API."},
+    {"q": "Czy ChatGPT obsługuje serwery MCP?", "a": "Tak. OpenAI zbudowało Apps SDK dla ChatGPT na MCP, a Responses API pozwala podłączyć zdalny serwer MCP jako narzędzie. Dostępność konkretnych funkcji w ChatGPT zależy od planu, dlatego przed wdrożeniem sprawdź aktualną dokumentację OpenAI dla swojego abonamentu."},
+    {"q": "Czy MCP zastępuje RAG?", "a": "Nie. RAG to technika wyszukiwania fragmentów dokumentów i przekazywania ich modelowi, a MCP to protokół podłączania narzędzi i danych. Oba podejścia się uzupełniają: wyszukiwarkę RAG można udostępnić agentowi właśnie jako narzędzie na serwerze MCP."},
+    {"q": "W jakim języku najlepiej napisać serwer MCP?", "a": "W tym, w którym zespół utrzymuje resztę systemu. Oficjalne SDK istnieją m.in. dla TypeScript, Pythona, Go i C#. Dla serwerów wystawianych przez HTTP ważniejsze od języka są autoryzacja, logowanie wywołań i sensowny zakres uprawnień."},
+    {"q": "Jak sprawdzić, czy serwer MCP z internetu jest bezpieczny?", "a": "Wybieraj serwery publikowane przez dostawcę danej usługi albo takie, których kod możesz przejrzeć. Przypnij wersję, przeczytaj opisy narzędzi, uruchom serwer lokalny w kontenerze i sprawdź, jakich uprawnień wymaga. Jeśli serwer prosi o dostęp szerszy niż jego funkcja, nie podłączaj go."}
+  ],
+  "sources": [
+    {"title": "Anthropic: Introducing the Model Context Protocol (25.11.2024)", "url": "https://www.anthropic.com/news/model-context-protocol"},
+    {"title": "Specyfikacja MCP 2026-07-28: lista zmian", "url": "https://modelcontextprotocol.io/specification/2026-07-28/changelog"},
+    {"title": "Linux Foundation: powstanie Agentic AI Foundation (AAIF)", "url": "https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation"},
+    {"title": "MCP: Security Best Practices", "url": "https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices"},
+    {"title": "Invariant Labs: MCP Security Notification, Tool Poisoning Attacks", "url": "https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks"},
+    {"title": "Oficjalne SDK MCP dla TypeScript (GitHub)", "url": "https://github.com/modelcontextprotocol/typescript-sdk"},
+    {"title": "OpenAI: MCP and Connectors w API", "url": "https://developers.openai.com/api/docs/guides/tools-connectors-mcp"},
+    {"title": "Microsoft: MCP ogólnie dostępny w Copilot Studio", "url": "https://www.microsoft.com/en-us/microsoft-copilot/blog/copilot-studio/model-context-protocol-mcp-is-now-generally-available-in-microsoft-copilot-studio/"}
+  ],
+  "linkedin": "Jeśli podłączasz AI do systemów firmy, MCP (Model Context Protocol) przestał być opcją dla entuzjastów.\n\nCo warto wiedzieć w 2026 roku:\n- jeden serwer MCP dla CRM-a czy systemu zgłoszeń działa z Claude, ChatGPT, Copilotem i własnymi agentami,\n- od grudnia 2025 protokół rozwija się w Agentic AI Foundation pod Linux Foundation, współtworzonej przez Anthropic, OpenAI i Block,\n- specyfikacja z lipca 2026 uczyniła MCP bezstanowym, więc serwer skaluje się jak zwykła usługa HTTP,\n- główne ryzyka to złośliwe serwery (tool poisoning) i zbyt szerokie uprawnienia,\n- przy jednej aplikacji z trzema funkcjami MCP często nie jest potrzebny.\n\nW artykule tłumaczę architekturę, pokazuję działający serwer w TypeScript i listę kontrolną bezpieczeństwa:\n{url}\n\n#MCP #AI #agenciAI #bezpieczeństwo #TypeScript"
+}
+META-->
+<p><strong>MCP (Model Context Protocol) to otwarty standard, który opisuje, jak aplikacje AI łączą się z zewnętrznymi narzędziami i danymi.</strong> Zamiast budować osobną integrację dla każdego modelu i każdego systemu, przygotowujesz jeden serwer MCP, z którego korzysta dowolny zgodny klient: Claude, ChatGPT, Copilot albo własny agent.</p>
+<p>Protokół zaprezentował Anthropic w listopadzie 2024 roku. W grudniu 2025 trafił pod opiekę Agentic AI Foundation działającej w ramach Linux Foundation, a 28 lipca 2026 opublikowano nową wersję specyfikacji. Poniżej znajdziesz wyjaśnienie dla osób, które decydują o wdrożeniu, i konkrety techniczne dla zespołu developerskiego.</p>
+
+<h2>Jaki problem rozwiązuje Model Context Protocol</h2>
+<p>Model językowy sam z siebie nie zna stanu Twojego CRM-a, nie widzi zgłoszeń w systemie helpdesk i nie zajrzy do bazy zamówień. Żeby asystent AI odpowiedział na pytanie „ile faktur klienta X jest przeterminowanych”, ktoś musi napisać kod, który pobierze te dane i przekaże je modelowi w zrozumiałej formie.</p>
+<p>Przed MCP każdy dostawca aplikacji AI miał własny format takich integracji. Firma, która używała trzech narzędzi AI i chciała podłączyć pięć systemów, w najgorszym razie utrzymywała piętnaście osobnych integracji. To klasyczny problem N×M: każda nowa aplikacja albo nowy system mnoży pracę.</p>
+<p>MCP zamienia to na N+M. Każdy system dostaje jeden serwer MCP, każda aplikacja AI implementuje klienta MCP i wszystko ze sobą współpracuje. Twórcy otwarcie wzorowali się na Language Server Protocol, który w podobny sposób ujednolicił obsługę języków programowania w edytorach kodu.</p>
+
+<h2>Jak działa MCP: host, klient i serwer</h2>
+<p>Specyfikacja wyróżnia trzy role, które wymieniają komunikaty w formacie JSON-RPC 2.0:</p>
+<ul>
+<li><strong>Host</strong> to aplikacja, z którą pracuje użytkownik, np. Claude Desktop, ChatGPT, VS Code z Copilotem albo Twój własny agent.</li>
+<li><strong>Klient</strong> to komponent wewnątrz hosta, który obsługuje połączenie z konkretnym serwerem. Jeden host może mieć wielu klientów jednocześnie.</li>
+<li><strong>Serwer</strong> to usługa udostępniająca dane i akcje z jednego systemu: CRM-a, bazy danych, repozytorium kodu, systemu zgłoszeń.</li>
+</ul>
+<h3>Narzędzia, zasoby i prompty</h3>
+<p>Serwer MCP może oferować trzy rodzaje elementów:</p>
+<ul>
+<li><strong>Narzędzia (tools)</strong>: funkcje, które model może wywołać, np. <code>utworz_zgloszenie</code> albo <code>znajdz_klienta</code>. Każde ma nazwę, opis i schemat parametrów w JSON Schema.</li>
+<li><strong>Zasoby (resources)</strong>: dane do odczytu identyfikowane adresem URI, np. dokument, rekord albo plik konfiguracyjny.</li>
+<li><strong>Prompty (prompts)</strong>: gotowe szablony poleceń, które użytkownik wybiera świadomie, np. „podsumuj tydzień sprzedaży”.</li>
+</ul>
+<p>Narzędzia wybiera model, prompty wybiera człowiek, a zasoby zwykle dobiera aplikacja. Ten podział ma znaczenie, gdy projektujesz uprawnienia i miejsca, w których potrzebne jest potwierdzenie użytkownika.</p>
+<h3>Transport: stdio i Streamable HTTP</h3>
+<p>Specyfikacja definiuje dwa standardowe transporty. W <strong>stdio</strong> host uruchamia serwer jako lokalny proces i komunikuje się z nim przez standardowe wejście i wyjście. Tak działa większość serwerów instalowanych na komputerze programisty.</p>
+<p>W <strong>Streamable HTTP</strong> każdy komunikat to żądanie POST do jednego endpointu, a odpowiedź przychodzi jako obiekt JSON albo strumień SSE. Ten wariant wybierasz dla serwerów zdalnych, z których korzysta cały zespół lub cała firma.</p>
+<h3>Co zmieniła specyfikacja 2026-07-28</h3>
+<p>Najnowsza wersja uczyniła protokół bezstanowym. Zniknął handshake <code>initialize</code> i sesje na poziomie protokołu, a każde żądanie niesie wersję protokołu i możliwości klienta. Dzięki temu serwer MCP skaluje się jak zwykła usługa HTTP za load balancerem.</p>
+<p>Długie operacje obsługuje oficjalne rozszerzenie Tasks, a interaktywne elementy interfejsu rozszerzenie MCP Apps. Funkcje Roots, Sampling i Logging oraz stary transport HTTP+SSE mają status przestarzałych. Jeśli utrzymujesz serwer napisany w 2025 roku, zaplanuj aktualizację SDK.</p>
+
+<h2>Kto wspiera MCP w 2026 roku</h2>
+<p>MCP przestał być projektem jednej firmy. 9 grudnia 2025 Linux Foundation ogłosiła powstanie Agentic AI Foundation, którą współzałożyli Anthropic, Block i OpenAI, przy wsparciu m.in. Google, Microsoftu, AWS, Cloudflare i Bloomberga. MCP jest jednym z projektów założycielskich fundacji. Decyzje o kierunku rozwoju nadal podejmują dotychczasowi opiekunowie specyfikacji w publicznym procesie propozycji zmian.</p>
+<p>W praktyce obsługa wygląda tak:</p>
+<ul>
+<li><strong>Anthropic</strong>: aplikacje Claude, Claude Code i API łączą się z serwerami lokalnymi i zdalnymi.</li>
+<li><strong>OpenAI</strong>: Apps SDK dla ChatGPT jest zbudowane na MCP, Responses API przyjmuje zdalne serwery MCP jako narzędzia, a Codex obsługuje MCP.</li>
+<li><strong>Google</strong>: SDK Gemini API i Gemini CLI obsługują serwery MCP, a Google Cloud udostępnia zarządzane, zdalne serwery MCP do swoich usług.</li>
+<li><strong>Microsoft</strong>: MCP jest ogólnie dostępny w Copilot Studio, obsługują go Visual Studio i VS Code, a Azure DevOps ma własny zdalny serwer MCP.</li>
+<li><strong>Platformy automatyzacji</strong>: n8n, Make i Zapier potrafią korzystać z serwerów MCP i wystawiać własne przepływy jako serwer MCP.</li>
+</ul>
+
+<h2>Serwer MCP w firmie: przykłady zastosowań</h2>
+<p>Dla biznesu MCP oznacza, że dane i akcje z Twoich systemów stają się dostępne w asystencie AI, z którego pracownicy już korzystają. Nie musisz budować osobnego czatu dla każdego działu. Typowe scenariusze:</p>
+<h3>CRM</h3>
+<p>Serwer udostępnia narzędzia <code>znajdz_klienta</code>, <code>historia_kontaktow</code> i <code>dodaj_notatke</code>. Handlowiec pisze „przygotuj mnie do spotkania z firmą X” i dostaje zestawienie ostatnich rozmów, otwartych szans i zaległych płatności. Zapis notatki to osobne narzędzie, które wymaga potwierdzenia.</p>
+<h3>ERP i magazyn</h3>
+<p>Narzędzia tylko do odczytu: stany magazynowe, status zamówienia, terminy dostaw. Dział obsługi klienta odpowiada na pytania bez przełączania się między kilkoma ekranami. Operacje zapisu, jak korekta dokumentu, zostają poza zasięgiem modelu albo przechodzą przez akceptację człowieka.</p>
+<h3>Wewnętrzna baza danych</h3>
+<p>Kusi, żeby dać modelowi narzędzie „wykonaj dowolne zapytanie SQL”. Nie rób tego. Przygotuj kilka nazwanych zapytań z parametrami, uruchamianych z konta, które ma prawo odczytu tylko wybranych widoków. Model dostaje dokładnie te dane, których potrzebuje, a Ty masz przewidywalny zestaw operacji do audytu.</p>
+<h3>System zgłoszeń</h3>
+<p>Serwer MCP dla Jiry, GitLaba czy Zendeska pozwala agentowi sklasyfikować nowe zgłoszenie, znaleźć podobne, zaproponować priorytet i szkic odpowiedzi. Więcej takich scenariuszy znajdziesz w tekście o <a href="/blog/automatyzacje-ai-2026-przyklady/">automatyzacjach AI w 2026 roku</a>, a przykład obsługi poczty w artykule o <a href="/blog/agent-ai-skrzynka-email/">agencie AI do e-maili</a>.</p>
+<p>Jeśli AI ma odpowiadać na podstawie dokumentów firmy, serwer MCP może opakować wyszukiwarkę dokumentów. Sam mechanizm wyszukiwania to osobny temat, opisany w tekście <a href="/blog/czym-jest-rag/">czym jest RAG</a>. Serwery MCP dla systemów firmowych projektujemy i wdrażamy również w ramach <a href="/#uslugi">naszych usług</a>, razem z przeglądem uprawnień.</p>
+
+<h2>Jak napisać prosty serwer MCP w TypeScript</h2>
+<p>Przykład używa oficjalnego SDK w wersji 2 (pakiet <code>@modelcontextprotocol/server</code>), wydanego razem ze specyfikacją 2026-07-28. Potrzebujesz Node.js w wersji 20 lub nowszej. Zainstaluj zależności:</p>
+<pre><code class="language-bash">npm install @modelcontextprotocol/server zod</code></pre>
+<p>Serwer wystawia jedno narzędzie, które wyszukuje klienta po NIP. Dane są wpisane w kodzie, w prawdziwym wdrożeniu w tym miejscu wywołasz API CRM-a.</p>
+<pre><code class="language-typescript">import { McpServer } from '@modelcontextprotocol/server';
+import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
+import * as z from 'zod/v4';
+
+// Dane przykładowe. W prawdziwym wdrożeniu wywołasz tu API CRM.
+const klienci = [
+  { nip: '5250000000', nazwa: 'Przykładowa Sp. z o.o.', opiekun: 'Anna Nowak', status: 'aktywny' }
+];
+
+const server = new McpServer({ name: 'crm-server', version: '1.0.0' });
+
+server.registerTool(
+  'znajdz_klienta',
+  {
+    title: 'Wyszukaj klienta w CRM',
+    description: 'Zwraca dane klienta na podstawie NIP. Tylko odczyt.',
+    inputSchema: z.object({
+      nip: z.string().regex(/^\d{10}$/).describe('NIP bez kresek, 10 cyfr')
+    }),
+    annotations: { readOnlyHint: true }
+  },
+  async ({ nip }) =&gt; {
+    const klient = klienci.find((k) =&gt; k.nip === nip);
+    if (!klient) {
+      return {
+        content: [{ type: 'text', text: `Brak klienta o NIP ${nip}` }],
+        isError: true
+      };
+    }
+    return { content: [{ type: 'text', text: JSON.stringify(klient) }] };
+  }
+);
+
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error('Serwer MCP działa na stdio');
+}
+
+main();</code></pre>
+<p>Na co zwrócić uwagę w tym kodzie:</p>
+<ul>
+<li>Schemat wejścia w Zod SDK zamienia na JSON Schema i sam waliduje. Wywołanie z niepoprawnym NIP-em zwróci błąd walidacji, zanim dotrze do Twojej logiki.</li>
+<li><code>readOnlyHint</code> informuje klienta, że narzędzie niczego nie zmienia. To podpowiedź dla hosta, a nie zabezpieczenie. Uprawnienia egzekwujesz po stronie serwera i systemu źródłowego.</li>
+<li>Przy transporcie stdio nie wypisuj logów przez <code>console.log</code>, bo standardowe wyjście służy do komunikacji z klientem. Używaj <code>console.error</code>.</li>
+<li>Błąd biznesowy („nie ma takiego klienta”) zwracasz jako wynik z <code>isError: true</code>, żeby model mógł na niego sensownie zareagować.</li>
+</ul>
+<p>Po kompilacji do JavaScriptu przetestujesz serwer w MCP Inspectorze poleceniem <code>npx @modelcontextprotocol/inspector node server.js</code>. Potem dodaj go do konfiguracji klienta, np. Claude Desktop albo VS Code. Wersja zdalna na Streamable HTTP wymaga warstwy HTTP (SDK ma pakiety pośredniczące m.in. dla Express, Fastify i Hono) oraz autoryzacji.</p>
+
+<h2>Bezpieczeństwo serwerów MCP: o czym musisz pamiętać</h2>
+<p>Specyfikacja mówi wprost, że narzędzia oznaczają możliwość wykonania dowolnego kodu i trzeba je traktować ostrożnie. Serwer MCP podłączony do asystenta AI to nowa ścieżka dostępu do danych firmy. Projektuj go jak publiczne API, a nie jak skrypt pomocniczy.</p>
+<h3>Uwierzytelnianie i uprawnienia</h3>
+<ul>
+<li>Dla serwerów HTTP specyfikacja opiera autoryzację na OAuth 2.1. Serwer musi sprawdzać, czy token wydano właśnie dla niego, i nie może przekazywać tokenu klienta dalej do innych API.</li>
+<li>Serwery stdio pobierają poświadczenia ze środowiska, np. ze zmiennych środowiskowych. Nie wpisuj kluczy do repozytorium.</li>
+<li>Działaj w imieniu użytkownika, a nie z konta serwisowego z pełnym dostępem. Jeśli handlowiec nie widzi w CRM-ie danych innego regionu, jego agent też nie powinien.</li>
+<li>Zacznij od minimalnego zakresu uprawnień i dodawaj kolejne dopiero przy operacjach, które ich wymagają.</li>
+</ul>
+<h3>Tool poisoning i złośliwe serwery</h3>
+<p>W kwietniu 2025 Invariant Labs opisało atak nazwany tool poisoning. Złośliwy serwer umieszcza w opisie narzędzia ukryte instrukcje, których użytkownik nie widzi, a model je czyta. W demonstracji skłoniło to agenta do odczytania kluczy SSH i wysłania ich atakującemu. Pokrewne warianty to podmiana opisu narzędzia po jego zatwierdzeniu oraz wpływanie jednego serwera na to, jak agent używa pozostałych.</p>
+<p>OpenAI w dokumentacji API ostrzega podobnie: złośliwy serwer może wyprowadzić wszystko, co trafi do kontekstu modelu. Dlatego:</p>
+<ul>
+<li>Podłączaj tylko serwery zaufane: własne albo oficjalne, publikowane przez dostawcę danej usługi.</li>
+<li>Przypinaj wersje pakietów i przeglądaj opisy narzędzi przy każdej aktualizacji.</li>
+<li>Pamiętaj, że lokalne serwery działają z uprawnieniami użytkownika. Uruchamiaj je w kontenerze lub piaskownicy.</li>
+<li>Wymagaj potwierdzenia człowieka dla narzędzi, które wysyłają wiadomości, zmieniają rekordy lub usuwają dane.</li>
+<li>Loguj każde wywołanie narzędzia z parametrami i tożsamością użytkownika.</li>
+</ul>
+<aside class="callout">Dane zwracane przez serwer MCP (treść zgłoszenia, e-maila, dokumentu) też mogą zawierać instrukcje dla modelu. To pośredni prompt injection i żaden protokół go nie eliminuje. Sposoby ograniczania szkód opisujemy w artykule o <a href="/blog/prompt-injection-bezpieczenstwo-agentow-ai/">prompt injection i bezpieczeństwie agentów AI</a>.</aside>
+
+<h2>Kiedy nie potrzebujesz MCP</h2>
+<p>MCP to warstwa standaryzacji. Opłaca się, gdy te same dane mają być dostępne dla wielu aplikacji AI albo gdy pracownicy mają z nich korzystać w narzędziach, które już znają. Są sytuacje, w których tylko dokłada pracy:</p>
+<ul>
+<li><strong>Jedna aplikacja, jeden model, stały przepływ.</strong> Jeśli Twój backend wywołuje model z trzema zdefiniowanymi funkcjami, zwykłe function calling w API dostawcy wystarczy. Serwer MCP wydzielisz później, gdy pojawi się drugi konsument.</li>
+<li><strong>Proces jest deterministyczny.</strong> Przeniesienie danych z formularza do ERP według stałych reguł lepiej zrobi zwykła integracja, webhook albo workflow bez modelu językowego.</li>
+<li><strong>Wiedza jest mała i rzadko się zmienia.</strong> Kilkustronicowy cennik czy regulamin umieść po prostu w instrukcji systemowej asystenta.</li>
+<li><strong>Brakuje porządku w danych i uprawnieniach.</strong> MCP nie naprawi CRM-a z połową zdublowanych rekordów ani systemu, w którym wszyscy mają konto administratora.</li>
+</ul>
+<p>Jeśli dopiero planujesz pierwsze projekty z AI, zacznij od wyboru procesów i zasad bezpieczeństwa, a protokół dobierz na końcu. Kolejność kroków opisuje przewodnik <a href="/blog/jak-wdrozyc-ai-w-firmie/">jak wdrożyć AI w firmie</a>.</p>

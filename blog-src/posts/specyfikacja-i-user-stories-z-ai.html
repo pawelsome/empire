@@ -17,7 +17,7 @@
   "faq": [
     {"q": "Czy ChatGPT lub Claude napisze całą specyfikację projektu?", "a": "Napisze dokument, który wygląda na kompletny, i to jest ryzyko. Model nie zna decyzji, których nikt nie wypowiedział, więc uzupełnia je założeniami. Używaj AI do porządkowania materiału, wykrywania luk i formułowania kryteriów akceptacji, a treść weryfikuj z klientem i zespołem."},
     {"q": "Jak zamienić notatki ze spotkania w user stories?", "a": "Najpierw wyciągnij z transkrypcji decyzje, wymagania i otwarte pytania ze znacznikami czasu. Potem pogrupuj wymagania w epiki i dopiero wtedy poproś o historie w formacie „jako…, chcę…, aby…” z kryteriami Given/When/Then. Na końcu przejrzyj wynik z właścicielem produktu."},
-    {"q": "Czy kryteria akceptacji w Gherkin można pisać po polsku?", "a": "Tak. Gherkin ma polskie słowa kluczowe, m.in. Zakładając, Jeżeli, Wtedy i Oraz, a język ustawia się komentarzem # language: pl na początku pliku. Dzięki temu te same scenariusze mogą czytać klient, tester i narzędzia do testów automatycznych."},
+    {"q": "Czy kryteria akceptacji w Gherkin można pisać po polsku?", "a": "Tak. Gherkin ma polskie odpowiedniki słów Given, When, Then i And: Zakładając, Jeżeli, Wtedy i Oraz, a język ustawia się komentarzem # language: pl na początku pliku. Dzięki temu te same scenariusze mogą czytać klient, tester i narzędzia do testów automatycznych."},
     {"q": "Czy agent AI może sam zakładać zadania w Jirze?", "a": "Może, przez REST API albo serwer MCP, np. Atlassian Rovo MCP Server, który działa w granicach uprawnień zalogowanego użytkownika. Bezpieczniej, gdy tworzy zgłoszenia jako szkice z etykietą, sprawdza duplikaty i nie zmienia istniejących zadań bez akceptacji człowieka."},
     {"q": "Czym jest spec-driven development?", "a": "To podejście, w którym specyfikacja w repozytorium jest punktem wyjścia dla planu technicznego, listy zadań i pracy agentów kodujących. Narzędzia takie jak GitHub Spec Kit czy Kiro prowadzą przez kolejne etapy: wymagania, projekt, zadania i implementację. Specyfikację zmienia się wtedy przez pull requesty, podobnie jak kod."}
   ],
@@ -27,7 +27,7 @@
     {"title": "Atlassian: Atlassian Rovo MCP Server is now GA", "url": "https://www.atlassian.com/blog/announcements/atlassian-rovo-mcp-ga"},
     {"title": "Linear Docs: MCP server", "url": "https://linear.app/docs/mcp"},
     {"title": "Cucumber: Gherkin reference", "url": "https://cucumber.io/docs/gherkin/reference/"},
-    {"title": "Cucumber: gherkin-languages.json (słowa kluczowe, w tym polskie)", "url": "https://github.com/cucumber/gherkin/blob/main/gherkin-languages.json"},
+    {"title": "Cucumber: gherkin-languages.json (tłumaczenia składni, w tym polskie)", "url": "https://github.com/cucumber/gherkin/blob/main/gherkin-languages.json"},
     {"title": "Sonar: ISO/IEC 25010 explained", "url": "https://www.sonarsource.com/resources/library/iso-iec-25010-explained/"}
   ],
   "linkedin": "Najlepsze, co AI robi przy specyfikacji projektu, to nie pisanie wymagań, tylko wskazywanie, czego jeszcze nie ustaliliście.\n\nJak to wygląda w praktyce:\n- transkrypcja spotkania zamieniona w listę decyzji, wymagań i otwartych pytań, każda pozycja ze znacznikiem czasu,\n- user stories z kryteriami akceptacji w Gherkin, także po polsku (Zakładając, Jeżeli, Wtedy),\n- automatyczne wyłapywanie sprzeczności i brakujących wymagań niefunkcjonalnych,\n- zadania w Jirze lub Linearze zakładane przez MCP jako szkice, nie od razu do sprintu,\n- specyfikacja w repozytorium, zmieniana przez pull requesty.\n\nPrzykład: od fikcyjnej notatki ze spotkania do gotowej historii z kryteriami: {url}\n\n#ProductManagement #AI #Agile #UserStories"
@@ -122,7 +122,7 @@ Format wyjścia: Markdown z czterema sekcjami jak wyżej.</code></pre>
 <table>
 <thead><tr><th>Cecha (ISO/IEC 25010:2023)</th><th>Pytanie do zadania</th></tr></thead>
 <tbody>
-<tr><td>Przydatność funkcjonalna (functional suitability)</td><td>Czy funkcje pokrywają cel biznesowy, a nie tylko listę życzeń?</td></tr>
+<tr><td>Przydatność funkcjonalna (functional suitability)</td><td>Czy funkcje pokrywają cel biznesowy, a nie samą listę życzeń?</td></tr>
 <tr><td>Wydajność (performance efficiency)</td><td>Ilu użytkowników jednocześnie w szczycie? Jaki czas odpowiedzi jest akceptowalny?</td></tr>
 <tr><td>Kompatybilność (compatibility)</td><td>Z jakimi systemami integracja? Jakie przeglądarki i wersje systemów mobilnych?</td></tr>
 <tr><td>Zdolność interakcji (interaction capability)</td><td>Jakie wymagania dostępności, np. WCAG? Jakie języki interfejsu?</td></tr>

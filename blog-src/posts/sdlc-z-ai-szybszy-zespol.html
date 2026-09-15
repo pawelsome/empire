@@ -1,0 +1,145 @@
+<!--META
+{
+  "slug": "sdlc-z-ai-szybszy-zespol",
+  "title": "AI w wytwarzaniu oprogramowania: szybszy zespół bez utraty jakości",
+  "metaTitle": "AI w wytwarzaniu oprogramowania: SDLC krok po kroku",
+  "description": "AI w wytwarzaniu oprogramowania faza po fazie: specyfikacja, kodowanie z agentami, review, testy, CI/CD i utrzymanie. Badania DORA i METR oraz plan wdrożenia.",
+  "category": "Technologia i zarządzanie",
+  "tags": ["SDLC", "AI w programowaniu", "DORA", "agenci AI", "DevOps", "jakość oprogramowania"],
+  "primaryKeyword": "AI w wytwarzaniu oprogramowania",
+  "tldr": [
+    "Raport DORA 2025 wiąże większe wykorzystanie AI z wyższą przepustowością dostarczania oprogramowania, ale też z większą niestabilnością wdrożeń, i opisuje AI jako wzmacniacz istniejących praktyk.",
+    "W badaniu METR z 2025 roku doświadczeni programiści open source pracowali z AI o 19% dłużej, choć sami ocenili, że przyspieszyli; nowsze dane METR z 2026 roku sugerują poprawę, ale autorzy uznają je za słaby dowód.",
+    "Największe zyski dają zabezpieczenia wokół AI: małe zmiany, testy automatyczne, obowiązkowy przegląd kodu, pliki z instrukcjami dla agentów i jasne zasady dotyczące danych.",
+    "W każdej fazie SDLC AI przygotowuje materiał, a człowiek zatwierdza zakres, architekturę, merge i wdrożenie na produkcję.",
+    "Efekty mierz metrykami DORA na tle danych sprzed wdrożenia, a nie odczuciami zespołu ani liczbą linii wygenerowanych przez AI."
+  ],
+  "faq": [
+    {"q": "Czy AI naprawdę przyspiesza programistów?", "a": "Wyniki badań są niejednoznaczne i zależą od zadania. W kontrolowanym eksperymencie z 2023 roku programiści z Copilotem napisali prosty serwer HTTP o 55,8% szybciej, a w badaniu METR z 2025 roku doświadczeni programiści w dojrzałych repozytoriach pracowali z AI o 19% dłużej. Dlatego efekt mierz we własnym zespole, na własnych zadaniach."},
+    {"q": "Jakie metryki DORA stosować przy wdrażaniu AI w zespole?", "a": "DORA opisuje pięć metryk: czas realizacji zmiany, częstotliwość wdrożeń, czas przywrócenia po nieudanym wdrożeniu, odsetek nieudanych zmian i odsetek wdrożeń naprawczych. Pierwsze trzy mówią o przepustowości, dwie ostatnie o stabilności. Przy AI obserwuj obie grupy jednocześnie."},
+    {"q": "Czy kod wygenerowany przez AI jest bezpieczny?", "a": "Nie można tego zakładać. W aktualizacji raportu Veracode z wiosny 2026 około 55% zadań generowania kończyło się bezpiecznym kodem, a wynik niewiele zmieniał się między generacjami modeli. Kod od AI przechodzi te same testy, skanery i przegląd co kod pisany ręcznie."},
+    {"q": "Od czego zacząć wdrażanie AI w zespole programistów?", "a": "Od spisania zasad: jakie narzędzia są dozwolone, jakie dane można do nich wysyłać i kto odpowiada za kod. Potem zbierz metryki wyjściowe, uruchom pilotaż w jednym zespole na określonych typach zadań i po kilku tygodniach porównaj wyniki. Licz się z przejściowym spadkiem tempa na początku."},
+    {"q": "Czy AI zastąpi code review i testerów?", "a": "Nie w odpowiedzialnym procesie. AI dobrze wyłapuje część błędów i generuje testy, ale nie ocenia intencji biznesowej ani ryzyka zmiany. Raport DORA wskazuje, że bez mocnych testów automatycznych i szybkiej informacji zwrotnej większa liczba zmian prowadzi do niestabilności."}
+  ],
+  "sources": [
+    {"title": "Google Cloud: Announcing the 2025 DORA Report", "url": "https://cloud.google.com/blog/products/ai-machine-learning/announcing-the-2025-dora-report"},
+    {"title": "Google Cloud: Introducing DORA's inaugural AI Capabilities Model", "url": "https://cloud.google.com/blog/products/ai-machine-learning/introducing-doras-inaugural-ai-capabilities-model"},
+    {"title": "DORA: Software delivery performance metrics", "url": "https://dora.dev/guides/dora-metrics/"},
+    {"title": "InfoQ: DORA report on ROI of AI-assisted software development (J-curve)", "url": "https://www.infoq.com/news/2026/05/dora-roi-ai-assisted-dev-report/"},
+    {"title": "METR: Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity", "url": "https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/"},
+    {"title": "METR: We are Changing our Developer Productivity Experiment Design (02.2026)", "url": "https://metr.org/blog/2026-02-24-uplift-update/"},
+    {"title": "Peng i in.: The Impact of AI on Developer Productivity: Evidence from GitHub Copilot (arXiv)", "url": "https://arxiv.org/abs/2302.06590"},
+    {"title": "Veracode: Spring 2026 GenAI Code Security Update", "url": "https://www.veracode.com/blog/spring-2026-genai-code-security/"}
+  ],
+  "linkedin": "Doświadczeni programiści w badaniu METR z 2025 roku pracowali z AI o 19% dłużej, a mimo to byli przekonani, że przyspieszyli o 20%.\n\nTo dobry powód, żeby wdrażać AI w zespole z metrykami, a nie na wyczucie. Co pokazują badania i praktyka:\n- DORA 2025: więcej AI to wyższa przepustowość, ale też większa niestabilność wdrożeń,\n- AI wzmacnia to, co już masz: małe zmiany, testy i przegląd kodu decydują o wyniku,\n- kod od AI przechodzi te same skanery i review co kod pisany ręcznie,\n- w każdej fazie SDLC człowiek zatwierdza zakres, merge i wdrożenie,\n- efekt mierzysz metrykami DORA na tle danych sprzed pilotażu.\n\nPrzewodnik faza po fazie, z tabelą odpowiedzialności: {url}\n\n#SoftwareEngineering #DORA #AI #DevOps #EngineeringManagement"
+}
+META-->
+<p>AI w wytwarzaniu oprogramowania przyspiesza zespół wtedy, gdy obejmuje cały cykl, od specyfikacji po utrzymanie, a każda faza ma zabezpieczenia: testy, małe zmiany, przegląd kodu i jasny podział odpowiedzialności. Raport DORA 2025 opisuje AI jako wzmacniacz: zespoły z dobrymi praktykami zyskują, a słabe procesy szybciej produkują niestabilne wdrożenia.</p>
+<p>Ten przewodnik przechodzi przez kolejne fazy SDLC, pokazuje, co mówią wiarygodne badania, i proponuje plan wdrożenia z mierzeniem efektów.</p>
+
+<h2>Co mówią badania o produktywności programistów z AI</h2>
+<p>Zanim ustalisz oczekiwania wobec zespołu, poznaj dane. Wyniki są mniej jednoznaczne, niż sugerują materiały marketingowe dostawców.</p>
+<h3>DORA 2025: więcej przepustowości, mniej stabilności</h3>
+<p>Raport DORA State of AI-assisted Software Development 2025 opiera się na ankiecie wśród blisko 5000 specjalistów i ponad 100 godzinach wywiadów. 90% badanych używa AI w pracy, ponad 80% uważa, że zwiększyło to ich produktywność, a 30% deklaruje niewielkie zaufanie do kodu generowanego przez AI albo jego brak.</p>
+<p>Ważniejszy jest wniosek o dostarczaniu oprogramowania. W 2025 roku DORA zaobserwowała pozytywny związek między wykorzystaniem AI a przepustowością i wynikami produktu, ale nadal negatywny związek ze stabilnością wdrożeń. Autorzy tłumaczą to tak: bez mocnych testów automatycznych, dojrzałej kontroli wersji i szybkiej informacji zwrotnej większa liczba zmian prowadzi do niestabilności.</p>
+<p>DORA opisała też siedem cech organizacji, które wzmacniają pozytywny wpływ AI: jasno zakomunikowane stanowisko wobec AI, zdrowy ekosystem danych, dostęp AI do danych wewnętrznych, dobre praktyki kontroli wersji, praca w małych partiach, koncentracja na użytkowniku oraz wysokiej jakości platformy wewnętrzne.</p>
+<h3>METR: odczucia a zmierzony czas</h3>
+<p>W randomizowanym badaniu METR z 2025 roku 16 doświadczonych programistów open source wykonało 246 zadań w dużych, dojrzałych repozytoriach, głównie z Cursor Pro i modelami Claude 3.5/3.7 Sonnet. Z dostępem do AI zadania trwały o 19% dłużej. Przed badaniem uczestnicy spodziewali się przyspieszenia o 24%, a po nim nadal oceniali, że AI przyspieszyło ich o 20%.</p>
+<p>Autorzy zastrzegają, że wynik nie dowodzi, iż AI nie pomaga większości programistów, i dotyczy konkretnego momentu i środowiska. W lutym 2026 METR opublikował dane z nowego eksperymentu (57 programistów, ponad 800 zadań). Szacunki wskazywały na skrócenie czasu o 18% u uczestników pierwszego badania i o 4% u nowych, ale przedziały ufności obejmowały zero. METR uznał te dane za słaby dowód, bo część zaproszonych osób odmawiała udziału, nie chcąc pracować bez AI, co zaniża zmierzony efekt.</p>
+<h3>Zadania proste kontra dojrzały kod</h3>
+<p>Dla kontrastu: w kontrolowanym eksperymencie z 2023 roku programiści z GitHub Copilotem napisali serwer HTTP w JavaScripcie o 55,8% szybciej niż grupa kontrolna. Dobrze zdefiniowane, samodzielne zadanie to inna sytuacja niż zmiana w dużym systemie z historią i niepisanymi zasadami.</p>
+<aside class="callout"><p>Wniosek praktyczny: nie opieraj decyzji na deklaracjach zespołu ani na demach. Zmierz czas i jakość dostarczania przed wdrożeniem AI i po nim, na własnych zadaniach.</p></aside>
+
+<h2>AI w każdej fazie SDLC: praktyka i odpowiedzialność</h2>
+<p>Poniższa tabela to punkt wyjścia do zasad w Twoim zespole. W każdej fazie AI przygotowuje materiał, a konkretna osoba podejmuje decyzję.</p>
+<table>
+<thead><tr><th>Faza</th><th>Praktyka z AI</th><th>Odpowiedzialność człowieka</th></tr></thead>
+<tbody>
+<tr><td>Discovery i specyfikacja</td><td>Transkrypcje spotkań zamieniane w wymagania, user stories i listę otwartych pytań</td><td>Zatwierdzenie zakresu, rozstrzygnięcie sprzeczności, priorytety</td></tr>
+<tr><td>Projekt i architektura</td><td>Warianty rozwiązań, krytyka projektu, szkic decyzji architektonicznej (ADR)</td><td>Wybór rozwiązania i akceptacja jego kosztów oraz ryzyk</td></tr>
+<tr><td>Kodowanie</td><td>Agenci realizują małe zadania według plików z instrukcjami, uruchamiają testy i linter</td><td>Autor PR rozumie i broni każdej zmiany, którą wysyła</td></tr>
+<tr><td>Code review</td><td>Automatyczna recenzja każdego PR pod kątem błędów i bezpieczeństwa</td><td>Zatwierdzenie merge, ocena sensu zmiany i zgodności z wymaganiem</td></tr>
+<tr><td>Testy</td><td>Generowanie testów jednostkowych, przypadków brzegowych i scenariuszy z kryteriów akceptacji</td><td>Ocena, czy testy sprawdzają zachowanie, a nie samo pokrycie</td></tr>
+<tr><td>CI/CD</td><td>Analiza nieudanych buildów, propozycje poprawek w pipeline</td><td>Kontrola wdrożeń na produkcję, sekretów i uprawnień</td></tr>
+<tr><td>Dokumentacja</td><td>Aktualizacja README i opisów API, release notes z listy PR</td><td>Sprawdzenie, czy dokumentacja opisuje rzeczywisty stan</td></tr>
+<tr><td>Utrzymanie i incydenty</td><td>Streszczenia alertów i logów, szkice postmortemów, tygodniowe raporty</td><td>Decyzje w trakcie incydentu, komunikacja z klientem</td></tr>
+<tr><td>Aktualizacje zależności</td><td>Poprawki kodu po zmianach łamiących zgodność, wskazane przez Dependabota lub Renovate</td><td>Akceptacja ryzyka aktualizacji, testy regresji</td></tr>
+</tbody>
+</table>
+
+<h2>Specyfikacja i projekt: najtańsze miejsce na poprawki</h2>
+<p>Błąd w wymaganiu kosztuje najmniej, gdy wyłapiesz go przed napisaniem kodu. Agenci kodujący wzmacniają ten efekt: z niejasnej specyfikacji szybko powstaje dużo kodu, który robi nie to, co trzeba.</p>
+<ul>
+<li>Z transkrypcji spotkań wyciągaj decyzje, wymagania i otwarte pytania ze znacznikami czasu, żeby każde ustalenie miało źródło.</li>
+<li>Proś model o listę luk i sprzeczności, a nie o gotową specyfikację.</li>
+<li>Kryteria akceptacji zapisuj w formacie Given/When/Then, bo z nich później powstają testy.</li>
+<li>Trzymaj specyfikację w repozytorium i zmieniaj ją przez pull requesty.</li>
+</ul>
+<p>Cały przepływ, z szablonem promptu i przykładem, opisujemy we wpisie <a href="/blog/specyfikacja-i-user-stories-z-ai/">Specyfikacja projektu i user stories z AI</a>.</p>
+<p>Przy projektowaniu używaj AI jako krytyka. Opisz planowane rozwiązanie i poproś o trzy sposoby, w jakie może zawieść, przy dziesięciokrotnie większym ruchu, awarii zależności czy zmianie wymagań. Decyzję zapisz w krótkim dokumencie ADR, z wariantami, które odrzuciłeś, i powodem.</p>
+
+<h2>Kodowanie z agentami AI: zasady, które chronią jakość</h2>
+<p>Agenci kodujący potrafią samodzielnie przejść od zadania do pull requesta. To zmienia pracę programisty z pisania na delegowanie i sprawdzanie, a sprawdzanie wymaga dyscypliny.</p>
+<h3>Instrukcje w repozytorium</h3>
+<p>Utwórz plik z instrukcjami dla agentów, np. <code>AGENTS.md</code> (otwarty format obsługiwany przez wiele narzędzi) albo <code>CLAUDE.md</code>. Wpisz w nim komendy do budowania i uruchamiania testów, konwencje nazewnictwa, strukturę katalogów i rzeczy zakazane, np. zmiany w migracjach produkcyjnych bez zgody. Krótki, konkretny plik działa lepiej niż długi.</p>
+<h3>Małe zadania, małe PR</h3>
+<p>Praca w małych partiach to jedna z siedmiu cech z modelu DORA. Zadanie dla agenta powinno dać się opisać w kilku zdaniach i sprawdzić w kwadrans. PR na 2000 linii wygenerowany w pięć minut oznacza godzinę recenzji i większe ryzyko, że coś przejdzie niezauważone.</p>
+<h3>Definicja ukończenia dla agenta</h3>
+<ul>
+<li>Testy i linter przechodzą lokalnie, zanim agent zgłosi koniec pracy.</li>
+<li>Agent nie modyfikuje istniejących testów, żeby przeszły, bez wyraźnego polecenia; każda zmiana w testach jest opisana w PR.</li>
+<li>Nowe zależności są wymienione i uzasadnione w opisie PR. Sprawdź, czy pakiet istnieje, jest utrzymywany i to na pewno ten, o który chodziło.</li>
+<li>Opis PR wyjaśnia, co zmieniono i jak to przetestowano.</li>
+</ul>
+<h3>Izolacja i bezpieczeństwo</h3>
+<p>Uruchamiaj agentów w kontenerze lub środowisku deweloperskim bez produkcyjnych sekretów i z ograniczonym dostępem do sieci. Kod od AI przechodzi te same skanery co kod pisany ręcznie: analizę statyczną, skanowanie zależności i wykrywanie sekretów w CI. To nie jest nadmierna ostrożność. W aktualizacji raportu Veracode z wiosny 2026 około 55% zadań generowania kodu kończyło się kodem bezpiecznym, a wynik niewiele się zmieniał między kolejnymi generacjami modeli.</p>
+<p>Zasada nadrzędna: autor PR odpowiada za każdą linię, niezależnie od tego, kto ją napisał. „Tak wygenerował agent” nie jest wyjaśnieniem na review.</p>
+
+<h2>Code review i testy generowane przez AI</h2>
+<p>Automatyczny recenzent przy każdym PR wyłapuje błędy logiki, brakujące przypadki brzegowe i podejrzane wzorce bezpieczeństwa, zanim zajrzy tam człowiek. Ludzki recenzent może wtedy skupić się na sensie zmiany i architekturze. Konfigurację narzędzi, pliki z zasadami i sposoby na ograniczenie szumu opisujemy we wpisie <a href="/blog/automatyczne-code-review-ai/">Automatyczne code review z AI</a>.</p>
+<p>Przy testach AI oszczędza najwięcej czasu, ale łatwo tu o fałszywe poczucie bezpieczeństwa. Model chętnie pisze testy, które przechodzą, bo sprawdzają to, co kod robi, a nie to, co powinien robić.</p>
+<ul>
+<li><strong>Testy z kryteriów akceptacji.</strong> Generuj je ze specyfikacji, nie z implementacji. Wtedy test może wykryć rozbieżność z wymaganiem.</li>
+<li><strong>Testy charakteryzujące przed refaktoryzacją.</strong> Przy starym kodzie bez testów poproś AI o testy utrwalające obecne zachowanie, a dopiero potem zmieniaj kod.</li>
+<li><strong>Testy mutacyjne.</strong> Narzędzia takie jak Infection dla PHP czy StrykerJS dla JavaScriptu i TypeScriptu wprowadzają celowe błędy do kodu i sprawdzają, czy testy je wykryją. To dobra kontrola jakości testów wygenerowanych przez AI.</li>
+<li><strong>Pokrycie nie jest celem.</strong> Wysoki procent pokrycia z testami bez sensownych asercji niczego nie gwarantuje.</li>
+</ul>
+
+<h2>CI/CD, dokumentacja, incydenty i aktualizacje</h2>
+<h3>Pipeline</h3>
+<p>AI dobrze analizuje logi nieudanych buildów: wskazuje, który test zawiódł, czy to niestabilny test, czy realny błąd, i proponuje poprawkę. Daj mu dostęp tylko do odczytu logów. Wdrożenie na produkcję zatwierdza człowiek, np. przez chronione środowiska z wymaganym zatwierdzeniem w GitHub Actions lub GitLab CI.</p>
+<h3>Dokumentacja</h3>
+<p>Release notes złożone z listy PR, aktualizacja opisu API po zmianie endpointu, README po zmianie sposobu uruchamiania: to zadania, które zespoły odkładają, a AI robi je szybko. Dodaj do definicji ukończenia PR punkt „dokumentacja zaktualizowana” i pozwól recenzentowi AI to sprawdzać.</p>
+<h3>Utrzymanie i incydenty</h3>
+<p>W trakcie incydentu AI streszcza alerty i logi z wielu źródeł, szuka podobnych zdarzeń w historii i proponuje kroki z runbooka. Po incydencie przygotowuje szkic postmortemu z osią czasu. Decyzje w trakcie incydentu i komunikacja z klientem zostają przy ludziach. Regularny przegląd stanu systemów możesz zautomatyzować, o czym piszemy we wpisie <a href="/blog/automatyczne-raporty-ai/">Automatyczne raporty z AI</a>.</p>
+<h3>Aktualizacje zależności</h3>
+<p>Dependabot lub Renovate wskazują nowe wersje bibliotek, a agent AI może poprawić kod po zmianach łamiących zgodność i uruchomić testy. Takie PR przechodzą normalny review, a większe aktualizacje frameworka planuj jako osobne zadania z testami regresji.</p>
+
+<h2>Jak wdrożyć AI w zespole programistów krok po kroku</h2>
+<ol>
+<li><strong>Spisz stanowisko wobec AI.</strong> Jakie narzędzia są dozwolone, jakie dane i repozytoria można do nich wysyłać, kto odpowiada za kod. Jasno zakomunikowane stanowisko to pierwsza z siedmiu cech w modelu DORA, bo niejasność zniechęca do eksperymentów albo prowadzi do używania prywatnych kont.</li>
+<li><strong>Zbierz dane wyjściowe.</strong> Przez co najmniej miesiąc przed pilotażem mierz metryki opisane niżej. Bez tego każda ocena będzie opinią.</li>
+<li><strong>Uruchom pilotaż w jednym zespole.</strong> Wybierz typy zadań, np. testy, poprawki błędów, drobne funkcje, i ustal czas trwania z góry, np. dwa miesiące.</li>
+<li><strong>Zadbaj o bezpieczeństwo.</strong> Licencje firmowe z umową i jasnymi warunkami przetwarzania danych, logowanie przez SSO, wykluczenia wrażliwych plików, brak sekretów w repozytoriach, logi użycia.</li>
+<li><strong>Dziel się praktykami.</strong> Wspólne pliki instrukcji, sprawdzone prompty, krótkie spotkania o tym, co zadziałało, a co nie.</li>
+<li><strong>Oceń i zdecyduj.</strong> Porównaj metryki z danymi wyjściowymi i dopiero wtedy rozszerzaj wdrożenie.</li>
+</ol>
+<p>Licz się z przejściowym spadkiem tempa. Raport DORA o zwrocie z inwestycji w AI opisuje krzywą J: na początku zespół dostosowuje sposób pracy, rośnie obciążenie przeglądem kodu i testami, a korzyści pojawiają się później. Szerzej o organizacji takich projektów piszemy we wpisie <a href="/blog/jak-wdrozyc-ai-w-firmie/">Jak wdrożyć AI w firmie</a>.</p>
+
+<h2>Jak mierzyć efekty: metryki DORA i metryki zespołu</h2>
+<p>DORA opisuje wydajność dostarczania oprogramowania pięcioma metrykami, podzielonymi na dwie grupy:</p>
+<ul>
+<li><strong>Przepustowość</strong>: czas realizacji zmiany (od commita do produkcji), częstotliwość wdrożeń, czas przywrócenia działania po nieudanym wdrożeniu.</li>
+<li><strong>Niestabilność</strong>: odsetek zmian wymagających natychmiastowej interwencji po wdrożeniu oraz odsetek wdrożeń nieplanowanych, wykonanych w odpowiedzi na incydent.</li>
+</ul>
+<p>Przy AI obserwuj obie grupy jednocześnie. Wyniki DORA 2025 pokazują, że przepustowość może rosnąć razem z niestabilnością, więc sama liczba wdrożeń niczego nie dowodzi.</p>
+<p>Uzupełnij je metrykami bliższymi codziennej pracy:</p>
+<ul>
+<li>czas od otwarcia PR do pierwszej recenzji i do merge,</li>
+<li>mediana wielkości PR,</li>
+<li>liczba błędów z produkcji, które dało się wykryć na etapie PR,</li>
+<li>odsetek wycofanych zmian,</li>
+<li>krótka ankieta w zespole co kwartał: gdzie AI pomaga, a gdzie przeszkadza.</li>
+</ul>
+<p>Nie mierz sukcesu liczbą linii wygenerowanych przez AI ani odsetkiem kodu napisanego przez agentów. Takie wskaźniki łatwo poprawić, a nie mówią nic o wartości dla użytkownika. Pamiętaj też o wyniku METR: odczucia zespołu i zmierzony czas mogą się mocno rozjeżdżać.</p>
+<p>Jeśli potrzebujesz kogoś, kto oceni obecny proces i przeprowadzi pilotaż, sprawdź, <a href="/blog/zewnetrzny-cto-kiedy-sie-oplaca/">kiedy opłaca się zewnętrzny CTO</a>, albo zobacz <a href="/#uslugi">zakres naszych usług</a>.</p>

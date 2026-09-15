@@ -1,0 +1,146 @@
+<!--META
+{
+  "slug": "zainfekowany-wordpress-objawy",
+  "title": "Zainfekowana strona WordPress: objawy i co zrobić w pierwszej godzinie",
+  "metaTitle": "Zainfekowany WordPress: objawy i pierwsza godzina",
+  "description": "Zainfekowany WordPress: przekierowania, obcy administratorzy, spam w Google. Poznaj objawy i checklistę na pierwszą godzinę po wykryciu włamania na stronę.",
+  "category": "Bezpieczeństwo",
+  "tags": ["zainfekowany WordPress", "włamanie na stronę", "malware", "reagowanie na incydenty", "WordPress"],
+  "primaryKeyword": "zainfekowany wordpress",
+  "tldr": [
+    "Najczęstsze objawy infekcji WordPressa to przekierowania na obce strony, nieznani administratorzy, obce pliki PHP, spam w wynikach Google, ostrzeżenia przeglądarki i hostingu oraz wysyłka spamu z serwera.",
+    "Infekcja często jest niewidoczna dla zalogowanego administratora, więc objawy zgłaszają najpierw klienci, Google albo hosting.",
+    "W pierwszej godzinie nie kasuj plików i nie przywracaj od razu kopii zapasowej: najpierw udokumentuj objawy, zrób kopię do analizy, odetnij ruch i zmień hasła z czystego komputera.",
+    "Zabezpiecz logi serwera, zanim zostaną nadpisane, i ustal zakres: inne strony na koncie, dane osobowe, nowe konta.",
+    "Jeśli wyciekły dane osobowe, zgłoszenie do UODO trzeba złożyć w ciągu 72 godzin od stwierdzenia naruszenia."
+  ],
+  "faq": [
+    {"q": "Czy wystarczy przywrócić kopię zapasową sprzed włamania?", "a": "Zwykle nie. Kopia przywraca tę samą podatną wersję wtyczki lub to samo przejęte hasło, więc strona może zostać zainfekowana ponownie w ciągu dni. Poza tym infekcja mogła powstać wcześniej, niż zauważyłeś objawy, i kopia też może zawierać backdoor."},
+    {"q": "Czy wtyczka bezpieczeństwa sama wyczyści zainfekowany WordPress?", "a": "Skaner we wtyczce pomaga znaleźć część zmian, ale działa wewnątrz zainfekowanej instalacji i nie wykryje wszystkiego, np. kodu w bazie danych czy plików poza katalogiem WordPressa. Traktuj go jako jedno z narzędzi, obok sum kontrolnych, logów i ręcznego przeglądu."},
+    {"q": "Dlaczego widzę przekierowanie tylko na telefonie albo po wejściu z Google?", "a": "Złośliwy kod często sprawdza, skąd przychodzi użytkownik i jakiego urządzenia używa. Przekierowuje ruch z wyszukiwarki lub z telefonów, a zalogowanemu administratorowi pokazuje normalną stronę. To celowe utrudnienie wykrycia, a nie błąd konfiguracji."},
+    {"q": "Ile trwa wyczyszczenie zainfekowanego WordPressa?", "a": "Nie ma jednej odpowiedzi. Czas zależy od liczby wstrzyknięć, rozmiaru strony, dostępnych kopii i logów oraz tego, czy da się ustalić wektor ataku. Pojedyncza zmiana w motywie to inna skala pracy niż sklep z kilkoma infekcjami i backdoorami naraz. Pierwsza godzina służy do opanowania sytuacji, a nie do pełnego sprzątania."},
+    {"q": "Czy muszę informować klientów o włamaniu na stronę?", "a": "Jeśli doszło do naruszenia ochrony danych osobowych, RODO wymaga oceny ryzyka, zgłoszenia do UODO w ciągu 72 godzin od stwierdzenia naruszenia, a przy wysokim ryzyku także zawiadomienia osób, których dane dotyczą. Gdy wyciekły wyłącznie treści publiczne, obowiązku zgłoszenia zwykle nie ma, ale warto to udokumentować."}
+  ],
+  "sources": [
+    {"title": "WordPress.org Documentation: FAQ My site was hacked", "url": "https://wordpress.org/documentation/article/faq-my-site-was-hacked/"},
+    {"title": "Patchstack: State of WordPress Security in 2026", "url": "https://patchstack.com/whitepaper/state-of-wordpress-security-in-2026/"},
+    {"title": "WP-CLI: wp core verify-checksums", "url": "https://developer.wordpress.org/cli/commands/core/verify-checksums/"},
+    {"title": "GoDaddy: Threat Actors Push ClickFix Fake Browser Updates Using Stolen Credentials (10.2024)", "url": "https://www.godaddy.com/resources/news/threat-actors-push-clickfix-fake-browser-updates-using-stolen-credentials"},
+    {"title": "Rapid7: When Trusted Websites Turn Malicious: WordPress Compromises Advance Global Stealer Operation (03.2026)", "url": "https://www.rapid7.com/blog/post/tr-malicious-websites-wordpress-compromise-advances-global-stealer-operation/"},
+    {"title": "Search Console – pomoc: Dlaczego moja witryna jest oznaczona w wyszukiwarce Google jako niebezpieczna?", "url": "https://support.google.com/webmasters/answer/6347750?hl=pl"},
+    {"title": "UODO: Naruszenia ochrony danych osobowych należy zgłaszać Prezesowi UODO bez zbędnej zwłoki", "url": "https://uodo.gov.pl/pl/138/2965"},
+    {"title": "Apache HTTP Server: RewriteRule Flags", "url": "https://httpd.apache.org/docs/2.4/rewrite/flags.html"}
+  ],
+  "linkedin": "Pierwsza reakcja na zainfekowany WordPress to zwykle kasowanie podejrzanych plików. To błąd, który utrudnia całą resztę.\n\nCo robić w pierwszej godzinie po wykryciu włamania:\n\n- Zapisz objawy i godzinę, zrób zrzuty ekranu.\n- Zrób kopię plików i bazy w obecnym, zainfekowanym stanie. Bez niej nie ustalisz, jak przestępca wszedł.\n- Odetnij ruch na poziomie serwera, żeby strona przestała szkodzić odwiedzającym.\n- Zmień hasła do hostingu, SFTP, bazy i WordPressa, ale z czystego komputera.\n- Pobierz logi serwera, zanim zostaną nadpisane.\n- Jeśli wyciekły dane osobowe, pamiętaj o 72 godzinach na zgłoszenie do UODO.\n\nOd czego zależy, czy potrzebny jest specjalista, i jakie objawy wskazują na infekcję, opisałem tutaj:\n\n{url}\n\n#WordPress #cyberbezpieczeństwo #reagowanienaincydenty"
+}
+META-->
+<p>Zainfekowany WordPress najczęściej zdradza się przekierowaniami na obce strony, nieznanymi kontami administratorów, spamem w wynikach Google i ostrzeżeniami od hostingu lub przeglądarki. W pierwszej godzinie nie kasuj plików na ślepo: udokumentuj objawy, zrób kopię do analizy, odetnij ruch, zmień hasła z czystego komputera i zabezpiecz logi.</p>
+
+<h2>Po czym poznać, że WordPress jest zainfekowany?</h2>
+<p>Pojedynczy objaw nie przesądza sprawy, ale dwa lub trzy naraz to już mocny sygnał. Pamiętaj, że złośliwy kod często ukrywa się przed zalogowanymi użytkownikami. Rapid7 opisał w 2026 r. wstrzyknięcia, które sprawdzały ciasteczka sesji WordPressa i nie pokazywały się administratorom, dlatego wiele infekcji zgłaszają najpierw klienci.</p>
+<table>
+<thead><tr><th>Objaw</th><th>Co zwykle oznacza</th><th>Jak sprawdzić</th></tr></thead>
+<tbody>
+<tr><td>Przekierowania na kasyna, apteki, fałszywe loterie</td><td>Wstrzyknięty JavaScript albo reguły w <code>.htaccess</code> zależne od źródła ruchu lub urządzenia</td><td>Wejdź na stronę z wyników Google na telefonie, w oknie prywatnym, bez logowania</td></tr>
+<tr><td>Fałszywa CAPTCHA lub „aktualizacja przeglądarki”</td><td>Kampanie typu ClickFix lub SocGholish rozsyłające malware</td><td>Zgłoszenia klientów, kod strony pobrany jako anonimowy użytkownik</td></tr>
+<tr><td>Nieznani administratorzy</td><td>Przejęte konto lub wykorzystana podatność</td><td><code>wp user list --role=administrator</code> albo Użytkownicy w panelu</td></tr>
+<tr><td>Obce pliki PHP, szczególnie w <code>wp-content/uploads</code></td><td>Backdoor lub web shell</td><td><code>find wp-content/uploads -name "*.php"</code></td></tr>
+<tr><td>Podstrony ze spamem w Google, często po japońsku</td><td>Wstrzyknięte treści SEO</td><td>Zapytanie <code>site:twojadomena.pl</code> i raport stron w Search Console</td></tr>
+<tr><td>Ostrzeżenie w Chrome lub w wynikach Google</td><td>Google Safe Browsing wykrył malware, phishing lub włamanie</td><td>Raport „Problemy dotyczące bezpieczeństwa” w Search Console</td></tr>
+<tr><td>Mail od hostingu, blokada konta</td><td>Skaner hostingu wykrył malware lub nadużycia</td><td>Treść zgłoszenia, lista wskazanych plików</td></tr>
+<tr><td>Serwer wysyła spam, maile nie dochodzą</td><td>Skrypt mailingowy na serwerze, adres IP na czarnej liście</td><td>Kolejka poczty w panelu hostingu, sprawdzenie IP na listach blokad</td></tr>
+<tr><td>Nagłe spowolnienie, wysokie obciążenie CPU</td><td>Złośliwe skrypty, masowe żądania do wstrzykniętych podstron</td><td>Statystyki zasobów w panelu, logi dostępu</td></tr>
+<tr><td>Zmienione pliki rdzenia</td><td>Modyfikacja WordPressa przez atakującego</td><td><code>wp core verify-checksums</code></td></tr>
+</tbody>
+</table>
+<p>Dokumentacja WordPress.org dopisuje do tej listy jeszcze dwa sygnały: antywirusy odwiedzających blokują stronę albo ktoś informuje, że Twój serwer atakuje inne witryny. Każdy z objawów ma osobny tok postępowania. Fałszywe weryfikacje opisuję w tekście o <a href="/blog/clickfix-falszywa-captcha/">ClickFix</a>, fałszywe aktualizacje w tekście o <a href="/blog/socgholish-falszywa-aktualizacja-przegladarki/">SocGholish</a>, a spam w wynikach wyszukiwania we wpisie o <a href="/blog/japonski-spam-seo-przekierowania/">japońskim spamie SEO i przekierowaniach</a>.</p>
+
+<h2>Dlaczego WordPress w ogóle zostaje zainfekowany?</h2>
+<p>Rdzeń WordPressa jest dziś rzadko problemem. Według raportu Patchstack w 2025 r. zgłoszono w ekosystemie 11 334 nowe podatności, o 42% więcej niż rok wcześniej. 91% dotyczyło wtyczek, 9% motywów, a w samym rdzeniu było ich sześć, wszystkie o niskim priorytecie.</p>
+<p>Czas na reakcję jest krótki. Patchstack podaje, że dla najczęściej atakowanych podatności ważona mediana czasu do pierwszego exploita wynosi 5 godzin, a mniej więcej połowa podatności o wysokim wpływie jest wykorzystywana w ciągu doby. W testach Patchstack typowe zabezpieczenia hostingu zablokowały tylko 26% ataków.</p>
+<p>Drugą drogą są hasła. GoDaddy opisał w 2024 r. ponad 6000 stron, na które przestępcy weszli z prawidłowymi danymi administratora i wgrali fałszywe wtyczki. Hasła pochodzą z wycieków, ataków słownikowych albo z infostealerów na komputerach osób zarządzających stroną.</p>
+
+<h2>Co zrobić w pierwszej godzinie po wykryciu infekcji?</h2>
+<p>Pierwsza godzina nie służy do sprzątania. Masz opanować sytuację: zatrzymać szkody dla odwiedzających, odciąć atakującego i zachować ślady, bez których nie ustalisz, jak wszedł. Podział na minuty jest orientacyjny, liczy się kolejność.</p>
+
+<h3>Minuty 0–10: zapisz, co widzisz</h3>
+<ul>
+<li>Zanotuj objawy, godzinę ich zauważenia i strefę czasową. Tak zaczyna też procedurę dokumentacja WordPress.org.</li>
+<li>Zrób zrzuty ekranu przekierowań, ostrzeżeń, nieznanych kont i maili od hostingu.</li>
+<li>Zapisz, co zmieniało się ostatnio: nowe wtyczki, aktualizacje, nowe osoby z dostępem.</li>
+<li>Nie usuwaj niczego i nie przywracaj kopii zapasowej. Oba kroki niszczą ślady.</li>
+</ul>
+
+<h3>Minuty 10–20: zrób kopię do analizy</h3>
+<p>Najpierw sprawdź, czy hosting pozwala wykonać migawkę konta. Jeśli nie, zrób kopię ręcznie i zapisz ją poza katalogiem publicznym:</p>
+<pre><code class="language-bash"># Pliki strony (z datami modyfikacji) poza katalogiem publicznym
+tar -czf ~/incydent-$(date +%F-%H%M)-pliki.tar.gz -C /sciezka/do public_html
+
+# Zrzut bazy danych bez uruchamiania kodu wtyczek i motywu
+wp db export ~/incydent-$(date +%F-%H%M)-baza.sql --path=/sciezka/do/public_html --skip-plugins --skip-themes
+
+# Sumy kontrolne, żeby później wykazać, że kopia nie była zmieniana
+sha256sum ~/incydent-*</code></pre>
+<aside class="callout"><p>Na zainfekowanej stronie uruchamiaj WP-CLI z flagami <code>--skip-plugins --skip-themes</code>. Bez nich każde polecenie ładuje wtyczki i motyw, czyli także wstrzyknięty kod.</p></aside>
+
+<h3>Minuty 20–35: odetnij ruch i atakującego</h3>
+<p>Przerwę techniczną ustaw na poziomie serwera, a nie wtyczką w zainfekowanym WordPressie. Na Apache wystarczy reguła na początku pliku <code>.htaccess</code>, która zwraca kod 503 wszystkim poza Twoim adresem IP:</p>
+<pre><code class="language-apache">RewriteEngine On
+RewriteCond %{REMOTE_ADDR} !^203\.0\.113\.10$
+RewriteRule ^ - [R=503,L]</code></pre>
+<p>Podmień przykładowy adres na swój. Kod 503 informuje roboty wyszukiwarek, że przerwa jest chwilowa. Potem, z komputera, co do którego masz pewność, że jest czysty:</p>
+<ul>
+<li>zmień hasło do panelu hostingu i włącz w nim MFA;</li>
+<li>zmień hasła SFTP/SSH i usuń klucze SSH, których nie znasz;</li>
+<li>zmień hasło użytkownika bazy danych i wpisz nowe do <code>wp-config.php</code>;</li>
+<li>usuń nieznanych administratorów, zmień hasła pozostałych i skasuj ich hasła aplikacji;</li>
+<li>wygeneruj nowe klucze i sole (<code>wp config shuffle-salts</code>), co wyloguje wszystkie sesje.</li>
+</ul>
+<p>Po wyczyszczeniu strony zmień hasła jeszcze raz. Dokumentacja WordPress.org zaleca to wprost, bo pierwsza zmiana następuje, gdy backdoor może jeszcze działać.</p>
+
+<h3>Minuty 35–50: zabezpiecz logi i ustal zakres</h3>
+<ul>
+<li>Pobierz logi dostępu i błędów serwera WWW, logi FTP i historię logowań do panelu. Hostingi rotują je automatycznie, więc później może ich już nie być.</li>
+<li>Wyszukaj w logach żądania POST do <code>wp-login.php</code> i <code>xmlrpc.php</code>, wgrywanie wtyczek oraz odwołania do plików PHP w <code>uploads</code>.</li>
+<li>Uruchom <code>wp core verify-checksums</code> i sprawdź listę plików zmienionych w ostatnich tygodniach (<code>find . -type f -mtime -30</code>).</li>
+<li>Sprawdź inne strony na tym samym koncie hostingowym. Dokumentacja WordPress.org przypomina, że zwłaszcza na hostingu współdzielonym włamanie może objąć więcej niż jedną witrynę.</li>
+<li>Zajrzyj do raportu „Problemy dotyczące bezpieczeństwa” w Search Console, żeby zobaczyć, co widzi Google.</li>
+<li>Ustal, czy strona przetwarza dane osobowe: formularze, konta klientów, zamówienia.</li>
+</ul>
+
+<h3>Minuty 50–60: zdecyduj, kto i jak sprząta</h3>
+<p>Masz już kopię, logi, odcięty ruch i nowe hasła. Teraz oceń, czy dasz radę wyczyścić stronę sam, i poinformuj osoby, których to dotyczy: wspólnika, dział obsługi klienta, hosting. Jeśli w grę wchodzą dane osobowe, uruchom procedurę RODO. UODO przypomina, że zgłoszenie naruszenia powinno nastąpić nie później niż w terminie 72 godzin od jego stwierdzenia.</p>
+
+<h2>Czego nie robić po wykryciu włamania?</h2>
+<ul>
+<li><strong>Nie kasuj całej strony w panice.</strong> Stracisz dowody i często treści, których nie ma w żadnej kopii.</li>
+<li><strong>Nie przywracaj od razu starej kopii.</strong> Wróci ta sama podatność, a kopia mogła powstać już po włamaniu.</li>
+<li><strong>Nie instaluj pięciu wtyczek bezpieczeństwa naraz.</strong> Działają wewnątrz zainfekowanej instalacji i wprowadzają kolejne zmiany do analizy.</li>
+<li><strong>Nie zmieniaj haseł z komputera, który mógł być źródłem wycieku.</strong></li>
+<li><strong>Nie proś Google o ponowne sprawdzenie, zanim skończysz.</strong> Odrzucona prośba wydłuża cały proces.</li>
+</ul>
+
+<h2>Jak wyczyścić stronę po pierwszej godzinie?</h2>
+<p>Sprzątanie to osobny etap, który zależy od rodzaju infekcji. Ogólny schemat, zgodny z zaleceniami WordPress.org, wygląda tak:</p>
+<ol>
+<li>Zastąp katalogi <code>wp-admin</code> i <code>wp-includes</code> czystą kopią tej samej wersji WordPressa.</li>
+<li>Wgraj ponownie wtyczki i motyw z oficjalnych źródeł, usuń wszystko, czego nie używasz.</li>
+<li>Przejrzyj pliki, które najczęściej są modyfikowane: <code>.htaccess</code> (także w podkatalogach), <code>index.php</code>, <code>header.php</code>, <code>footer.php</code>, <code>functions.php</code>, <code>wp-config.php</code>.</li>
+<li>Znajdź backdoory. To one sprawiają, że infekcja wraca po „wyczyszczeniu”. Typowe wzorce opisuję w tekście o <a href="/blog/backdoor-web-shell-php/">backdoorach i web shellach PHP</a>.</li>
+<li>Wyczyść bazę danych ze wstrzykniętych skryptów, spamowych wpisów i obcych opcji.</li>
+<li>Zaktualizuj wszystko, zmień hasła drugi raz, włącz MFA i ogranicz dostęp do panelu.</li>
+<li>Zdejmij przerwę techniczną, sprawdź stronę z zewnątrz i obserwuj logi przez kolejne tygodnie.</li>
+<li>Jeśli Google oznaczył stronę, poproś o ponowne sprawdzenie. Proces opisuję we wpisie o <a href="/blog/ostrzezenie-google-strona-niebezpieczna/">ostrzeżeniu Google „strona niebezpieczna”</a>.</li>
+</ol>
+
+<h2>Kiedy wezwać specjalistę od bezpieczeństwa?</h2>
+<p>Część infekcji właściciel z doświadczeniem technicznym posprząta sam. Pomoc z zewnątrz ma sens, gdy:</p>
+<ul>
+<li>strona to sklep lub przetwarza dane osobowe i musisz wiedzieć, czy dane wyciekły;</li>
+<li>infekcja wróciła po samodzielnym czyszczeniu;</li>
+<li>nie masz dostępu SSH, kopii zapasowych ani logów, a hosting zablokował konto;</li>
+<li>na jednym serwerze działa kilka stron i nie wiesz, która była pierwsza;</li>
+<li>widzisz ślady na poziomie serwera: nieznane procesy, zadania cron, konta systemowe;</li>
+<li>potrzebujesz udokumentowanej analizy dla ubezpieczyciela, klienta lub UODO.</li>
+</ul>
+<p>W takich sytuacjach liczy się czas i kolejność działań. Jeśli potrzebujesz wsparcia przy incydencie, <a href="/#kontakt">napisz lub zadzwoń</a>, pomożemy opanować sytuację i ustalić, jak doszło do włamania.</p>

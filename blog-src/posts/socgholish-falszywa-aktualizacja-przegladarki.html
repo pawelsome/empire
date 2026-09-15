@@ -1,0 +1,109 @@
+<!--META
+{
+  "slug": "socgholish-falszywa-aktualizacja-przegladarki",
+  "title": "Fałszywa aktualizacja przeglądarki (SocGholish): jak działa i co robić",
+  "metaTitle": "Fałszywa aktualizacja przeglądarki: SocGholish",
+  "description": "Fałszywa aktualizacja przeglądarki na zhakowanej stronie to często SocGholish. Jak działa, jak sprawdzić i wyczyścić stronę i co zrobić po pobraniu pliku.",
+  "category": "Bezpieczeństwo",
+  "tags": ["SocGholish", "FakeUpdates", "fałszywa aktualizacja przeglądarki", "WordPress", "malware"],
+  "primaryKeyword": "fałszywa aktualizacja przeglądarki",
+  "tldr": [
+    "SocGholish (FakeUpdates) wyświetla na przejętych stronach komunikat o rzekomo nieaktualnej przeglądarce i podsuwa plik JavaScript lub archiwum ZIP ze skryptem.",
+    "Po uruchomieniu skrypt zbiera informacje o komputerze i sieci, a w części incydentów doinstalowuje trojany zdalnego dostępu, stealery lub narzędzia używane przez grupy ransomware.",
+    "Wstrzyknięty kod pokazuje przynętę tylko wybranym odwiedzającym, dlatego właściciel strony zwykle jej nie widzi; często trafia na serwer przez przejęte konto administratora.",
+    "W czerwcu 2026 r. w ramach Operacji Endgame oczyszczono 14 971 zainfekowanych stron, ale Proofpoint ostrzega, że miejsce SocGholish mogą zająć inne grupy.",
+    "Przeglądarki aktualizują się same lub z poziomu własnych ustawień; plik .js pobrany jako „aktualizacja” to zawsze oszustwo."
+  ],
+  "faq": [
+    {"q": "Jak odróżnić prawdziwą aktualizację Chrome od fałszywej?", "a": "Chrome, Edge i Firefox aktualizują się automatycznie, a stan sprawdzisz w ustawieniach przeglądarki, np. pod adresem chrome://settings/help. Prawdziwa aktualizacja nigdy nie jest plikiem .js ani archiwum ZIP pobieranym z odwiedzanej strony. Jeśli komunikat pojawia się w treści witryny, a nie w oknie przeglądarki, to oszustwo."},
+    {"q": "Czy samo zobaczenie komunikatu o aktualizacji jest groźne?", "a": "W scenariuszu SocGholish do infekcji potrzebne jest pobranie i uruchomienie pliku. Zamknij kartę i nie klikaj w przyciski na nakładce. Jeśli plik się pobrał, usuń go bez otwierania."},
+    {"q": "Dlaczego SocGholish pokazuje się tylko niektórym odwiedzającym?", "a": "Wstrzyknięty skrypt filtruje ruch: sprawdza m.in. system operacyjny, skąd przyszedł użytkownik i ciasteczka wskazujące na wcześniejszą wizytę, a system kierowania ruchem może uwzględniać lokalizację. Dzięki temu administrator i badacze rzadziej widzą przynętę, a infekcja dłużej pozostaje niezauważona."},
+    {"q": "Czy SocGholish zniknął po Operacji Endgame?", "a": "Akcja z czerwca 2026 r. mocno uderzyła w infrastrukturę grupy i oczyściła prawie 15 tysięcy stron. Proofpoint zaznacza jednak, że po takich działaniach popularność mogą zyskać inne grupy stosujące podobne wstrzyknięcia, więc strony nadal trzeba monitorować."},
+    {"q": "Czy fałszywa aktualizacja przeglądarki dotyczy tylko WordPressa?", "a": "Najwięcej opisanych przypadków dotyczy WordPressa, bo to najpopularniejszy CMS i łatwo przejąć go przez podatne wtyczki lub skradzione hasła. Wstrzyknąć skrypt można jednak do każdej strony, do której przestępca ma dostęp, niezależnie od technologii."}
+  ],
+  "sources": [
+    {"title": "Proofpoint: SocGholish: A Very Real Threat from a Very Fake Update (11.2022)", "url": "https://www.proofpoint.com/us/blog/threat-insight/part-1-socgholish-very-real-threat-very-fake-update"},
+    {"title": "Proofpoint: Sayonara, SocGholish: Operation Endgame Disrupts Major Cybercrime Operation (06.2026)", "url": "https://www.proofpoint.com/us/blog/threat-insight/sayonara-socgholish-operation-endgame-disrupts-major-cybercrime-operation"},
+    {"title": "Red Canary Threat Detection Report 2026: SocGholish", "url": "https://redcanary.com/threat-detection-report/threats/socgholish/"},
+    {"title": "Sucuri: SocGholish Malware: What It Is & How to Prevent It (06.2024)", "url": "https://blog.sucuri.net/2024/06/socgholish-malware.html"},
+    {"title": "GoDaddy: Threat Actors Push ClickFix Fake Browser Updates Using Stolen Credentials (10.2024)", "url": "https://www.godaddy.com/resources/news/threat-actors-push-clickfix-fake-browser-updates-using-stolen-credentials"},
+    {"title": "Trend Micro: SocGholish's Intrusion Techniques Facilitate Distribution of RansomHub Ransomware (03.2025)", "url": "https://www.trendmicro.com/en_us/research/25/c/socgholishs-intrusion-techniques-facilitate-distribution-of-rans.html"},
+    {"title": "Eurojust: Operation Endgame continues: international coalition takes malware offline (06.2026)", "url": "https://www.eurojust.europa.eu/news/operation-endgame-continues-international-coalition-takes-malware-offline"},
+    {"title": "Shadowserver: SocGholish Compromised WordPress Sites Special Report (06.2026)", "url": "https://www.shadowserver.org/what-we-do/network-reporting/critical-socgholish-compromised-wordpress-sites-special-report/"}
+  ],
+  "linkedin": "Komunikat „Twoja przeglądarka jest nieaktualna” na stronie lokalnej firmy może być początkiem ataku ransomware.\n\nTak od lat działa SocGholish, znany też jako FakeUpdates:\n\n- Przestępcy wstrzykują skrypt na legalne strony, najczęściej WordPress, często logując się skradzionym hasłem administratora.\n- Przynęta pokazuje się tylko wybranym odwiedzającym, więc właściciel strony zwykle jej nie widzi.\n- Pobrany plik to skrypt JavaScript, który zbiera informacje o komputerze i sieci firmowej.\n- Red Canary odnotował w 2025 r. drugi etap ataku w mniej więcej co czwartym incydencie, m.in. trojany zdalnego dostępu i stealery.\n- W czerwcu 2026 r. Operacja Endgame oczyściła 14 971 zainfekowanych stron.\n\nW artykule: jak sprawdzić swoją stronę, jak ją wyczyścić i co zrobić, jeśli ktoś uruchomił plik.\n\n{url}\n\n#cyberbezpieczeństwo #WordPress #SocGholish #ransomware"
+}
+META-->
+<p>Fałszywa aktualizacja przeglądarki to komunikat na przejętej stronie, który twierdzi, że Chrome, Edge lub Firefox są nieaktualne, i podsuwa plik do pobrania. Najbardziej znana kampania tego typu to SocGholish (FakeUpdates). Pobrany plik jest skryptem JavaScript, który otwiera przestępcom drogę do komputera. Przeglądarki nie proszą o aktualizację przez okienka w treści odwiedzanych stron.</p>
+
+<h2>Czym jest SocGholish (FakeUpdates)?</h2>
+<p>SocGholish to framework złośliwego oprogramowania napisany w JavaScripcie, aktywny co najmniej od 2017 r. Proofpoint śledzi go pod nazwą TA569, inni badacze używają nazw Mustard Tempest, GOLD PRELUDE czy UNC1543. Publiczne raporty wiążą tę działalność z rosyjską grupą Evil Corp.</p>
+<p>To nie jest nisza. W raporcie Red Canary za 2026 r. SocGholish zajął ósme miejsce wśród najczęściej wykrywanych zagrożeń i dotyczył 2,3% monitorowanych klientów. Sucuri podawał, że sam wariant wstrzyknięć oznaczany jako NDSW wykrył w 2023 r. na ponad 110 000 stron.</p>
+<p>Podobną przynętę stosują też inne grupy. GoDaddy opisywał w 2024 r. kampanię ClearFake, która na przejętych WordPressach również pokazywała fałszywe aktualizacje przeglądarki. Pokrewną przynętą są fałszywe weryfikacje „nie jestem robotem”, które opisuję we wpisie o <a href="/blog/clickfix-falszywa-captcha/">ClickFix i fałszywej CAPTCHY</a>.</p>
+
+<h2>Jak działa atak z fałszywą aktualizacją przeglądarki?</h2>
+<ol>
+<li><strong>Wstrzyknięcie.</strong> Na przejętej stronie pojawia się zaciemniony skrypt: w plikach JavaScript motywu, w <code>functions.php</code>, w fałszywej wtyczce albo w bazie danych.</li>
+<li><strong>Filtrowanie odwiedzających.</strong> Według Proofpoint skrypt sprawdza m.in. system operacyjny, pochodzenie ruchu i ciasteczka świadczące o wcześniejszej wizycie. Trend Micro opisał dodatkowe filtrowanie po lokalizacji w systemach kierowania ruchem (TDS).</li>
+<li><strong>Przynęta.</strong> Wybrany użytkownik widzi nakładkę stylizowaną na komunikat przeglądarki z przyciskiem aktualizacji.</li>
+<li><strong>Pobranie pliku.</strong> Red Canary opisał, że w 2025 r. mniej więcej jedna trzecia infekcji zaczynała się od archiwum ZIP, a dwie trzecie od samego pliku <code>.js</code>. Nazwy zmieniały się w ciągu roku: od <code>Update.js</code> z cyryliczną literą „р” zamiast łacińskiego „p” po <code>New Version (CLICK).js</code>.</li>
+<li><strong>Uruchomienie.</strong> Dwuklik otwiera plik w Windows Script Host (<code>wscript.exe</code>). Skrypt zbiera nazwę komputera, użytkownika, informacje o domenie i zainstalowanym antywirusie, po czym wysyła je na serwer sterujący.</li>
+<li><strong>Drugi etap.</strong> Red Canary widział kolejny ładunek w mniej więcej co czwartym incydencie w 2025 r., najczęściej MintsLoader, który instalował AsyncRAT albo StealC. Trend Micro opisał przypadki, w których SocGholish dostarczał backdoory w Pythonie używane przez afiliantów ransomware RansomHub.</li>
+</ol>
+<p>Ostatni punkt tłumaczy, dlaczego SocGholish jest traktowany poważnie. Proofpoint zwracał uwagę, że komputery podpięte do domeny firmowej są dla operatorów szczególnie cenne, bo mogą prowadzić do ataku ransomware na całą organizację.</p>
+
+<h2>Dlaczego legalna strona serwuje fałszywe aktualizacje?</h2>
+<p>Bo ktoś ją przejął, a zaufana witryna z ruchem jest dla przestępcy lepsza niż podejrzana domena. Właściciel zwykle nie ma pojęcia o problemie, bo filtrowanie ukrywa przynętę przed zalogowanymi użytkownikami i powracającymi gośćmi.</p>
+<p>Droga do przejęcia często jest banalna. GoDaddy opisał w 2024 r. ponad 6000 stron, na które przestępcy weszli z prawidłowymi danymi administratora i zainstalowali fałszywe wtyczki o nazwach takich jak „Advanced User Manager”, „Quick Cache Cleaner” czy „SEO Optimizer Pro”. Nie wykorzystano żadnej podatności. Hasła mogły pochodzić z ataków słownikowych, phishingu albo infostealerów na komputerach administratorów, o czym piszę w tekście o <a href="/blog/lumma-stealer-infostealery/">infostealerach Lumma, StealC i Vidar</a>.</p>
+<p>Drugą drogą są podatne wtyczki i motywy. Sucuri opisuje też wstrzyknięcia do <code>functions.php</code> motywu i ukrywanie kodu za pośrednimi domenami, żeby nie rzucał się w oczy przy przeglądaniu źródła strony.</p>
+
+<h2>Co zmieniła Operacja Endgame w czerwcu 2026 r.?</h2>
+<p>18 czerwca 2026 r. służby z Holandii, Kanady, USA i Niemiec przy wsparciu Europolu przeprowadziły akcję przeciw infrastrukturze SocGholish. Według Proofpoint oczyszczono 14 971 zainfekowanych stron. Eurojust podsumował cały tydzień działań (15–19 czerwca), obejmujący też StealC i Amadey: 326 serwerów i 142 domeny unieszkodliwione oraz 27 mln zestawów skradzionych danych odzyskanych.</p>
+<p>Fundacja Shadowserver udostępniła przy tej okazji raport specjalny z listą przejętych stron WordPress wykorzystywanych przez SocGholish w okresie od maja 2023 r. do maja 2026 r. Raport trafia do właścicieli sieci subskrybujących bezpłatne raporty Shadowserver, więc informację o infekcji mógł dostać Twój hosting.</p>
+<aside class="callout"><p>Jeśli hosting, CERT lub ktokolwiek inny poinformował Cię, że Twoja strona była częścią infrastruktury SocGholish, nie zakładaj, że akcja służb załatwiła sprawę. Zmień wszystkie dane dostępowe i sprawdź stronę. Proofpoint ostrzega, że po uderzeniu w TA569 popularność mogą zyskać inne grupy stosujące wstrzyknięcia na stronach.</p></aside>
+
+<h2>Jak sprawdzić, czy Twoja strona jest zainfekowana SocGholish?</h2>
+<p>Test z przeglądarki ma ograniczoną wartość, bo skrypt pokazuje przynętę wybiórczo. Jeśli chcesz spróbować, użyj czystej maszyny wirtualnej z Windows, okna prywatnego i wejdź na stronę z wyników Google, a nie z paska adresu. Brak komunikatu nie oznacza, że strona jest czysta.</p>
+<p>Pewniejsze jest przejrzenie plików, bazy i logów. Na serwerze z WP-CLI uruchom poniższe polecenia w katalogu WordPressa. Nic nie zmieniają, a flagi <code>--skip-plugins --skip-themes</code> zapobiegają wykonaniu kodu z zainfekowanych wtyczek:</p>
+<pre><code class="language-bash"># Ślady wariantu NDSW/NDSX opisywanego przez Sucuri
+grep -rlE "ndsw|ndsx" --include="*.js" --include="*.php" .
+
+# Lista wtyczek: szukaj pozycji, których nikt nie instalował
+wp plugin list --fields=name,status,version --skip-plugins --skip-themes
+
+# Zgodność wtyczek i rdzenia z repozytorium WordPress.org
+wp plugin verify-checksums --all --skip-plugins --skip-themes
+wp core verify-checksums
+
+# Znaczniki script w bazie danych
+wp db search '&lt;script' --all-tables-with-prefix --stats --skip-plugins --skip-themes
+
+# Wgrywanie wtyczek z pliku ZIP i logowania w logach serwera (ścieżka zależy od hostingu)
+grep -E "update\.php\?action=upload-plugin|POST /wp-login\.php" /var/log/apache2/access.log | tail -n 50</code></pre>
+<p>Zwróć uwagę na wgrane wtyczki w dniach, w których nikt z zespołu nie pracował przy stronie, i na udane logowania z adresów IP spoza firmy. Sucuri radzi też sprawdzić rekordy DNS domeny pod kątem subdomen, których nie tworzyłeś.</p>
+
+<h2>Jak usunąć SocGholish ze strony?</h2>
+<aside class="callout"><p>Przed jakimkolwiek usuwaniem zrób kopię plików i bazy danych w obecnym stanie. Kasowanie wtyczek i nadpisywanie plików jest nieodwracalne, a zainfekowana kopia będzie potrzebna, żeby ustalić, jak przestępca wszedł.</p></aside>
+<ol>
+<li>Włącz przerwę techniczną na poziomie serwera, żeby strona przestała infekować odwiedzających.</li>
+<li>Usuń fałszywe wtyczki i nieznane konta administratorów. Zapisz ich nazwy i daty utworzenia do dokumentacji incydentu.</li>
+<li>Wyczyść wszystkie zainfekowane pliki JavaScript i PHP. Wariant NDSW potrafi dopisać się do wielu plików naraz, więc jedna poprawka zwykle nie wystarcza. Rdzeń i wtyczki najlepiej wgrać od nowa z oficjalnych źródeł.</li>
+<li>Usuń skrypty z bazy danych, ręcznie, wpis po wpisie.</li>
+<li>Zmień hasła do WordPressa, hostingu, SFTP, bazy danych i rejestratora domeny, a potem wygeneruj nowe klucze w <code>wp-config.php</code> (<code>wp config shuffle-salts</code>).</li>
+<li>Sprawdź komputery osób z dostępem administracyjnym. Jeśli hasło wyciekło przez infostealera, nowe wycieknie tą samą drogą.</li>
+<li>Zaktualizuj wszystko, włącz MFA dla administratorów i ogranicz dostęp do panelu do znanych adresów IP. To zalecenia, które Proofpoint kieruje do właścicieli stron WordPress, obok silnych, unikalnych haseł.</li>
+<li>Wyczyść cache wtyczek, serwera i CDN, a jeśli Google oznaczył stronę, poproś o ponowne sprawdzenie. Jak to zrobić, opisuję w tekście o <a href="/blog/ostrzezenie-google-strona-niebezpieczna/">ostrzeżeniu Google „strona niebezpieczna”</a>.</li>
+</ol>
+<p>Szczegółową procedurę pierwszej godziny po wykryciu włamania, z logami i kopiami do analizy, znajdziesz w poradniku <a href="/blog/zainfekowany-wordpress-objawy/">zainfekowany WordPress: objawy i co zrobić</a>.</p>
+
+<h2>Zobaczyłem komunikat o aktualizacji przeglądarki. Co robić?</h2>
+<p>Nie klikaj w przycisk i zamknij kartę. Jeśli masz wątpliwości, czy przeglądarka jest aktualna, sprawdź to w jej ustawieniach: w Chrome pod adresem <code>chrome://settings/help</code>, w Edge pod <code>edge://settings/help</code>, w Firefoksie w menu Pomoc. Przeglądarka pobierze aktualizację sama, bez żadnych plików z odwiedzanej strony.</p>
+<p>Sygnały, że to oszustwo:</p>
+<ul>
+<li>komunikat jest częścią strony, a nie okna przeglądarki;</li>
+<li>pobierany plik ma rozszerzenie <code>.js</code> albo jest archiwum ZIP ze skryptem w środku;</li>
+<li>komunikat dotyczy innej przeglądarki niż ta, której używasz;</li>
+<li>strona nie ma nic wspólnego z producentem przeglądarki.</li>
+</ul>
+<p>Jeśli plik się pobrał, ale go nie otwierałeś, usuń go. Jeśli go uruchomiłeś, odłącz komputer od sieci i zgłoś sprawę do działu IT. Na komputerze firmowym w domenie to incydent o wysokim priorytecie, bo SocGholish celuje właśnie w takie maszyny. Dalej postępuj jak przy infekcji stealerem: z czystego urządzenia zmień hasła, wyloguj sesje i przygotuj się na reinstalację systemu.</p>
+<p>Administratorzy mogą ograniczyć ryzyko, blokując <code>wscript.exe</code> dla zwykłych użytkowników zasadami grupy, co zaleca Trend Micro, albo zmieniając domyślny program dla plików <code>.js</code> na Notatnik. Red Canary podpowiada dwa sygnały do monitoringu: <code>wscript.exe</code> uruchomiony przez przeglądarkę i nawiązujący połączenia sieciowe oraz <code>nltest.exe</code> z parametrem <code>/domain_trusts</code>. Takie reguły wykrywania wdrażamy w ramach <a href="/#bezpieczenstwo">usług bezpieczeństwa</a>.</p>

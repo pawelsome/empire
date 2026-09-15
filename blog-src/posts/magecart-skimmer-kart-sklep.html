@@ -1,0 +1,133 @@
+<!--META
+{
+  "slug": "magecart-skimmer-kart-sklep",
+  "title": "Skimmer kart w sklepie internetowym: jak wykryć atak Magecart",
+  "metaTitle": "Skimmer kart w sklepie internetowym: wykrywanie Magecart",
+  "description": "Skimmer kart w sklepie internetowym kradnie dane płatności niezauważenie. Zobacz, jak go wykryć, usunąć i jakie obowiązki masz wobec UODO i PCI DSS.",
+  "category": "Bezpieczeństwo",
+  "tags": ["Magecart", "skimmer", "WooCommerce", "Magento", "PrestaShop", "PCI DSS"],
+  "primaryKeyword": "skimmer kart sklep internetowy",
+  "tldr": [
+    "Skimmer kart to złośliwy JavaScript lub kod po stronie serwera, który kopiuje dane płatności wpisywane w sklepie i wysyła je atakującemu.",
+    "Przekierowanie do bramki płatniczej nie chroni w pełni: skimmer potrafi wyświetlić fałszywy formularz karty jeszcze na stronie sklepu.",
+    "Wykrywanie opiera się na inwentarzu skryptów na stronie zamówienia, CSP z raportowaniem, SRI i stałym monitoringu zmian, a nie na jednorazowym skanie.",
+    "Od 31 marca 2025 roku wymagania PCI DSS 6.4.3 i 11.6.1 dotyczące skryptów na stronach płatności są obowiązkowe, a sprzedawcy na SAQ A muszą potwierdzić odporność strony na ataki skryptami.",
+    "Wyciek danych kart to naruszenie ochrony danych osobowych: oceń ryzyko, zgłoś je do UODO w ciągu 72 godzin i powiadom operatora płatności."
+  ],
+  "faq": [
+    {"q": "Czy sklep z płatnością przez przekierowanie do bramki może paść ofiarą skimmera?", "a": "Tak. Skimmer nie musi przechwytywać formularza operatora. Wystarczy, że na stronie sklepu wyświetli własny, fałszywy formularz karty, zbierze dane i dopiero potem przepuści klienta do prawdziwej płatności. Sucuri i Sansec opisywały takie przypadki w sklepach na WooCommerce i innych platformach."},
+    {"q": "Jak klient może zauważyć, że sklep ma skimmer?", "a": "Zwykle nie zauważy. Czasem zdradza go formularz karty wyświetlany dwa razy, nietypowy wygląd strony płatności albo komunikat o błędzie po wpisaniu karty, po którym następuje przejście do bramki. Innym sygnałem są zgłoszenia od klientów i banków o nieautoryzowanych transakcjach."},
+    {"q": "Czy Content Security Policy wystarczy do ochrony przed Magecart?", "a": "Sama nie wystarczy. CSP ogranicza, skąd przeglądarka ładuje skrypty i dokąd wysyła dane, ale atakujący potrafią wykorzystać domeny, które masz na liście dozwolonych. Sansec w 2026 roku opisał skimmer dostarczany przez kontener Google Tag Manager, którego kod leżał w metadanych konta Stripe. Łącz CSP z inwentarzem skryptów i monitoringiem zmian."},
+    {"q": "Czy muszę zgłosić skimmer do UODO?", "a": "Jeśli dane klientów mogły zostać przechwycone, a naruszenie niesie ryzyko dla ich praw lub wolności, zgłoś je do UODO bez zbędnej zwłoki, w miarę możliwości w ciągu 72 godzin od stwierdzenia. Gdy ryzyko jest wysokie, poinformuj też klientów. Jeśli nie znasz jeszcze wszystkich szczegółów, wyślij zgłoszenie wstępne i uzupełnij je później."},
+    {"q": "Kto odpowiada za PCI DSS w małym sklepie na WooCommerce?", "a": "Sprzedawca przyjmujący płatności kartą podlega PCI DSS także wtedy, gdy korzysta z zewnętrznego operatora. Operator przejmuje większość wymagań, a sklep zwykle wypełnia uproszczony kwestionariusz, np. SAQ A. Od 2025 roku w SAQ A trzeba jednak potwierdzić, że strona sklepu nie jest podatna na ataki skryptami."}
+  ],
+  "sources": [
+    {"title": "PCI SSC: FAQ Clarifies New SAQ A Eligibility Criteria for E-Commerce Merchants", "url": "https://blog.pcisecuritystandards.org/faq-clarifies-new-saq-a-eligibility-criteria-for-e-commerce-merchants"},
+    {"title": "PCI SSC: Guidance for PCI DSS E-commerce Requirements Effective After 31 March 2025", "url": "https://blog.pcisecuritystandards.org/coffee-with-the-council-podcast-guidance-for-pci-dss-e-commerce-requirements-effective-after-31-march-2025"},
+    {"title": "PCI SSC: New Information Supplement: Payment Page Security and Preventing E-Skimming", "url": "https://blog.pcisecuritystandards.org/new-information-supplement-payment-page-security-and-preventing-e-skimming"},
+    {"title": "Sansec: What is Magecart?", "url": "https://sansec.io/what-is-magecart"},
+    {"title": "Sansec: Magecart skimmer turns Stripe into a malware command server (2026)", "url": "https://sansec.io/research/stripe-api-skimmer-infrastructure"},
+    {"title": "Sucuri: Stealthy Credit Card Skimmer Targets WordPress Checkout Pages via Database Injection (2025)", "url": "https://blog.sucuri.net/2025/01/stealthy-credit-card-skimmer-targets-wordpress-checkout-pages-via-database-injection.html"},
+    {"title": "UODO: Zgłaszanie naruszeń", "url": "https://uodo.gov.pl/pl/525/2584"},
+    {"title": "MDN: Subresource Integrity", "url": "https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity"}
+  ],
+  "linkedin": "Płatność przez przekierowanie do bramki nie chroni sklepu przed skimmerem kart.\n\nAtak Magecart potrafi wyświetlić fałszywy formularz karty jeszcze na stronie sklepu, a dopiero potem przepuścić klienta do operatora. Co warto wiedzieć:\n- skimmer często siedzi w bazie danych (wp_options, core_config_data, bloki CMS), więc podmiana plików go nie usuwa,\n- aktywuje się zwykle tylko na stronie zamówienia,\n- CSP pomaga, ale Sansec opisał skimmer ładowany przez Google Tag Manager z danymi w koncie Stripe,\n- od 31 marca 2025 wymagania PCI DSS 6.4.3 i 11.6.1 są obowiązkowe,\n- wyciek danych kart to sprawa dla UODO: 72 godziny od stwierdzenia naruszenia.\n\nJak wykryć i usunąć skimmer: {url}\n\n#ecommerce #cyberbezpieczeństwo #PCIDSS #WooCommerce #Magento"
+}
+META-->
+<p>Skimmer kart w sklepie internetowym to złośliwy kod, który kopiuje dane płatności wpisywane przez klientów i wysyła je atakującemu, zanim transakcja trafi do operatora. Wykryjesz go, sprawdzając skrypty ładowane na stronie zamówienia, bazę danych i pliki sklepu. Po wykryciu usuń go, zamknij lukę i oceń obowiązek zgłoszenia do UODO.</p>
+
+<h2>Jak działa atak Magecart na sklep internetowy</h2>
+<p>Magecart to zbiorcza nazwa grup i technik kradzieży danych kart ze sklepów online, nazywana też web skimmingiem lub formjackingiem. Według Sansec pierwszy masowy atak tego typu dotknął w 2015 roku ponad 3000 sklepów na Magento. Dziś ofiarami padają sklepy na wszystkich popularnych platformach, w tym WooCommerce i PrestaShop.</p>
+<p>Przebieg ataku zwykle wygląda podobnie:</p>
+<ol>
+<li>Atakujący zdobywa dostęp do sklepu: przez podatną wtyczkę lub moduł, hasło administratora wykradzione np. przez <a href="/blog/lumma-stealer-infostealery/">infostealera</a> albo przejęty skrypt firmy trzeciej.</li>
+<li>Wstawia kod, który uruchamia się dopiero na stronie zamówienia.</li>
+<li>Kod przechwytuje pola formularza (numer karty, data ważności, CVV, dane rozliczeniowe) albo wyświetla własny formularz.</li>
+<li>Dane trafiają na serwer atakującego, często zaszyfrowane i ukryte w ruchu przypominającym analitykę.</li>
+</ol>
+
+<h3>Skimmer w przeglądarce i na serwerze</h3>
+<p>Wersja w JavaScripcie działa w przeglądarce klienta. Może siedzieć w plikach motywu, w bazie danych (w polach, do których sklep pozwala wklejać HTML), w kontenerze Google Tag Manager albo w zewnętrznej bibliotece ładowanej z cudzego serwera. Wersja serwerowa przechwytuje dane w PHP, zanim trafią do bramki. Sansec podaje, że około 64% ataków działa po stronie serwera, więc skan samej strony w przeglądarce nie daje pełnego obrazu.</p>
+
+<h3>Fałszywy formularz płatności</h3>
+<p>Wiele sklepów zakłada, że skoro płatność odbywa się u operatora, to dane kart ich nie dotyczą. Skimmer omija to prosto: wyświetla własny formularz karty, łudząco podobny do formularza Stripe czy innej bramki. Klient wpisuje dane, a potem, zależnie od wariantu, dostaje komunikat o błędzie albo trafia do prawdziwej płatności.</p>
+<p>Tak działał skimmer opisany przez Sucuri w styczniu 2025 roku. Był zapisany w bazie WordPressa, w tabeli <code>wp_options</code> (opcja <code>widget_block</code>), uruchamiał się tylko na adresach zawierających „checkout”, a zaszyfrowane dane wysyłał funkcją <code>navigator.sendBeacon</code>. Podmiana plików sklepu na czyste w ogóle by go nie usunęła.</p>
+
+<h2>Gdzie szukać skimmera w WooCommerce, Magento i PrestaShop</h2>
+<table>
+<thead>
+<tr><th>Platforma</th><th>Typowe miejsca</th></tr>
+</thead>
+<tbody>
+<tr><td>WooCommerce (WordPress)</td><td>Tabela <code>wp_options</code> (widżety HTML, opcje wtyczek wstawiających kod w nagłówku i stopce), <code>functions.php</code> motywu, <code>mu-plugins</code>, zmodyfikowane pliki wtyczek płatności</td></tr>
+<tr><td>Magento / Adobe Commerce</td><td>Tabele <code>core_config_data</code> (dodatkowe skrypty w konfiguracji wyglądu), <code>cms_block</code> i <code>cms_page</code>, szablony i pliki JS, moduły firm trzecich</td></tr>
+<tr><td>PrestaShop</td><td>Katalogi <code>modules/</code> i <code>override/</code>, pliki motywu w <code>themes/</code>, zmodyfikowane moduły płatności, pliki JS ładowane w procesie zamówienia</td></tr>
+<tr><td>Każda platforma</td><td>Kontener Google Tag Manager (nowe tagi niestandardowe), skrypty czatu, analityki, opinii i innych usług zewnętrznych</td></tr>
+</tbody>
+</table>
+<p>Poniższe zapytania tylko odczytują dane. Sprawdź wcześniej prefiks tabel w swojej instalacji.</p>
+<pre><code class="language-sql">-- Magento: skrypty w konfiguracji i treściach CMS
+SELECT config_id, path, scope_id FROM core_config_data WHERE value LIKE '%&lt;script%';
+SELECT block_id, identifier FROM cms_block WHERE content LIKE '%&lt;script%';
+SELECT page_id, identifier FROM cms_page WHERE content LIKE '%&lt;script%';
+
+-- WooCommerce: opcje zawierające skrypty
+SELECT option_id, option_name FROM wp_options WHERE option_value LIKE '%&lt;script%';</code></pre>
+<p>Każde trafienie porównaj z tym, co świadomie dodałeś. Legalne skrypty analityczne też tu bywają, więc zapytania dają listę do przejrzenia, nie gotową diagnozę. Pamiętaj, że skimmer to ładunek. Jak w każdym włamaniu, szukaj też ukrytego dostępu, o czym piszemy w artykule o <a href="/blog/backdoor-web-shell-php/">backdoorach i web shellach PHP</a>.</p>
+
+<h2>Jak wykryć skimmer na stronie zamówienia</h2>
+
+<h3>Zrób inwentarz skryptów</h3>
+<p>Otwórz sklep w oknie prywatnym, jako niezalogowany klient, i przejdź cały proces aż do formularza płatności. W narzędziach deweloperskich (zakładka Sieć, filtr JS) spisz wszystkie skrypty: adres, dostawcę i cel. Skrypt bez uzasadnienia to kandydat do usunięcia. Taki inwentarz z uzasadnieniem wymaga zresztą PCI DSS w wymaganiu 6.4.3.</p>
+<p>Szybką listę skryptów, także tych wstrzykniętych do kodu strony, wyświetlisz w konsoli przeglądarki:</p>
+<pre><code class="language-javascript">[...document.scripts].map(s =&gt; s.src || '(inline) ' + s.textContent.slice(0, 100))</code></pre>
+<p>Obserwuj też żądania wysyłane po wpisaniu danych do formularza. Dane karty nie powinny trafiać nigdzie poza domenę operatora płatności.</p>
+
+<h3>Content Security Policy z raportowaniem</h3>
+<p>CSP to nagłówek HTTP, który mówi przeglądarce, z jakich domen wolno ładować skrypty (<code>script-src</code>) i dokąd strona może wysyłać dane (<code>connect-src</code>, <code>form-action</code>). Zacznij od nagłówka <code>Content-Security-Policy-Report-Only</code>: niczego nie blokuje, ale zgłasza naruszenia na wskazany adres. Gdy raporty przestaną pokazywać legalne skrypty, przejdź na tryb blokujący, przynajmniej na stronie zamówienia.</p>
+<pre><code class="language-http">Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://js.operator-platnosci.example; connect-src 'self' https://api.operator-platnosci.example; form-action 'self' https://operator-platnosci.example; frame-src https://operator-platnosci.example; report-uri /csp-report</code></pre>
+<p>CSP ma swoje granice. Sansec w czerwcu 2026 roku opisał skimmer ładowany z prawdziwego kontenera Google Tag Manager, który pobierał kod z metadanych klienta w koncie Stripe. Obie domeny zwykle są na liście dozwolonych, więc polityka go nie zatrzymała. Dlatego pilnuj też, kto ma dostęp do Twojego kontenera GTM i jakie tagi w nim są.</p>
+
+<h3>Subresource Integrity dla stałych bibliotek</h3>
+<p>SRI to atrybut <code>integrity</code> z hashem pliku. Jeśli zawartość skryptu z zewnętrznego serwera się zmieni, przeglądarka odmówi jego uruchomienia. Działa dobrze dla bibliotek w konkretnej wersji, słabo dla skryptów, które dostawca aktualizuje bez uprzedzenia, jak menedżery tagów czy skrypty niektórych operatorów.</p>
+<pre><code class="language-html">&lt;script src="https://cdn.example.com/biblioteka-3.2.1.min.js"
+        integrity="sha384-HASH_PLIKU"
+        crossorigin="anonymous"&gt;&lt;/script&gt;</code></pre>
+
+<h3>Stały monitoring zmian</h3>
+<p>Jednorazowy przegląd nie wystarczy, bo skimmer może pojawić się jutro. Ustaw automatyczne sprawdzanie strony zamówienia (skrypty i nagłówki bezpieczeństwa widziane przez przeglądarkę) oraz monitoring integralności plików i wybranych tabel bazy na serwerze. PCI DSS w wymaganiu 11.6.1 oczekuje takiego mechanizmu działającego co najmniej raz w tygodniu albo z częstotliwością wynikającą z analizy ryzyka.</p>
+
+<h2>PCI DSS 6.4.3 i 11.6.1: co oznaczają dla sklepu</h2>
+<p>PCI DSS 4.0.1 zawiera dwa wymagania dotyczące skryptów na stronach płatności. Do 31 marca 2025 roku były dobrą praktyką, od tego dnia są obowiązkowe. W marcu 2025 roku PCI SSC wydało do nich osobny dokument z wytycznymi.</p>
+<table>
+<thead>
+<tr><th>Wymaganie</th><th>Co oznacza w praktyce</th></tr>
+</thead>
+<tbody>
+<tr><td>6.4.3</td><td>Każdy skrypt na stronie płatności jest autoryzowany, ma zapewnioną integralność i figuruje w inwentarzu z uzasadnieniem, dlaczego jest potrzebny.</td></tr>
+<tr><td>11.6.1</td><td>Mechanizm wykrywania zmian i manipulacji alarmuje o nieautoryzowanych modyfikacjach nagłówków HTTP istotnych dla bezpieczeństwa oraz zawartości skryptów strony płatności, tak jak odbiera je przeglądarka klienta.</td></tr>
+</tbody>
+</table>
+<p>Małe sklepy często rozliczają się kwestionariuszem SAQ A, bo obsługę kart przejmuje operator. Na początku 2025 roku PCI SSC usunęło te dwa wymagania z SAQ A, ale dodało warunek kwalifikacji: sprzedawca musi potwierdzić, że jego strona nie jest podatna na ataki skryptami, które mogą wpłynąć na system e-commerce. Można to wykazać, stosując techniki z 6.4.3 i 11.6.1, albo uzyskując od zgodnego z PCI DSS dostawcy osadzonego formularza potwierdzenie, że zapewnia taką ochronę. Który kwestionariusz Cię obowiązuje, sprawdź u operatora płatności.</p>
+
+<h2>Obowiązki sklepu po wykryciu skimmera</h2>
+<p>Dane karty razem z imieniem, nazwiskiem i adresem to dane osobowe, więc skimmer oznacza naruszenie ochrony danych w rozumieniu RODO. Terminy liczą się od chwili stwierdzenia naruszenia, nie od zakończenia analizy.</p>
+<ul>
+<li><strong>UODO:</strong> zgłoś naruszenie bez zbędnej zwłoki, w miarę możliwości w ciągu 72 godzin (art. 33 RODO), chyba że ryzyko dla osób jest mało prawdopodobne. Jeśli nie masz pełnych informacji, wyślij zgłoszenie wstępne i uzupełnij je później.</li>
+<li><strong>Klienci:</strong> przy wysokim ryzyku dla ich praw lub wolności zawiadom ich bez zbędnej zwłoki (art. 34 RODO), żeby mogli zastrzec karty i obserwować wyciągi.</li>
+<li><strong>Operator płatności:</strong> powiadom go niezwłocznie i sprawdź, co o incydentach mówi umowa. Operator może mieć własne wymagania, łącznie z niezależnym dochodzeniem.</li>
+<li><strong>Dokumentacja:</strong> opisz okoliczności, skutki i podjęte działania, nawet jeśli uznasz, że zgłoszenie do UODO nie jest potrzebne. RODO wymaga dokumentowania każdego naruszenia.</li>
+<li><strong>KSC:</strong> jeśli Twoja firma jest podmiotem kluczowym lub ważnym w rozumieniu znowelizowanej ustawy o krajowym systemie cyberbezpieczeństwa, dochodzą zgłoszenia incydentów do właściwego CSIRT.</li>
+</ul>
+
+<h2>Jak usunąć skimmer i zabezpieczyć sklep</h2>
+<ol>
+<li>Zabezpiecz dowody: kopię plików, bazy i logów, zrzuty ekranu fałszywego formularza, listę domen, do których wysyłano dane.</li>
+<li>Jeśli skimmer jest aktywny, wyłącz płatności kartą albo cały sklep do czasu usunięcia kodu.</li>
+<li>Usuń złośliwy kod z plików, bazy i kontenera GTM, a rdzeń, rozszerzenia i motyw zainstaluj od nowa z oficjalnych źródeł.</li>
+<li>Znajdź drogę wejścia i wszystkie backdoory, inaczej skimmer wróci.</li>
+<li>Wymień hasła i klucze, w tym klucze API bramki płatności oraz dostępy do GTM i panelu hostingu.</li>
+<li>Wdróż CSP, inwentarz skryptów i monitoring zmian na stronie zamówienia.</li>
+<li>Po zmianach sprawdź sklep niezależnym testem. Opisujemy, <a href="/blog/test-penetracyjny-jak-wyglada/">jak wygląda test penetracyjny</a> i jak się do niego przygotować.</li>
+</ol>
+<p>Jeśli sklep działa na WordPressie, przejdź też przez <a href="/blog/zabezpieczenie-wordpress-checklista/">checklistę zabezpieczenia WordPressa</a>. Przy incydencie z danymi kart liczą się godziny, więc jeśli potrzebujesz pomocy przy analizie i czyszczeniu, <a href="/#kontakt">napisz do nas</a>.</p>

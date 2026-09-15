@@ -134,7 +134,7 @@ async function main() {
 main();</code></pre>
 <p>Na co zwrócić uwagę w tym kodzie:</p>
 <ul>
-<li>Schemat wejścia w Zod SDK zamienia na JSON Schema i sam waliduje. Wywołanie z niepoprawnym NIP-em zwróci błąd walidacji, zanim dotrze do Twojej logiki.</li>
+<li>SDK zamienia schemat Zod na JSON Schema i samo waliduje parametry. Wywołanie z niepoprawnym NIP-em zwróci błąd walidacji, zanim dotrze do Twojej logiki.</li>
 <li><code>readOnlyHint</code> informuje klienta, że narzędzie niczego nie zmienia. To podpowiedź dla hosta, a nie zabezpieczenie. Uprawnienia egzekwujesz po stronie serwera i systemu źródłowego.</li>
 <li>Przy transporcie stdio nie wypisuj logów przez <code>console.log</code>, bo standardowe wyjście służy do komunikacji z klientem. Używaj <code>console.error</code>.</li>
 <li>Błąd biznesowy („nie ma takiego klienta”) zwracasz jako wynik z <code>isError: true</code>, żeby model mógł na niego sensownie zareagować.</li>

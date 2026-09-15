@@ -1,0 +1,116 @@
+<!--META
+{
+  "slug": "zewnetrzny-cto-kiedy-sie-oplaca",
+  "title": "Zewnętrzny CTO (fractional CTO): kiedy się opłaca i czego oczekiwać",
+  "metaTitle": "Zewnętrzny CTO: kiedy się opłaca i co robi",
+  "description": "Zewnętrzny CTO (fractional CTO): komu się opłaca, jaki ma zakres obowiązków, modele współpracy, jak mierzyć efekty i jakie czerwone flagi sprawdzić.",
+  "category": "Technologia i zarządzanie",
+  "tags": ["zewnętrzny CTO", "fractional CTO", "software house", "audyt kodu", "due diligence", "strategia IT"],
+  "primaryKeyword": "zewnętrzny CTO",
+  "tldr": [
+    "Zewnętrzny CTO to lider technologiczny w niepełnym wymiarze, który odpowiada za kierunek technologiczny i nadzór, a nie za pisanie kodu.",
+    "Najwięcej zyskują nietechniczni założyciele, firmy pracujące z zewnętrznym software house’em, spółki przed due diligence i firmy po nieudanym projekcie.",
+    "Typowe modele to stała liczba dni w miesiącu, abonament z określonym zakresem albo jednorazowy audyt lub druga opinia.",
+    "Wartość mierz przewidywalnością dostaw, metrykami DORA, kosztami infrastruktury i listą zamkniętych ryzyk, ustalonymi na starcie współpracy.",
+    "Czerwone flagi to brak konkretnego zakresu, nieujawniony konflikt interesów, niechęć do dokumentowania i obietnice składane przed audytem."
+  ],
+  "faq": [
+    {"q": "Ile dni w miesiącu pracuje fractional CTO?", "a": "Nie ma jednej normy, bo zakres zależy od etapu firmy i liczby dostawców. Przy stałym rozwoju produktu zwykle ustala się kilka dni w miesiącu plus dostępność na pytania, a przy audycie rozlicza się jednorazowy projekt. Liczbę dni dopasuj do zadań zapisanych w umowie, nie odwrotnie."},
+    {"q": "Czy zewnętrzny CTO może nadzorować software house?", "a": "Tak, to jedno z najczęstszych zadań. Zewnętrzny CTO przegląda estymacje, uczestniczy w planowaniu, sprawdza jakość kodu i testów oraz porównuje raportowane godziny z realnym postępem. Działa po stronie klienta, więc nie powinien mieć finansowych powiązań z nadzorowanym dostawcą."},
+    {"q": "Czym różni się fractional CTO od konsultanta IT?", "a": "Konsultant zwykle dostarcza raport lub rekomendację i kończy zlecenie. Fractional CTO bierze udział w decyzjach na bieżąco, rozmawia z zespołami i dostawcami oraz odpowiada za realizację uzgodnionej roadmapy. Granica bywa płynna, dlatego zakres odpowiedzialności zapisz w umowie."},
+    {"q": "Kiedy lepiej zatrudnić CTO na etat?", "a": "Gdy technologia jest rdzeniem firmy, masz lub budujesz duży zespół wewnętrzny i decyzje techniczne zapadają codziennie. Wtedy potrzebujesz lidera dostępnego na co dzień. Zewnętrzny CTO może przygotować grunt pod tę rekrutację i pomóc wybrać kandydata."},
+    {"q": "Co zewnętrzny CTO sprawdza przed due diligence?", "a": "Najczęściej jakość i strukturę kodu, dług technologiczny, sposób wdrażania, bezpieczeństwo, zależność od pojedynczych osób oraz prawa firmy do oprogramowania. W Polsce przeniesienie autorskich praw majątkowych wymaga umowy w formie pisemnej, więc warto sprawdzić umowy z wykonawcami i freelancerami. Znalezione problemy lepiej naprawić przed rozmowami z inwestorem."}
+  ],
+  "sources": [
+    {"title": "Harvard Business Review: The Growing Trend of Part-Time Executives (podcast)", "url": "https://hbr.org/podcast/2024/11/the-growing-hr-trend-of-fractional-leadership"},
+    {"title": "DORA: DORA’s software delivery metrics", "url": "https://dora.dev/guides/dora-metrics/"},
+    {"title": "FinOps Foundation: What is FinOps?", "url": "https://www.finops.org/introduction/what-is-finops/"},
+    {"title": "ISAP Sejm: Ustawa o prawie autorskim i prawach pokrewnych", "url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19940240083"}
+  ],
+  "linkedin": "Zewnętrzny CTO nie jest tańszym programistą. To osoba, która po Twojej stronie stołu podejmuje decyzje technologiczne i pilnuje dostawców.\n\nKiedy fractional CTO ma sens:\n- jesteś nietechnicznym założycielem i nie umiesz ocenić estymacji software house’u,\n- produkt robi zewnętrzna firma, która sama ocenia jakość swojej pracy,\n- szykujesz się do rozmów z inwestorem i due diligence,\n- poprzedni projekt przekroczył budżet i trzeba zdecydować, co ratować.\n\nCzego pilnować przy wyborze: konkretnego zakresu w umowie, jawnych zasad przy konflikcie interesów, dokumentowania decyzji i miar ustalonych na starcie (np. metryki DORA, koszty chmury, lista zamkniętych ryzyk).\n\nCały przewodnik z porównaniem etatowego CTO, fractional CTO i tech leada software house’u: {url}\n\n#CTO #FractionalCTO #startup #softwarehouse"
+}
+META-->
+<p>Zewnętrzny CTO opłaca się, gdy potrzebujesz decyzji i nadzoru na poziomie dyrektora technologii, ale nie masz dla takiej osoby pracy na pełny etat albo budżetu na nią. Najczęściej korzystają z niego nietechniczni założyciele, firmy współpracujące z software house’em i spółki przygotowujące się do rozmów z inwestorem.</p>
+
+<h2>Czym jest zewnętrzny CTO (fractional CTO)</h2>
+<p>Fractional CTO to doświadczony lider technologiczny, który pełni funkcję CTO w Twojej firmie w niepełnym wymiarze, zwykle równolegle dla kilku organizacji. Nie jest konsultantem, który zostawia raport i znika. Bierze udział w decyzjach, rozmawia z dostawcami i odpowiada za kierunek technologiczny w ustalonym zakresie.</p>
+<p>Model „ułamkowych” członków kadry zarządzającej (fractional CFO, CMO, CTO) coraz częściej wybierają startupy oraz małe i średnie firmy. W podcaście Harvard Business Review goście podkreślają, że taka osoba powinna być obecna we wszystkich ważnych momentach firmy, mimo że nie pracuje na etacie. Wśród ryzyk wymieniają rozmywanie się zakresu i relację, która staje się czysto transakcyjna.</p>
+
+<h2>Kto potrzebuje zewnętrznego CTO</h2>
+<h3>Nietechniczny założyciel</h3>
+<p>Masz pomysł na produkt, budżet i wybranego wykonawcę, ale nie potrafisz ocenić, czy architektura ma sens, a estymacja jest realna. Zewnętrzny CTO tłumaczy decyzje techniczne na język ryzyka, czasu i pieniędzy, zanim podpiszesz umowę. Pomoże też zrozumieć, <a href="/blog/ile-kosztuje-aplikacja-mobilna-2026/">od czego zależy koszt aplikacji</a> i gdzie wycena ma luki.</p>
+<h3>Firma z zewnętrznym software house’em</h3>
+<p>Wykonawca pisze kod, raportuje postęp i sam ocenia jakość swojej pracy. Brakuje osoby po Twojej stronie, która przejrzy pull requesty, sprawdzi, czy istnieją testy, i zapyta, dlaczego sprint znów się przesunął. Na etapie wyboru wykonawcy przyda się poradnik <a href="/blog/jak-ocenic-oferte-software-house/">jak ocenić ofertę software house’u</a>.</p>
+<h3>Spółka przed inwestycją lub due diligence</h3>
+<p>Inwestor zwykle przygląda się kodowi, architekturze, bezpieczeństwu i prawom do oprogramowania. Lepiej, żeby słabe punkty znalazł ktoś po Twojej stronie kilka miesięcy wcześniej, a nie audytor funduszu w trakcie negocjacji.</p>
+<h3>Firma po nieudanym projekcie</h3>
+<p>Projekt przekroczył budżet, dostawca zniknął albo aplikacji nie da się dalej rozwijać. Zewnętrzny CTO ocenia, co można uratować, co trzeba przepisać i jak nie powtórzyć tych samych błędów z kolejnym wykonawcą.</p>
+
+<h2>Co robi zewnętrzny CTO: zakres obowiązków</h2>
+<p>Zakres zależy od etapu firmy, ale w praktyce powtarza się kilka obszarów.</p>
+<ul>
+<li><strong>Strategia i roadmapa technologiczna.</strong> Co budujesz w najbliższych kwartałach, na jakim stosie technologicznym, co kupujesz jako gotową usługę, a co piszesz sam.</li>
+<li><strong>Nadzór nad dostawcami i zespołami.</strong> Przegląd estymacji, udział w planowaniu, odbiory, porównanie fakturowanych godzin z realnym postępem.</li>
+<li><strong>Audyty architektury i kodu.</strong> Jakość kodu, dług technologiczny, testy, sposób wdrażania, zależność od konkretnych osób.</li>
+<li><strong>Pomoc w rekrutacji.</strong> Opis ról, zadania techniczne, udział w rozmowach z kandydatami na developerów i tech leadów.</li>
+<li><strong>Bezpieczeństwo.</strong> Zarządzanie dostępami, kopie zapasowe, plan reakcji na incydenty i decyzja, kiedy zlecić <a href="/blog/test-penetracyjny-jak-wyglada/">test penetracyjny</a>.</li>
+<li><strong>Budżet i koszty chmury.</strong> Przegląd rachunków za infrastrukturę, licencje i narzędzia. Przydaje się tu podejście FinOps, które FinOps Foundation opisuje jako współpracę inżynierii, finansów i biznesu nad wartością wydatków na technologię.</li>
+</ul>
+<p>Osobny obszar to sprawy na styku prawa i technologii. Zewnętrzny CTO powinien sprawdzić, czy firma ma prawa do kodu, za który zapłaciła. W Polsce umowa o przeniesienie autorskich praw majątkowych wymaga formy pisemnej pod rygorem nieważności (art. 53 ustawy o prawie autorskim), więc sama zapłacona faktura nie wystarczy. Treść umów oceni prawnik, ale CTO wie, o co zapytać: repozytoria, konta w sklepach z aplikacjami, domeny, klucze do podpisywania aplikacji.</p>
+
+<h2>Czego nie oczekiwać od fractional CTO</h2>
+<p>Zewnętrzny CTO nie jest darmowym dodatkowym programistą. Jeśli kupujesz kilka dni w miesiącu, a oczekujesz, że w tym czasie napisze moduł płatności, nie dostaniesz ani modułu, ani strategii.</p>
+<ul>
+<li>Nie zastąpi zespołu developerskiego ani administratora z nocnym dyżurem.</li>
+<li>Nie będzie dostępny o każdej porze, chyba że tak ustalicie w umowie i wycenie.</li>
+<li>Nie podejmie decyzji biznesowych za zarząd. Przygotuje opcje, koszty i ryzyka.</li>
+<li>Nie rozwiąże problemu, o którym nie wie. Potrzebuje dostępu do repozytoriów, dokumentacji, umów i ludzi.</li>
+</ul>
+
+<h2>Modele współpracy z zewnętrznym CTO</h2>
+<h3>Określona liczba dni w miesiącu</h3>
+<p>Najprostszy model: stała liczba dni, w które CTO uczestniczy w planowaniu, przegląda pracę dostawców i rozwija roadmapę. Sprawdza się w firmach ze stałym rozwojem produktu, które nie potrzebują lidera technologicznego na co dzień.</p>
+<h3>Abonament (retainer)</h3>
+<p>Stała miesięczna opłata za określony zakres i dostępność, np. udział w cotygodniowym spotkaniu, odpowiedzi na pytania w ustalonym czasie i comiesięczny raport. Zapisz, co wchodzi w abonament, a co jest rozliczane osobno.</p>
+<h3>Audyt projektu lub druga opinia</h3>
+<p>Jednorazowe zlecenie z konkretnym wynikiem: audyt kodu i architektury, ocena oferty software house’u, przygotowanie do due diligence. Dobry sposób, żeby sprawdzić współpracę przed dłuższą umową.</p>
+<p>Ceny tych modeli zależą od doświadczenia osoby, zakresu i wymaganego czasu reakcji. Porównuj oferty po zakresie odpowiedzialności i rezultatach, a nie wyłącznie po stawce dziennej.</p>
+
+<h2>Etatowy CTO, fractional CTO czy tech lead software house’u</h2>
+<table>
+<thead>
+<tr><th>Kryterium</th><th>Etatowy CTO</th><th>Zewnętrzny CTO</th><th>Tech lead software house’u</th></tr>
+</thead>
+<tbody>
+<tr><td>Czyje interesy reprezentuje</td><td>Twojej firmy</td><td>Twojej firmy, w ustalonym zakresie</td><td>Projektu, ale jest pracownikiem dostawcy</td></tr>
+<tr><td>Dostępność</td><td>Codzienna</td><td>Ustalone dni lub godziny w miesiącu</td><td>W ramach projektu i budżetu u dostawcy</td></tr>
+<tr><td>Forma kosztu</td><td>Wynagrodzenie, koszty pracodawcy, często premie lub udziały</td><td>Dni, abonament lub projekt</td><td>Zwykle wliczony w stawkę dostawcy</td></tr>
+<tr><td>Strategia i roadmapa</td><td>Pełna odpowiedzialność</td><td>Tak, we współpracy z zarządem</td><td>Rzadko, raczej plan realizacji projektu</td></tr>
+<tr><td>Kontrola dostawcy</td><td>Tak</td><td>Tak, to jedno z głównych zadań</td><td>Nie, bo sam reprezentuje dostawcę</td></tr>
+<tr><td>Budowa zespołu wewnętrznego</td><td>Tak, na co dzień</td><td>Pomoc w rekrutacji i procesach</td><td>Nie</td></tr>
+<tr><td>Kiedy wybrać</td><td>Technologia jest rdzeniem firmy, zespół jest duży</td><td>Mały lub zewnętrzny zespół, potrzeba decyzji i nadzoru</td><td>Projekt z jasnym zakresem i nadzorem po Twojej stronie</td></tr>
+</tbody>
+</table>
+<p>Te role się nie wykluczają. Często spotykany układ to software house z własnym tech leadem i zewnętrzny CTO po stronie klienta, który pilnuje, żeby decyzje dostawcy służyły firmie. Jeśli kiedyś zatrudnisz etatowego CTO, dobrze udokumentowana praca poprzednika skróci mu start.</p>
+
+<h2>Jak zmierzyć, czy zewnętrzny CTO się opłaca</h2>
+<p>Ustal miary na początku współpracy, a nie po pół roku. Samo wrażenie, że „jest lepiej”, trudno obronić przy przeglądzie budżetu.</p>
+<ul>
+<li><strong>Przewidywalność dostaw.</strong> Czy terminy z planu są dotrzymywane częściej niż wcześniej i czy zmiany zakresu są świadomie zatwierdzane.</li>
+<li><strong>Metryki dostarczania oprogramowania.</strong> DORA opisuje m.in. czas od commita do wdrożenia, częstotliwość wdrożeń, odsetek wdrożeń wymagających natychmiastowej interwencji i czas przywrócenia działania po nieudanym wdrożeniu. Obserwuj trend, a nie pojedyncze wartości.</li>
+<li><strong>Koszty.</strong> Rachunki za chmurę i licencje, liczba godzin dostawcy przy podobnych zadaniach, koszt poprawek po wdrożeniach.</li>
+<li><strong>Zamknięte ryzyka.</strong> Lista problemów z audytu i status każdego z nich: MFA, kopie zapasowe, prawa do kodu, dostępy byłych współpracowników.</li>
+<li><strong>Jakość decyzji.</strong> Rejestr decyzji architektonicznych z uzasadnieniem. Po roku widać, które się sprawdziły.</li>
+</ul>
+<p>Jeśli zespół korzysta z AI przy code review, specyfikacjach czy testach, CTO powinien sprawdzić, czy to realnie skraca cykl dostarczania. Piszemy o tym w tekście o <a href="/blog/sdlc-z-ai-szybszy-zespol/">SDLC z AI</a>.</p>
+
+<h2>Czerwone flagi przy wyborze zewnętrznego CTO</h2>
+<ul>
+<li><strong>Brak konkretnego zakresu.</strong> Oferta „wsparcia technologicznego” bez listy zadań, rezultatów i czasu reakcji.</li>
+<li><strong>Jedna ulubiona technologia na każdy problem.</strong> Dobry CTO pyta o model biznesowy, zanim zaproponuje stos.</li>
+<li><strong>Konflikt interesów bez jawnych zasad.</strong> Prowizje od polecanych dostawców albo sytuacja, w której ta sama firma ocenia projekt i chce go realizować. Jeśli CTO pochodzi z firmy, która też wykonuje projekty, ustalcie na piśmie, czy może składać ofertę.</li>
+<li><strong>Brak doświadczenia wykonawczego.</strong> Ktoś, kto nigdy nie odpowiadał za system produkcyjny, łatwo pisze strategie niemożliwe do wdrożenia.</li>
+<li><strong>Niechęć do dokumentowania.</strong> Wiedza zostaje w głowie zewnętrznego CTO, a Ty zamieniasz jedną zależność na inną.</li>
+<li><strong>Obietnice przed audytem.</strong> Deklaracje przyspieszenia projektu składane, zanim ktoś zobaczył kod i umowy.</li>
+</ul>
+<p>Na pierwszej rozmowie poproś o zanonimizowany przykład raportu z audytu i o plan pierwszych 30 dni. Dobra odpowiedź przypomina plan z tekstu o <a href="/blog/chaos-w-it-jak-opanowac/">opanowaniu chaosu w IT</a>: najpierw spis i dostępy, potem priorytety. Rolę zewnętrznego CTO pełnimy także u naszych klientów, a zakres tej usługi opisujemy w sekcji <a href="/#uslugi">usługi</a>.</p>

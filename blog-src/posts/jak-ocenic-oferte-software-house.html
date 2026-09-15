@@ -1,0 +1,149 @@
+<!--META
+{
+  "slug": "jak-ocenic-oferte-software-house",
+  "title": "Jak ocenić ofertę software house’u i nie przepłacić",
+  "metaTitle": "Wycena aplikacji od software house: jak ocenić ofertę",
+  "description": "Wycena aplikacji software house’u pod lupą: co musi zawierać dobra oferta, czerwone flagi, pytania do wykonawcy, prawa do kodu i porównanie trzech ofert.",
+  "category": "Technologia i zarządzanie",
+  "tags": ["wycena aplikacji", "software house", "umowa IT", "prawa autorskie do kodu", "zewnętrzny CTO", "zarządzanie projektem"],
+  "primaryKeyword": "wycena aplikacji software house",
+  "tldr": [
+    "Dobra oferta opisuje zakres, założenia i wyłączenia, rozbija wycenę na moduły i role oraz wprost uwzględnia testy, środowiska, wdrożenie i utrzymanie.",
+    "Fixed price przerzuca ryzyko wyceny na wykonawcę, który wlicza je w cenę, a time and materials daje elastyczność, ale wymaga aktywnego zarządzania budżetem.",
+    "Przeniesienie autorskich praw majątkowych do kodu wymaga formy pisemnej pod rygorem nieważności i obejmuje tylko pola eksploatacji wyraźnie wymienione w umowie.",
+    "Duże różnice między ofertami zwykle oznaczają różne rozumienie zakresu, a nie różną wydajność firm, więc porównuj oferty dopiero po ujednoliceniu założeń.",
+    "Niezależna ocena techniczna opłaca się szczególnie wtedy, gdy nie masz w firmie osoby technicznej, a projekt ma istotny budżet lub krytyczne znaczenie."
+  ],
+  "faq": [
+    {"q": "Dlaczego wyceny tej samej aplikacji tak bardzo się różnią?", "a": "Najczęściej dlatego, że każda firma inaczej rozumie zakres. Jedna wycenia prosty panel administracyjny i brak testów automatycznych, druga rozbudowane role użytkowników, testy i utrzymanie. Różnice wynikają też ze składu zespołu, stawek i bufora na ryzyko. Poproś każdą firmę o listę założeń i wyłączeń, a różnice zwykle staną się zrozumiałe."},
+    {"q": "Czy warto płacić za fazę discovery przed wyceną?", "a": "Przy projektach większych niż prosta strona zazwyczaj tak. Discovery to kilka tygodni warsztatów i analizy, po których powstaje opis funkcji, makiety, architektura i dokładniejsza wycena. Płacisz za nią osobno, ale ograniczasz ryzyko, że główny budżet rozjedzie się przez niejasny zakres. Zadbaj, żeby wyniki discovery należały do Ciebie i dało się je przekazać innej firmie."},
+    {"q": "Kto jest właścicielem kodu aplikacji napisanej przez software house?", "a": "Domyślnie nie zamawiający. Prawa majątkowe do programu stworzonego przez pracownika w ramach obowiązków przysługują pracodawcy, czyli software house’owi, a przy programistach na umowach cywilnoprawnych prawa trzeba skutecznie przenieść w umowach. Żeby prawa przeszły na Ciebie, potrzebujesz pisemnej umowy przenoszącej autorskie prawa majątkowe z wymienionymi polami eksploatacji."},
+    {"q": "Jaki model rozliczenia wybrać: fixed price czy time and materials?", "a": "Fixed price sprawdza się przy małym, stabilnym i dokładnie opisanym zakresie. Time and materials lepiej pasuje do produktów rozwijanych iteracyjnie, w których wymagania zmieniają się po pierwszych testach z użytkownikami. Często najlepszy jest model mieszany: płatne discovery, a potem etapy z ustalonym budżetem i przeglądem po każdym z nich."},
+    {"q": "Ile kosztuje niezależna ocena oferty software house’u?", "a": "Zależy od wielkości projektu i liczby ofert, dlatego rzetelna wycena wymaga zapoznania się z dokumentami. Przy przeglądzie jednej lub kilku ofert to zwykle praca liczona w godzinach lub dniach, a nie tygodniach. Taki koszt najczęściej stanowi niewielki ułamek budżetu samego projektu."}
+  ],
+  "sources": [
+    {"title": "Tekst jednolity ustawy o prawie autorskim i prawach pokrewnych (Dz.U. 2025 poz. 24)", "url": "https://api.sejm.gov.pl/eli/acts/DU/2025/24"},
+    {"title": "Traple Konarski Podrecki: forma umowy o przeniesienie praw autorskich", "url": "https://www.traple.pl/forma-umowy-o-przeniesienie-praw-autorskich-czy-jest-zbyt-rygorystyczna/"},
+    {"title": "Obowiązek wymienienia pól eksploatacji w umowie prawnoautorskiej", "url": "https://www.kancelariaprawnajr.pl/blog/obowiazek-wymienienia-pol-eksploatacji-w-umowie-prawno-autorskiej"},
+    {"title": "Art. 74 ustawy o prawie autorskim: ochrona programów komputerowych", "url": "https://arslege.pl/ochrona-programow-komputerowych/k442/a36808/"},
+    {"title": "Gov.pl: Polski Akt o Dostępności, usługi handlu elektronicznego", "url": "https://www.gov.pl/web/dostepnosc-cyfrowa/polski-akt-o-dostepnosci--uslugi-handlu-elektronicznego"},
+    {"title": "EUR-Lex: RODO, rozporządzenie (UE) 2016/679", "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj"}
+  ],
+  "linkedin": "Najdroższa oferta software house’u to często ta najtańsza, która nie ma w wycenie testów, utrzymania i przeniesienia praw do kodu.\n\nNa co patrzę, gdy klient prosi o drugą opinię:\n- czy zakres ma założenia i wyłączenia, a wycena jest rozbita na moduły i role,\n- czy są osobne pozycje na QA, środowisko testowe i wdrożenie,\n- czy repozytorium, chmura i konta w sklepach będą na koncie klienta od pierwszego dnia,\n- czy umowa przenosi autorskie prawa majątkowe na piśmie i wymienia pola eksploatacji,\n- czy harmonogram uwzględnia discovery, testy i odbiory, czy tylko programowanie.\n\nW artykule tabela do porównania trzech ofert i lista pytań do zadania przed podpisaniem umowy:\n{url}\n\n#softwarehouse #IT #zarządzanieprojektami #CTO #aplikacje"
+}
+META-->
+<p>Ofertę software house’u ocenisz rzetelnie, gdy sprawdzisz trzy rzeczy: czy zakres jest opisany na tyle dokładnie, że inna firma wyceniłaby to samo, czy koszt jest rozbity na moduły i role oraz czy umowa przenosi na Ciebie prawa do kodu. Najdrożej kosztuje zwykle oferta, która pomija testy, wdrożenie i utrzymanie.</p>
+<p>Wycena aplikacji od software house’u to prognoza, a nie cennik. Różnice między ofertami na ten sam projekt bywają duże i rzadko wynikają z samych stawek. Poniżej znajdziesz listę elementów dobrej oferty, sygnały ostrzegawcze, pytania do wykonawcy i sposób porównania kilku propozycji.</p>
+
+<h2>Co powinna zawierać dobra oferta software house’u</h2>
+<p>Oferta, na podstawie której można podjąć decyzję, zawiera co najmniej:</p>
+<ul>
+<li><strong>Zakres</strong>: lista funkcji z podziałem na moduły, role użytkowników, platformy (web, iOS, Android), integracje z innymi systemami, panel administracyjny.</li>
+<li><strong>Założenia</strong>: co wykonawca przyjął, żeby wycenić projekt. Na przykład „płatności przez jednego operatora”, „jedna wersja językowa”, „projekt graficzny dostarcza klient”.</li>
+<li><strong>Wyłączenia</strong>: czego wycena nie obejmuje. Brak tej sekcji oznacza, że spór o zakres jest kwestią czasu.</li>
+<li><strong>Wycenę w podziale na moduły</strong>, najlepiej jako przedział (wariant optymistyczny i pesymistyczny) z liczbą godzin dla każdej roli.</li>
+<li><strong>Skład zespołu</strong>: role, doświadczenie, wymiar zaangażowania, informacja, czy pracują pracownicy firmy, czy podwykonawcy.</li>
+<li><strong>Harmonogram z kamieniami milowymi</strong> i zasadami odbioru każdego etapu.</li>
+<li><strong>Jakość i infrastrukturę</strong>: testy manualne i automatyczne, środowisko testowe (staging), CI/CD, przegląd kodu, dokumentację techniczną.</li>
+<li><strong>Wdrożenie</strong>: konfigurację serwerów lub chmury, publikację w sklepach z aplikacjami, migrację danych.</li>
+<li><strong>Bezpieczeństwo i zgodność</strong>: podejście do ochrony danych, testy bezpieczeństwa, wymagania dostępności, jeśli dotyczą Twojej usługi.</li>
+<li><strong>Utrzymanie i gwarancję</strong>: co dzieje się po uruchomieniu, w jakim czasie wykonawca reaguje na błędy i ile to kosztuje.</li>
+</ul>
+<p>Przy aplikacjach dla konsumentów zwróć uwagę na dostępność. Od 28 czerwca 2025 roku obowiązuje polska ustawa wdrażająca Europejski Akt o Dostępności, która obejmuje m.in. usługi handlu elektronicznego. Nie stosuje się jej do usług świadczonych przez mikroprzedsiębiorców, ale jeśli Twoja firma nie jest mikroprzedsiębiorcą, wymagania muszą znaleźć się w zakresie.</p>
+<p>Jeśli dopiero szacujesz budżet aplikacji mobilnej, zajrzyj do tekstu <a href="/blog/ile-kosztuje-aplikacja-mobilna-2026/">ile kosztuje aplikacja mobilna w 2026 roku</a>, a przy wyborze technologii do porównania <a href="/blog/natywna-czy-cross-platform/">aplikacji natywnej i cross-platform</a>.</p>
+
+<h2>Fixed price, time and materials czy model mieszany</h2>
+<p>Model rozliczenia decyduje o tym, kto ponosi ryzyko błędnej wyceny i jak obsługiwane są zmiany. Żaden nie jest z zasady tańszy.</p>
+<table>
+<thead>
+<tr><th>Kryterium</th><th>Fixed price</th><th>Time and materials</th><th>Model mieszany</th></tr>
+</thead>
+<tbody>
+<tr><td>Kiedy pasuje</td><td>Mały, stabilny, dokładnie opisany zakres</td><td>Produkt rozwijany iteracyjnie, wymagania zmieniają się po testach z użytkownikami</td><td>Płatne discovery, potem etapy z ustalonym budżetem</td></tr>
+<tr><td>Ryzyko wyceny</td><td>Po stronie wykonawcy, który wlicza bufor w cenę</td><td>Po stronie zamawiającego</td><td>Dzielone między strony</td></tr>
+<tr><td>Zmiany zakresu</td><td>Formalne zlecenia zmian, dodatkowo płatne</td><td>Elastyczne, zmiana priorytetów w backlogu</td><td>Swobodne w ramach etapu, większe po przeglądzie etapu</td></tr>
+<tr><td>Kontrola kosztów</td><td>Znana kwota, ale spory o to, co było w zakresie</td><td>Wymaga raportów godzin i aktywnego zarządzania</td><td>Limit na etap i decyzja o kontynuacji</td></tr>
+<tr><td>Typowa pułapka</td><td>Oszczędzanie na testach, gdy budżet się kończy</td><td>Brak limitu i przejrzystego raportowania</td><td>Niejasne zasady przejścia między etapami</td></tr>
+</tbody>
+</table>
+<p>Fixed price przy niejasnym zakresie to najgorsze połączenie. Wykonawca albo dolicza duży bufor, albo broni się interpretacją wymagań, a Ty płacisz za każdą zmianę zgłoszoną po starcie.</p>
+
+<h2>Czerwone flagi w wycenie aplikacji</h2>
+<ul>
+<li><strong>Zakres w jednym akapicie.</strong> „Aplikacja do rezerwacji z panelem administratora” może oznaczać bardzo różne projekty.</li>
+<li><strong>Brak fazy discovery przy dużym projekcie.</strong> Wycena złożonego systemu po jednej rozmowie to zgadywanie, niezależnie od doświadczenia firmy.</li>
+<li><strong>Brak osobnej pozycji na testy.</strong> Testowanie „w ramach programowania” zwykle oznacza, że testuje klient, na produkcji.</li>
+<li><strong>Brak środowiska testowego.</strong> Bez stagingu każda zmiana trafia prosto do użytkowników.</li>
+<li><strong>Cisza o utrzymaniu.</strong> Aktualizacje systemów mobilnych, bibliotek i zabezpieczeń są pewne, pytanie tylko, kto za nie zapłaci.</li>
+<li><strong>Niejasne prawa do kodu i brak dostępu do repozytorium.</strong> Kod udostępniany dopiero „po zakończeniu i pełnej płatności” to ryzyko, że nigdy nie zobaczysz stanu prac.</li>
+<li><strong>Uzależnienie od wykonawcy.</strong> Zamknięta platforma lub własny framework firmy, hosting i konta w sklepach na koncie wykonawcy, licencja ważna tylko w czasie umowy serwisowej.</li>
+<li><strong>Nierealny harmonogram.</strong> Termin, w którym nie ma miejsca na analizę, testy, poprawki po odbiorach i przegląd w sklepach z aplikacjami.</li>
+<li><strong>Anonimowy zespół „samych seniorów”.</strong> Bez nazwisk i zaangażowania nie wiesz, kto faktycznie będzie pracował.</li>
+<li><strong>Cena wyraźnie niższa od pozostałych bez wyjaśnienia.</strong> Zwykle oznacza węższy zakres, którego nikt nie nazwał.</li>
+</ul>
+<aside class="callout">Repozytorium kodu, konto w chmurze, domena, konta w Google Play i App Store oraz dostęp do narzędzi analitycznych powinny być założone na Twoją firmę od pierwszego dnia. Wykonawca dostaje do nich dostęp, a nie odwrotnie. Jak wygląda konto dewelopera i publikacja, opisujemy w tekście o <a href="/blog/publikacja-aplikacji-google-play/">publikacji aplikacji w Google Play</a>.</aside>
+
+<h2>Pytania do software house’u przed podpisaniem umowy</h2>
+<ol>
+<li>Kto konkretnie będzie pracował w projekcie, w jakim wymiarze i czy są to pracownicy, czy podwykonawcy?</li>
+<li>Jakie założenia przyjęliście przy wycenie i czego wycena nie obejmuje?</li>
+<li>Jak wygląda testowanie: kto testuje, czy piszecie testy automatyczne, jaka część budżetu przypada na QA?</li>
+<li>Kiedy dostanę dostęp do repozytorium i wersji testowej aplikacji?</li>
+<li>Jak zgłaszam i wyceniacie zmiany zakresu?</li>
+<li>Jak często i w jakiej formie raportujecie postęp i zużycie budżetu?</li>
+<li>Jakich bibliotek open source i własnych komponentów użyjecie i na jakich licencjach?</li>
+<li>Jak wygląda gwarancja, utrzymanie i czas reakcji na awarię po wdrożeniu?</li>
+<li>Co przekażecie, jeśli współpraca się zakończy, i ile potrwa przekazanie projektu innej firmie?</li>
+<li>Czy mogę porozmawiać z klientem, dla którego realizowaliście podobny projekt?</li>
+</ol>
+<p>Zwróć uwagę nie tylko na treść odpowiedzi, ale też na to, czy padają konkretnie i na piśmie. Wymijające odpowiedzi na pytania o repozytorium i przekazanie projektu to sygnał, że model biznesowy wykonawcy opiera się na uzależnieniu klienta.</p>
+
+<h2>Umowa: prawa autorskie do kodu, SLA i gwarancja</h2>
+<h3>Przeniesienie autorskich praw majątkowych</h3>
+<p>Program komputerowy jest w polskim prawie chroniony jak utwór. Kilka zasad z ustawy o prawie autorskim i prawach pokrewnych ma bezpośrednie znaczenie dla zamawiającego:</p>
+<ul>
+<li>Umowa o przeniesienie autorskich praw majątkowych wymaga formy pisemnej pod rygorem nieważności (art. 53). Formę pisemną zastępuje podpis kwalifikowany, ale akceptacja mailowa już nie.</li>
+<li>Umowa obejmuje tylko pola eksploatacji wyraźnie w niej wymienione (art. 41 ust. 2). Dla programów komputerowych chodzi m.in. o zwielokrotnianie, modyfikowanie i rozpowszechnianie (art. 74 ust. 4). Ogólnik „wszystkie prawa do aplikacji” to za mało.</li>
+<li>Prawa do programu napisanego przez pracownika w ramach obowiązków przysługują pracodawcy (art. 74 ust. 3). Programiści na umowach B2B to inna sytuacja: software house musi najpierw skutecznie nabyć od nich prawa, żeby móc je przenieść na Ciebie. Poproś o potwierdzenie tego w umowie.</li>
+</ul>
+<p>Sprawdź też, kiedy prawa przechodzą. Zapis „z chwilą zapłaty całości wynagrodzenia” oznacza, że przy sporze o ostatnią fakturę nie masz praw do niczego. Bezpieczniej, gdy prawa do każdego etapu przechodzą po jego odbiorze i zapłacie. Upewnij się, że umowa pozwala Tobie i innym wykonawcom modyfikować kod, a gotowe komponenty wykonawcy są objęte licencją bezterminową i nieodwołalną.</p>
+<h3>SLA, gwarancja i dane osobowe</h3>
+<ul>
+<li><strong>SLA</strong> powinno rozróżniać czas reakcji i czas naprawy oraz kategorie błędów (krytyczny, poważny, drobny). Określ godziny, w których obowiązuje, i konsekwencje przekroczenia.</li>
+<li><strong>Gwarancja</strong> ma wskazywać okres i zakres. Ustal, co jest błędem, który wykonawca poprawia bezpłatnie, a co nowym wymaganiem.</li>
+<li><strong>Umowa powierzenia</strong> przetwarzania danych osobowych zgodna z art. 28 RODO jest potrzebna, jeśli wykonawca będzie miał dostęp do danych Twoich klientów, np. przy utrzymaniu.</li>
+<li><strong>Kryteria odbioru</strong> spisz przed startem etapu. Odbiór „na podstawie wrażenia” kończy się sporem.</li>
+</ul>
+<p>Umowę na projekt o istotnym budżecie daj do przejrzenia prawnikowi, który zna umowy IT. Ten tekst nie jest poradą prawną.</p>
+
+<h2>Jak porównać trzy oferty software house’u</h2>
+<p>Zanim porównasz ceny, ujednolić założenia. Wyślij wszystkim firmom ten sam opis zakresu i poproś o listę założeń i wyłączeń w tym samym układzie. Jeśli oferty nadal różnią się wyraźnie, zapytaj o konkretne moduły, w których rozjazd jest największy.</p>
+<p>Porównuj całkowity koszt posiadania, a nie tylko cenę budowy: wytworzenie, utrzymanie przez pierwszy rok, hosting, licencje i koszt ewentualnej zmiany wykonawcy. Poniższa tabela pomaga ocenić oferty punktowo, np. w skali od 0 do 2 dla każdego kryterium:</p>
+<table>
+<thead>
+<tr><th>Kryterium</th><th>Co sprawdzić</th><th>Sygnał ostrzegawczy</th></tr>
+</thead>
+<tbody>
+<tr><td>Zakres i założenia</td><td>Lista funkcji, założenia, wyłączenia</td><td>Brak wyłączeń lub opis w jednym akapicie</td></tr>
+<tr><td>Szczegółowość wyceny</td><td>Moduły, godziny na role, przedziały</td><td>Jedna kwota bez rozbicia</td></tr>
+<tr><td>Zespół</td><td>Role, doświadczenie, zaangażowanie, podwykonawcy</td><td>Brak informacji, kto będzie pracował</td></tr>
+<tr><td>Jakość</td><td>Testy, staging, CI/CD, przegląd kodu</td><td>Brak pozycji na QA</td></tr>
+<tr><td>Harmonogram</td><td>Kamienie milowe, odbiory, bufor</td><td>Termin bez czasu na testy i poprawki</td></tr>
+<tr><td>Prawa i dostęp</td><td>Przeniesienie praw, repozytorium i konta klienta</td><td>Kod dostępny dopiero po zakończeniu</td></tr>
+<tr><td>Utrzymanie</td><td>Gwarancja, SLA, koszt utrzymania</td><td>Brak jakiejkolwiek wzmianki</td></tr>
+<tr><td>Ryzyko uzależnienia</td><td>Technologia, dokumentacja, zasady przekazania</td><td>Zamknięta platforma wykonawcy</td></tr>
+<tr><td>Komunikacja</td><td>Raporty, spotkania, osoba kontaktowa</td><td>Wymijające odpowiedzi na pytania</td></tr>
+</tbody>
+</table>
+<p>Nadaj kryteriom wagi odpowiednie dla projektu. Przy aplikacji przetwarzającej dane wrażliwe bezpieczeństwo i jakość ważą więcej niż termin, a przy prototypie do testu rynku odwrotnie. W systemach przetwarzających dane klientów zaplanuj też <a href="/blog/test-penetracyjny-jak-wyglada/">test penetracyjny</a> przed uruchomieniem i sprawdź, czy któraś oferta go uwzględnia.</p>
+
+<h2>Kiedy niezależna ocena techniczna oferty się opłaca</h2>
+<p>Druga opinia osoby technicznej, która nie jest stroną transakcji, ma największy sens, gdy:</p>
+<ul>
+<li>w firmie nie ma nikogo, kto oceni architekturę, technologię i realność wyceny,</li>
+<li>budżet projektu jest istotny w skali firmy albo system będzie krytyczny dla sprzedaży lub obsługi klientów,</li>
+<li>oferty różnią się wyraźnie i nie potrafisz wskazać przyczyny,</li>
+<li>wykonawca proponuje fixed price przy zakresie, który sam uważasz za niejasny,</li>
+<li>przejmujesz projekt od poprzedniego wykonawcy albo oceniasz firmę lub produkt przed inwestycją.</li>
+</ul>
+<p>Niezależny ekspert przegląda zakres i wyceny, zadaje wykonawcom pytania techniczne, wskazuje brakujące pozycje, pomaga przygotować załącznik techniczny do umowy i kryteria odbioru. Ważne, żeby nie pobierał prowizji od żadnego z oferentów. Kiedy taka rola ma sens na dłużej, opisujemy w artykule <a href="/blog/zewnetrzny-cto-kiedy-sie-oplaca/">zewnętrzny CTO: kiedy się opłaca</a>. Przeglądy ofert i drugą opinię techniczną przygotowujemy też w ramach <a href="/#uslugi">naszych usług</a>.</p>

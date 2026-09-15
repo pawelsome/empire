@@ -1,0 +1,168 @@
+<!--META
+{
+  "slug": "backdoor-web-shell-php",
+  "title": "Backdoor PHP i web shell: jak je znaleźć, zanim atakujący wróci",
+  "metaTitle": "Backdoor PHP i web shell: jak je znaleźć i usunąć",
+  "description": "Backdoor PHP pozwala atakującemu wrócić po każdym czyszczeniu strony. Zobacz, jak szukać web shelli w plikach, bazie i logach oraz co zrobić po ich usunięciu.",
+  "category": "Bezpieczeństwo",
+  "tags": ["backdoor", "web shell", "PHP", "WordPress", "analiza logów", "usuwanie malware"],
+  "primaryKeyword": "backdoor php",
+  "tldr": [
+    "Backdoor PHP to ukryty kod, który pozwala atakującemu wrócić na serwer; web shell to rozbudowany panel do wykonywania poleceń przez przeglądarkę.",
+    "Usunięcie widocznego spamu lub przekierowania bez usunięcia backdoorów kończy się ponowną infekcją.",
+    "Najmniej fałszywych alarmów daje porównanie plików z czystymi wersjami, np. wp core verify-checksums, a nie samo szukanie słów eval czy base64_decode.",
+    "Sprawdź miejsca niewidoczne w panelu: mu-plugins, pliki PHP w uploads, .user.ini z auto_prepend_file, zadania cron i nowe konta administratorów.",
+    "Po usunięciu wymień wszystkie hasła i klucze, załataj lukę, zablokuj PHP w uploads i włącz monitoring integralności plików."
+  ],
+  "faq": [
+    {"q": "Czy wtyczka bezpieczeństwa wykryje każdy backdoor?", "a": "Nie. Skanery w dużej mierze opierają się na sygnaturach znanego złośliwego kodu, a backdoor bywa krótki, zaciemniony albo zapisany w bazie danych. Traktuj skaner jako pierwsze sito i uzupełnij go porównaniem plików z czystymi wersjami oraz przeglądem logów serwera."},
+    {"q": "Czy base64_decode w pliku PHP oznacza infekcję?", "a": "Sama funkcja nie, bo używają jej legalne wtyczki i biblioteki. Podejrzany jest kontekst: dane z żądania ($_POST, $_COOKIE) albo długi zakodowany napis trafia do dekodowania, a wynik do eval lub funkcji wykonującej polecenia systemowe. Zwróć też uwagę na losowe nazwy zmiennych i jedną bardzo długą linię kodu."},
+    {"q": "Czy przywrócenie kopii zapasowej usuwa backdoor?", "a": "Tylko wtedy, gdy kopia pochodzi sprzed włamania, a to trudno ustalić bez analizy plików i logów. Backdoor bywa wgrany długo przed widocznym atakiem. Nawet czysta kopia nie pomoże, jeśli nie załatasz luki i nie zmienisz haseł, bo atakujący wejdzie tą samą drogą."},
+    {"q": "Jak sprawdzić, czy ktoś dodał konto administratora w WordPressie?", "a": "Uruchom wp user list --role=administrator --fields=ID,user_login,user_email,user_registered --skip-plugins --skip-themes i porównaj wynik z listą osób, które znasz. Zwróć uwagę na daty rejestracji zbieżne z datą infekcji. Złośliwy kod potrafi ukrywać konta w panelu, dlatego odpytanie przez WP-CLI bez ładowania wtyczek jest pewniejsze."},
+    {"q": "Czy po znalezieniu web shella trzeba zgłosić incydent do UODO?", "a": "Jeśli atakujący mógł mieć dostęp do danych osobowych, na przykład bazy klientów sklepu, administrator danych ocenia ryzyko i w razie potrzeby zgłasza naruszenie do UODO w ciągu 72 godzin od jego stwierdzenia. Web shell zwykle daje dostęp do bazy danych, więc tej oceny nie pomijaj. Każde naruszenie trzeba też udokumentować wewnętrznie."}
+  ],
+  "sources": [
+    {"title": "NSA Cybersecurity: Mitigating Web Shells (repozytorium z wytycznymi NSA i ASD)", "url": "https://github.com/nsacyber/Mitigating-Web-Shells"},
+    {"title": "Sucuri: Hidden Backdoors Uncovered in WordPress Malware Investigation (2025)", "url": "https://blog.sucuri.net/2025/02/hidden-backdoors-uncovered-in-wordpress-malware-investigation.html"},
+    {"title": "BleepingComputer: WordPress plugin disguised as a security tool injects backdoor (2025)", "url": "https://www.bleepingcomputer.com/news/security/wordpress-plugin-disguised-as-a-security-tool-injects-backdoor/"},
+    {"title": "WP-CLI: wp core verify-checksums", "url": "https://developer.wordpress.org/cli/commands/core/verify-checksums/"},
+    {"title": "WP-CLI: wp plugin verify-checksums", "url": "https://developer.wordpress.org/cli/commands/plugin/verify-checksums/"},
+    {"title": "PHP Manual: assert()", "url": "https://www.php.net/manual/en/function.assert.php"},
+    {"title": "PHP Manual: create_function()", "url": "https://www.php.net/manual/en/function.create-function.php"}
+  ],
+  "linkedin": "Typowy błąd przy czyszczeniu zhakowanej strony: usunięcie spamu i zostawienie backdoora.\n\nBackdoor PHP to często kilka linijek, które pozwalają atakującemu wgrać ładunek od nowa. Na co zwrócić uwagę:\n- porównuj pliki z czystymi wersjami (wp core verify-checksums), zamiast polegać tylko na grepie po eval,\n- sprawdzaj mu-plugins, pliki PHP w uploads i .user.ini z auto_prepend_file,\n- filtruj pliki po ctime, bo datę modyfikacji łatwo sfałszować,\n- w logach szukaj żądań POST do plików, które nie powinny ich przyjmować,\n- po usunięciu wymień wszystkie hasła, klucze i zamknij lukę.\n\nPoradnik z bezpiecznymi poleceniami: {url}\n\n#cyberbezpieczeństwo #PHP #WordPress #malware #incidentresponse"
+}
+META-->
+<p>Backdoor PHP to ukryty fragment kodu, który pozwala atakującemu wrócić na serwer nawet po usunięciu widocznego wirusa. Web shell to jego rozbudowana odmiana: panel do przeglądania plików i wykonywania poleceń przez przeglądarkę. Żeby się ich pozbyć, porównaj pliki z czystymi wersjami, przeszukaj kod i logi, a potem zamknij lukę i wymień hasła.</p>
+
+<h2>Czym jest backdoor PHP, a czym web shell</h2>
+<p>Oba pojęcia opisują to samo zjawisko w różnej skali. Backdoor bywa jedną linijką, która przyjmuje kod z parametru żądania albo z ciasteczka i go wykonuje. Web shell to pełne narzędzie: menedżer plików, konsola poleceń systemowych, dostęp do bazy danych. NSA i australijskie ASD opisują web shell jako złośliwe oprogramowanie na serwerze WWW, które pozwala wykonywać dowolne polecenia przesyłane przez HTTP lub HTTPS.</p>
+<p>Backdoor nie musi być osobnym plikiem. W praktyce spotkasz:</p>
+<ul>
+<li>plik o niewinnej nazwie, udający element systemu, cache albo tłumaczenia,</li>
+<li>kilka linijek doklejonych do prawdziwego pliku, np. <code>index.php</code>, <code>wp-config.php</code> czy <code>functions.php</code>,</li>
+<li>fałszywą wtyczkę, która ukrywa się na liście w panelu,</li>
+<li>kod zapisany w bazie danych i wykonywany przez inną część aplikacji,</li>
+<li>dodatkowe konto administratora albo mechanizm „awaryjnego” logowania,</li>
+<li>zadanie cron lub zmodyfikowany plik, który odtwarza usunięte elementy.</li>
+</ul>
+<p>Przykład z 2025 roku: Wordfence opisało fałszywą wtyczkę <code>WP-antymalwary-bot.php</code>. Ukrywała się w panelu, pozwalała zalogować się jako administrator zapytaniem z zaszytym w kodzie hasłem, a zmodyfikowany <code>wp-cron.php</code> odtwarzał ją i ponownie aktywował po usunięciu.</p>
+
+<h2>Dlaczego strona zaraża się ponownie po usunięciu wirusa</h2>
+<p>Widoczne skutki włamania, takie jak spam, przekierowania czy fałszywe formularze płatności, to ładunek. Backdoor to sposób, żeby ten ładunek wgrać ponownie. Jeśli usuniesz tylko ładunek, atakujący wraca tą samą drogą i po jakimś czasie masz powtórkę, często w innym miejscu.</p>
+<p>Atakujący lubią zostawiać kilka furtek. W lutym 2025 roku Sucuri opisało infekcję, w której plik w <code>mu-plugins</code> pobierał zaszyfrowany ładunek z <code>wp-content/uploads/2024/12/index.txt</code>, a niezależnych backdoorów było więcej, żeby dostęp przetrwał usunięcie jednego z nich. Stąd prosta zasada: po znalezieniu pierwszego szukaj dalej. Z tego samego powodu wraca <a href="/blog/japonski-spam-seo-przekierowania/">japoński spam SEO i złośliwe przekierowania</a>.</p>
+
+<h2>Jak znaleźć backdoor PHP w plikach</h2>
+<aside class="callout"><p>Polecenia w tej sekcji tylko czytają i wyświetlają wyniki. Uruchamiaj je po zrobieniu pełnej kopii plików i bazy, najlepiej na kopii strony. Niczego nie kasuj, dopóki nie zabezpieczysz dowodów.</p></aside>
+
+<h3>Porównaj pliki z czystymi wersjami</h3>
+<p>To metoda z najmniejszą liczbą fałszywych alarmów, bo nie zgaduje, tylko porównuje. Wytyczne NSA wskazują porównanie z wersją znaną jako dobra jako najskuteczniejszy sposób wykrywania większości web shelli. W WordPressie WP-CLI sprawdza rdzeń i wtyczki z repozytorium WordPress.org względem oficjalnych sum kontrolnych. Dodawaj flagi <code>--skip-plugins --skip-themes</code>, żeby nie uruchamiać podejrzanego kodu podczas ładowania WordPressa.</p>
+<pre><code class="language-bash"># Rdzeń WordPressa: zmienione pliki i pliki, których nie powinno być
+wp core verify-checksums --include-root --skip-plugins --skip-themes
+
+# Wtyczki pobrane z repozytorium WordPress.org
+wp plugin verify-checksums --all --skip-plugins --skip-themes
+
+# Aplikacja wdrażana z Gita: zmiany względem repozytorium
+git status --porcelain
+git diff --stat</code></pre>
+<p>Sumy kontrolne nie obejmują motywów, wtyczek premium ani katalogu uploads. Wtyczki komercyjne pobierz ponownie od producenta w tej samej wersji i porównaj katalogi poleceniem <code>diff -rq czysta/ serwer/</code>.</p>
+
+<h3>Szukaj podejrzanych funkcji i zaciemnionego kodu</h3>
+<p>Backdoor musi w którymś momencie zamienić tekst na wykonywany kod albo polecenie systemowe. Te funkcje i konstrukcje warto rozpoznawać od razu:</p>
+<table>
+<thead>
+<tr><th>Funkcja</th><th>Dlaczego jest podejrzana</th></tr>
+</thead>
+<tbody>
+<tr><td><code>eval</code></td><td>Wykonuje dowolny kod PHP przekazany jako tekst</td></tr>
+<tr><td><code>assert</code></td><td>Przed PHP 8.0 wykonywała napis jak kod; w starych infekcjach nadal ją spotkasz</td></tr>
+<tr><td><code>preg_replace</code> z modyfikatorem <code>/e</code></td><td>Wykonywał wynik zamiany jako kod; nie działa od PHP 7.0, ale zostaje w starym malware</td></tr>
+<tr><td><code>create_function</code></td><td>Tworzyła funkcję z napisu przez eval; usunięta w PHP 8.0</td></tr>
+<tr><td><code>base64_decode</code>, <code>gzinflate</code>, <code>gzuncompress</code>, <code>str_rot13</code></td><td>Same w sobie niegroźne, ale służą do rozpakowywania ukrytego ładunku, zwykle w kilku warstwach</td></tr>
+<tr><td><code>system</code>, <code>exec</code>, <code>shell_exec</code>, <code>passthru</code>, <code>proc_open</code>, <code>popen</code></td><td>Wykonywanie poleceń systemowych</td></tr>
+<tr><td><code>file_put_contents</code>, <code>move_uploaded_file</code> z danymi z żądania</td><td>Zapisywanie nowych plików na serwerze</td></tr>
+</tbody>
+</table>
+<pre><code class="language-bash"># Pliki PHP z typowymi funkcjami backdoorów (spodziewaj się fałszywych trafień)
+grep -rlE --include="*.php" '(eval|assert|gzinflate|gzuncompress|str_rot13)[[:space:]]*\(' /sciezka/do/strony
+
+# Dane z żądania przekazywane prosto do wykonania
+grep -rnE --include="*.php" '(eval|assert|system|shell_exec|passthru)[[:space:]]*\([[:space:]]*\$_(POST|GET|REQUEST|COOKIE|SERVER)' /sciezka/do/strony
+
+# Bardzo długie linie, typowe dla zaciemnionego kodu
+find /sciezka/do/strony -name "*.php" -exec awk 'length($0) &gt; 5000 { print FILENAME; exit }' {} \;</code></pre>
+<p>Legalne wtyczki też używają <code>base64_decode</code> czy <code>exec</code>, więc wynik to lista do przejrzenia. Liczy się kontekst: dane z <code>$_POST</code> lub <code>$_COOKIE</code> trafiające do dekodowania i wykonania, zmienne o losowych nazwach, jedna gigantyczna linia. Grep nie złapie też wszystkiego. W infekcji opisanej przez Sucuri nazwę funkcji sklejano z kawałków (<code>'ba'.'se'.'64_de'.'co'.'de'</code>), więc prosty wzorzec jej nie wykryje.</p>
+
+<h3>Sprawdź uploads i świeżo zmienione pliki</h3>
+<p>Katalog na przesyłane pliki nie powinien zawierać żadnego PHP. Szukaj też kodu PHP ukrytego w plikach z inną końcówką, bo można go dołączyć przez <code>include</code> z dowolnego miejsca.</p>
+<pre><code class="language-bash"># Pliki wykonywalne w uploads
+find /sciezka/do/strony/wp-content/uploads -type f \( -iname "*.php*" -o -iname "*.phtml" -o -iname "*.phar" \)
+
+# Kod PHP ukryty w obrazkach, plikach .txt, .ico itp.
+grep -rl "&lt;?php" /sciezka/do/strony/wp-content/uploads
+
+# Pliki PHP zmienione w ostatnich 14 dniach, od najnowszych, według ctime
+find /sciezka/do/strony -type f -name "*.php" -ctime -14 -printf '%C+ %p\n' | sort -r
+
+# mu-plugins i dyrektywy PHP ładujące plik przed każdym skryptem
+ls -la /sciezka/do/strony/wp-content/mu-plugins/
+grep -rn "auto_prepend_file\|auto_append_file" --include=".user.ini" --include=".htaccess" --include="php.ini" /sciezka/do/strony</code></pre>
+<p>Datę modyfikacji (<code>mtime</code>) atakujący zmienia jednym poleceniem <code>touch</code>, żeby plik wyglądał na stary. Czas zmiany metadanych (<code>ctime</code>) jest trudniejszy do podrobienia, dlatego filtruj po nim. Gdy znajdziesz pierwszy zainfekowany plik, sprawdź jego <code>ctime</code> i wyszukaj inne pliki zmienione w tym samym oknie czasowym.</p>
+
+<h3>Konta, zadania cron i baza danych</h3>
+<pre><code class="language-bash">wp user list --role=administrator --fields=ID,user_login,user_email,user_registered --skip-plugins --skip-themes
+wp cron event list --skip-plugins --skip-themes
+crontab -l
+wp db search 'eval(' --all-tables --skip-plugins --skip-themes
+wp db search 'base64_decode' --all-tables --skip-plugins --skip-themes</code></pre>
+
+<h2>Co pokażą logi serwera</h2>
+<p>Pliki mówią, co zostało zmienione. Logi mówią, jak atakujący wszedł i czy nadal korzysta z dostępu. Poproś hosting o logi dostępu z możliwie długiego okresu, bo są rotowane i po jakimś czasie znikają.</p>
+<p>Szukaj przede wszystkim:</p>
+<ul>
+<li>żądań POST do plików, które nie powinny ich przyjmować, zwłaszcza w uploads, w głębi katalogów wtyczek albo do plików o losowych nazwach,</li>
+<li>odpowiedzi 200 dla plików PHP, których nie ma w czystej instalacji,</li>
+<li>adresów odwiedzanych przez bardzo małą liczbę adresów IP lub User-Agentów, bez nagłówka Referer,</li>
+<li>zapytań tuż przed <code>ctime</code> pierwszego zainfekowanego pliku, bo tam zwykle widać wykorzystanie luki.</li>
+</ul>
+<pre><code class="language-bash"># Adresy najczęściej wywoływane metodą POST (format logu combined)
+grep '"POST ' /var/log/apache2/access.log | awk '{print $7}' | sort | uniq -c | sort -rn | head -30
+
+# Żądania do plików PHP w uploads
+grep -E '"(GET|POST) /wp-content/uploads/[^" ]*\.php' /var/log/apache2/access.log
+
+# Wszystko, co robił jeden podejrzany adres IP (tu adres z puli dokumentacyjnej)
+grep '^203\.0\.113\.45 ' /var/log/apache2/access.log</code></pre>
+<p>Tak samo podchodzą do tematu wytyczne NSA i ASD: szukanie rzadko odwiedzanych adresów, nietypowych klientów i brakujących nagłówków Referer. Na serwerze z dostępem roota warto też sprawdzić, czy proces serwera WWW nie uruchamiał poleceń w rodzaju <code>whoami</code> czy <code>sh</code>, co pokażą reguły auditd. Przy kilku serwerach ręczny grep przestaje wystarczać i wtedy przydaje się centralne zbieranie logów, o którym piszemy w artykule o <a href="/blog/monitoring-logow-elk-grafana/">monitoringu logów w ELK i Grafanie</a>.</p>
+
+<h2>Jak bezpiecznie usunąć backdoor i web shell</h2>
+<aside class="callout"><p>Kroki poniżej obejmują usuwanie plików i kont. Wykonaj je dopiero po zrobieniu pełnej kopii plików, bazy i logów przechowywanej poza serwerem. Jeśli dane klientów mogły wyciec, ta kopia będzie potrzebna do oceny naruszenia.</p></aside>
+<ol>
+<li>Włącz tryb serwisowy lub ogranicz dostęp do strony na czas prac.</li>
+<li>Podejrzane pliki przenieś do kwarantanny poza katalogiem publicznym zamiast od razu kasować, np. <code>mkdir -p ~/kwarantanna &amp;&amp; mv plik.php ~/kwarantanna/</code>.</li>
+<li>Rdzeń, wtyczki i motywy zainstaluj od nowa z oficjalnych źródeł. Nie czyść pojedynczych linijek, jeśli możesz podmienić cały plik.</li>
+<li>Usuń nieznane konta administratorów, zadania cron i wpisy <code>auto_prepend_file</code>.</li>
+<li>Wymień wszystkie sekrety: hasła do hostingu, SSH, SFTP i bazy, klucze w <code>wp-config.php</code>, klucze API bramek płatności i usług zewnętrznych.</li>
+<li>Zamknij lukę, przez którą wszedł atakujący: zaktualizuj lub usuń podatną wtyczkę, wyłącz nieużywane konta FTP.</li>
+<li>Zablokuj wykonywanie PHP w katalogu uploads i ponownie przeskanuj całość.</li>
+</ol>
+<pre><code class="language-apacheconf"># wp-content/uploads/.htaccess (Apache 2.4)
+&lt;FilesMatch "\.(php|phtml|phar)$"&gt;
+    Require all denied
+&lt;/FilesMatch&gt;</code></pre>
+<pre><code class="language-nginx"># nginx: w bloku server, przed blokiem przekazującym pliki .php do PHP-FPM
+location ~* ^/wp-content/uploads/.*\.(php|phtml|phar)$ {
+    deny all;
+}</code></pre>
+<p>Jeśli web shell działał na VPS lub serwerze dedykowanym, a atakujący mógł podnieść uprawnienia, nie ufaj już temu systemowi. Bezpieczniej postawić serwer od nowa i wgrać na niego wyczyszczoną aplikację.</p>
+
+<h2>Jak nie dopuścić do ponownej infekcji</h2>
+<ul>
+<li>Monitoruj integralność plików. Alert o nowym pliku PHP w uploads albo zmianie w <code>wp-config.php</code> daje czas na reakcję, zanim ktoś zobaczy spam. Takie reguły skonfigurujesz np. w Wazuhu, o czym piszemy w artykule <a href="/blog/wazuh-wdrozenie-mala-firma/">Wazuh w małej firmie</a>.</li>
+<li>Rozdziel uprawnienia: użytkownik, na którym działa PHP, nie powinien móc zapisywać plików kodu. Zapis zostaw tylko tam, gdzie jest potrzebny.</li>
+<li>Wyłącz edycję plików z panelu i instaluj rozszerzenia wyłącznie z zaufanych źródeł, nigdy z „darmowych” kopii wtyczek premium.</li>
+<li>Rozważ wyłączenie w <code>php.ini</code> funkcji wykonujących polecenia systemowe (<code>disable_functions</code>), jeśli aplikacja ich nie potrzebuje. Przetestuj to najpierw na kopii strony.</li>
+<li>Oceń, czy doszło do naruszenia ochrony danych osobowych. Jeśli tak i istnieje ryzyko dla osób, których dane dotyczą, masz 72 godziny od stwierdzenia naruszenia na zgłoszenie do UODO.</li>
+</ul>
+<p>Pełną listę ustawień znajdziesz w <a href="/blog/zabezpieczenie-wordpress-checklista/">checkliście zabezpieczenia WordPressa</a>, a jeśli dopiero zauważyłeś pierwsze objawy, zacznij od artykułu <a href="/blog/zainfekowany-wordpress-objawy/">zainfekowany WordPress: objawy i pierwsza godzina</a>. Szukanie backdoorów i analizę powłamaniową wykonujemy też <a href="/#bezpieczenstwo">zawodowo</a>.</p>

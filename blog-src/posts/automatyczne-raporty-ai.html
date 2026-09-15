@@ -1,0 +1,135 @@
+<!--META
+{
+  "slug": "automatyczne-raporty-ai",
+  "title": "Automatyczne raporty z AI: agent, który co tydzień zrobi podsumowanie",
+  "metaTitle": "Automatyczne raportowanie z AI: tygodniowe podsumowania",
+  "description": "Automatyczne raportowanie z AI: architektura agenta, dane z CRM, Jiry, GA4 i monitoringu, liczby liczone w kodzie, komentarz od AI i najczęstsze pułapki.",
+  "category": "AI w firmie",
+  "tags": ["automatyczne raportowanie", "agent AI", "raporty", "GA4", "Grafana", "automatyzacja"],
+  "primaryKeyword": "automatyczne raportowanie",
+  "tldr": [
+    "Tygodniowy raport z AI to zaplanowany proces: pobranie danych przez API lub MCP, obliczenia w kodzie lub SQL, komentarz modelu językowego, dostarczenie i przegląd przez człowieka.",
+    "Model językowy nie powinien liczyć żadnych wartości w raporcie; najpewniej działa wzorzec, w którym pisze komentarz z miejscami na liczby, a kod je wstawia i odrzuca tekst z nieznanymi wartościami.",
+    "Dobrze nadają się do automatyzacji raporty sprzedaży z CRM, status projektów z Jiry i GitHuba, marketing z GA4 i Search Console, przepływy pieniężne oraz tygodniowy przegląd bezpieczeństwa.",
+    "Najczęstsze pułapki to zmyślone liczby, nieaktualne lub niepełne dane, pusta odpowiedź API potraktowana jak zero i odbiorcy widzący dane, do których nie powinni mieć dostępu.",
+    "Każdy raport powinien zawierać sekcję o stanie danych: źródła, godzinę pobrania i znane braki."
+  ],
+  "faq": [
+    {"q": "Czy ChatGPT może sam przygotować raport sprzedaży z danych z CRM?", "a": "Może napisać tekst, ale nie powinien liczyć wartości. Modele językowe potrafią podać wiarygodnie wyglądającą, błędną sumę lub procent. Obliczenia wykonaj w SQL lub w kodzie, a modelowi przekaż gotowe wyniki do skomentowania."},
+    {"q": "Jak często uruchamiać automatyczny raport?", "a": "Tak często, jak odbiorca podejmuje decyzje na jego podstawie. Dla sprzedaży i projektów zwykle co tydzień, dla bezpieczeństwa codzienny skrót plus tygodniowe podsumowanie, dla finansów tygodniowo lub miesięcznie. Pamiętaj, że część źródeł, np. Search Console, udostępnia ostateczne dane z opóźnieniem."},
+    {"q": "Jak wysłać raport na Microsoft Teams?", "a": "Microsoft wycofuje konektory Office 365 w Teams (wyłączenie zaplanowano na maj 2026), więc stare adresy webhooków nie są już dobrym wyborem. Microsoft zaleca aplikację Workflows, która udostępnia nowy adres webhooka. Alternatywą jest wysyłka e-mailem lub przez Microsoft Graph."},
+    {"q": "Czy do automatycznych raportów potrzebny jest agent AI, czy wystarczy BI?", "a": "Jeśli wystarczą wykresy i tabele, dashboard w narzędziu BI albo zaplanowany raport PDF z Grafany w wersji Enterprise lub Cloud załatwi sprawę bez modelu językowego. AI przydaje się wtedy, gdy odbiorca potrzebuje komentarza: co się zmieniło, co jest nietypowe i czego dotyczy decyzja."},
+    {"q": "Jak sprawdzić, czy AI nie zmyśliło liczb w raporcie?", "a": "Najpewniej jest nie pozwolić modelowi wpisywać liczb. Model używa nazwanych miejsc, np. {przychod_tydzien}, a kod podstawia wartości i odrzuca tekst z nieznaną nazwą lub cyfrą spoza miejsc. Dodatkowo raport przegląda właściciel danych przed wysyłką szerszemu gronu."}
+  ],
+  "sources": [
+    {"title": "Google for Developers: Google Analytics Data API", "url": "https://developers.google.com/analytics/devguides/reporting/data/v1"},
+    {"title": "Google for Developers: Search Console API, Search Analytics query", "url": "https://developers.google.com/webmaster-tools/v1/searchanalytics/query"},
+    {"title": "Slack: Sending messages using incoming webhooks", "url": "https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks"},
+    {"title": "Microsoft 365 Developer Blog: Retirement of Office 365 connectors within Microsoft Teams", "url": "https://devblogs.microsoft.com/microsoft365dev/retirement-of-office-365-connectors-within-microsoft-teams/"},
+    {"title": "Grafana Docs: Create and manage reports", "url": "https://grafana.com/docs/grafana/latest/dashboards/create-reports/"},
+    {"title": "OWASP GenAI Security Project: LLM09 Misinformation", "url": "https://genai.owasp.org/llmrisk/llm092025-misinformation/"},
+    {"title": "Claude Code Docs: GitHub Actions (uruchamianie według harmonogramu)", "url": "https://code.claude.com/docs/en/github-actions"}
+  ],
+  "linkedin": "Automatyczny raport z AI ma jedną twardą zasadę: model językowy nie liczy żadnej liczby.\n\nJak to budujemy:\n- harmonogram uruchamia pobranie danych z CRM, Jiry, GA4 czy Wazuha przez API,\n- wszystkie wskaźniki i porównania liczy SQL lub kod,\n- model pisze tylko komentarz i wskazuje anomalie, używając nazwanych miejsc na liczby, które kod potem wypełnia,\n- raport ma sekcję o stanie danych: źródła, godzinę pobrania, braki,\n- zanim trafi do zarządu, przegląda go właściciel danych.\n\nNajczęstszy błąd, jaki widzimy: pusta odpowiedź API potraktowana jak zero i komentarz o dramatycznym spadku sprzedaży.\n\nPrzykładowa struktura raportu i lista pułapek: {url}\n\n#AI #Raportowanie #Automatyzacja #BusinessIntelligence"
+}
+META-->
+<p>Automatyczne raportowanie z AI to zaplanowany proces, który co tydzień pobiera dane z CRM, Jiry, GA4 czy monitoringu, liczy wskaźniki w kodzie lub SQL, a model językowy dopisuje tylko komentarz i wskazuje anomalie. Gotowy raport trafia na maila, Slacka lub Teams, a przed wysłaniem szerszemu gronu sprawdza go człowiek.</p>
+<p>Poniżej znajdziesz przykłady raportów, architekturę krok po kroku, wzorzec chroniący przed zmyślonymi liczbami i listę pułapek.</p>
+
+<h2>Jakie raporty najlepiej zautomatyzować</h2>
+<p>Zacznij od raportu, który ktoś już dziś składa ręcznie, co tydzień, z tych samych źródeł. Masz wtedy gotową definicję wskaźników i punkt odniesienia do porównania.</p>
+<table>
+<thead><tr><th>Raport</th><th>Źródła danych</th><th>Co liczy kod</th><th>Co pisze AI</th></tr></thead>
+<tbody>
+<tr><td>Sprzedaż tygodniowa</td><td>API systemu CRM</td><td>Nowe leady, wygrane i przegrane szanse, wartość lejka, konwersja między etapami, porównanie z poprzednim tygodniem</td><td>Które zmiany są nietypowe, które duże szanse od dawna stoją bez aktywności</td></tr>
+<tr><td>Status projektów</td><td>Jira, GitHub</td><td>Zamknięte zadania, PR otwarte dłużej niż ustalony próg, otwarte błędy krytyczne, odchylenie od planu sprintu</td><td>Ryzyka dla terminu, blokery, krótkie streszczenie dla klienta</td></tr>
+<tr><td>Marketing</td><td>GA4 Data API, Search Console API, Google Ads API</td><td>Sesje, konwersje, koszt konwersji, kliknięcia i CTR z wyszukiwarki, zmiany dla najważniejszych stron</td><td>Co się zmieniło i jakie przyczyny warto sprawdzić</td></tr>
+<tr><td>Przepływy pieniężne</td><td>System księgowy, wyciągi bankowe</td><td>Wpływy, wydatki, należności przeterminowane, prognoza salda na kolejne tygodnie</td><td>Komentarz o należnościach i odchyleniach od budżetu</td></tr>
+<tr><td>IT i bezpieczeństwo</td><td>Wazuh, Grafana, Prometheus</td><td>Alerty według poziomu, nowe podatności, dostępność usług, zajętość dysków, wygasające certyfikaty</td><td>Co wymaga działania w tym tygodniu, a co jest szumem</td></tr>
+</tbody>
+</table>
+<p>Ostatni typ raportu opiera się na dobrze skonfigurowanym monitoringu. Jeśli dopiero go budujesz, zajrzyj do wpisów <a href="/blog/wazuh-wdrozenie-mala-firma/">Wazuh w małej firmie</a> i <a href="/blog/monitoring-logow-elk-grafana/">Monitoring logów: ELK i Grafana</a>.</p>
+
+<h2>Architektura agenta raportowego krok po kroku</h2>
+<p>Większość tego procesu to zwykła inżynieria danych. Model językowy odpowiada za jeden etap z ośmiu.</p>
+<ol>
+<li><strong>Wyzwalacz według harmonogramu</strong>: cron na serwerze, zaplanowany workflow w CI, n8n albo funkcja w chmurze. Uruchom raport o stałej porze, np. w poniedziałek o 6:00, po zamknięciu tygodnia.</li>
+<li><strong>Pobranie danych</strong> przez API lub serwery MCP (<a href="/blog/czym-jest-mcp-model-context-protocol/">czym jest MCP</a>) na koncie technicznym z uprawnieniami tylko do odczytu.</li>
+<li><strong>Zapis migawki</strong> surowych danych z datą pobrania. Dzięki temu odtworzysz raport sprzed miesiąca i wyjaśnisz, skąd wzięła się liczba.</li>
+<li><strong>Kontrola kompletności</strong>: czy każde źródło odpowiedziało, czy liczba rekordów mieści się w oczekiwanym zakresie, czy dane obejmują cały okres.</li>
+<li><strong>Obliczenia</strong> w SQL lub kodzie: wskaźniki, porównania okresów, średnie kroczące.</li>
+<li><strong>Wykrywanie anomalii regułami</strong>, np. zmiana o więcej niż ustalony procent albo wartość poza zakresem z ostatnich tygodni. Reguła decyduje, co jest anomalią, model tylko ją opisuje.</li>
+<li><strong>Komentarz AI</strong> na podstawie gotowych wyników i listy anomalii.</li>
+<li><strong>Dostarczenie i przegląd</strong>: szkic do właściciela danych, po akceptacji wysyłka do odbiorców i archiwizacja.</li>
+</ol>
+<p>Jeśli uruchamiasz raport jako zaplanowany workflow w GitHub Actions, pamiętaj, że harmonogramy działają tylko z domyślnej gałęzi, a w publicznych repozytoriach GitHub wyłącza je po 60 dniach bez aktywności.</p>
+
+<h2>Dlaczego model językowy nie może liczyć liczb w raporcie</h2>
+<p>Model generuje tekst, który brzmi prawdopodobnie. Suma, procent czy zaokrąglenie mogą wyjść błędnie, a w gładkim akapicie nikt tego nie zauważy. OWASP opisuje ten problem jako misinformation (LLM09) i zaleca m.in. weryfikację wyników przez ludzi.</p>
+<p>Najpewniejszy wzorzec: model w ogóle nie wpisuje liczb. Dostaje słownik gotowych wartości i pisze komentarz z nazwanymi miejscami, a kod podstawia wartości i odrzuca tekst, który odwołuje się do nieistniejącej nazwy albo zawiera cyfry spoza miejsc. Uproszczony szkic w Pythonie:</p>
+<pre><code class="language-python">import re
+
+facts = {
+    "przychod_tydzien": "48 200 zł",
+    "przychod_zmiana": "-12,4%",
+    "wygrane_szanse": "14",
+}
+
+# Tekst od modelu, np.:
+# "Przychód wyniósł {przychod_tydzien} ({przychod_zmiana} tydzień do tygodnia)."
+commentary = llm_commentary
+
+bez_miejsc = re.sub(r"\{[a-z_]+\}", "", commentary)
+if re.search(r"\d", bez_miejsc):
+    raise ValueError("Model wpisał liczbę poza miejscami na wartości")
+
+try:
+    report_text = commentary.format_map(facts)
+except KeyError as missing:
+    raise ValueError(f"Model użył nieznanej wartości: {missing}")</code></pre>
+<p>Reguła „żadnych cyfr poza miejscami” jest surowa: odrzuci też zdanie „trzy największe szanse” zapisane cyfrą. To dobra cena za pewność, że każda liczba w raporcie pochodzi z obliczeń. Nieudane sprawdzenie powinno uruchomić ponowną generację, a po kilku próbach wysłać raport bez komentarza.</p>
+<aside class="callout"><p>Dane wejściowe do komentarza, takie jak notatki handlowców w CRM, tytuły zgłoszeń czy treść logów, mogą zawierać tekst wpisany przez osoby z zewnątrz. Traktuj je jako niezaufane, bo mogą przemycić polecenia dla modelu. Więcej o tym we wpisie <a href="/blog/prompt-injection-bezpieczenstwo-agentow-ai/">Prompt injection i bezpieczeństwo agentów AI</a>.</p></aside>
+
+<h2>Przykładowa struktura tygodniowego raportu</h2>
+<p>Dobry raport da się przeczytać w dwie minuty. Poniższy układ sprawdza się dla sprzedaży, projektów i marketingu:</p>
+<ol>
+<li><strong>Najważniejsze w trzech zdaniach</strong>: komentarz AI z wartościami wstawionymi przez kod.</li>
+<li><strong>Tabela wskaźników</strong>: wartość, poprzedni tydzień, zmiana, średnia z ostatnich tygodni. Całość generuje kod.</li>
+<li><strong>Anomalie</strong>: lista wykryta regułami, każda z jednozdaniowym opisem od AI i linkiem do źródła, np. do filtra w CRM.</li>
+<li><strong>Sprawy do decyzji</strong>: maksymalnie trzy punkty, np. szansa bez kontaktu od trzech tygodni czy należność przeterminowana powyżej progu.</li>
+<li><strong>Stan danych</strong>: z jakich źródeł, o której pobrano, czego brakuje i które dane nie są jeszcze ostateczne.</li>
+<li><strong>Przegląd</strong>: kto i kiedy zatwierdził raport.</li>
+</ol>
+<p>Sekcja o stanie danych wydaje się formalnością, dopóki raport nie pokaże spadku ruchu, który w rzeczywistości wynika z niepełnych danych z ostatnich dni.</p>
+
+<h2>Dostarczenie raportu: e-mail, Slack, Teams, PDF</h2>
+<p>Wybierz kanał, w którym odbiorca i tak pracuje. Raport, po który trzeba gdzieś wejść, przestaje być czytany po kilku tygodniach.</p>
+<ul>
+<li><strong>E-mail</strong>: najprostszy i dobry do archiwum. Wysyłaj z dedykowanej skrzynki z poprawnie ustawionymi SPF, DKIM i DMARC.</li>
+<li><strong>Slack</strong>: incoming webhook przyjmuje JSON wysłany metodą POST na unikalny adres. Ten adres zawiera sekret, więc nie może trafić do repozytorium.</li>
+<li><strong>Microsoft Teams</strong>: Microsoft wycofuje konektory Office 365, a ich wyłączenie zaplanował na 18–22 maja 2026. Jeśli raport korzysta ze starego webhooka, przejdź na aplikację Workflows.</li>
+<li><strong>PDF</strong>: przydatny dla zarządu i klientów. Grafana w wersjach Enterprise i Cloud potrafi wysyłać zaplanowane raporty PDF z dashboardów, więc część raportów technicznych nie wymaga własnego generatora.</li>
+</ul>
+<p>Na etapie przeglądu wystarczy, że szkic trafia najpierw do jednej osoby z przyciskiem lub odpowiedzią „zatwierdzam”. Po kilku tygodniach bez poprawek możesz rozważyć automatyczną wysyłkę dla raportów wewnętrznych o niskim ryzyku.</p>
+
+<h2>Najczęstsze pułapki automatycznych raportów</h2>
+<ul>
+<li><strong>Zmyślone liczby.</strong> Opisane wyżej. Jedyna skuteczna obrona to liczby wyłącznie z kodu.</li>
+<li><strong>Nieaktualne i niepełne dane.</strong> Search Console API domyślnie zwraca dane ostateczne; z parametrem <code>dataState</code> ustawionym na <code>all</code> dostaniesz świeższe, ale część wierszy może jeszcze się zmienić. Zaznacz to w raporcie.</li>
+<li><strong>Pusta odpowiedź potraktowana jak zero.</strong> Wygasły token, limit zapytań albo zmiana API i raport ogłasza spadek sprzedaży o 100%. Brak danych musi zatrzymać raport, a nie wejść do obliczeń.</li>
+<li><strong>Różne definicje tygodnia i stref czasowych.</strong> Ustal, że tydzień zaczyna się w poniedziałek i liczysz go w czasie polskim, także dla danych z systemów działających w UTC.</li>
+<li><strong>Zbyt szerokie uprawnienia.</strong> Konto techniczne widzi wszystko, a raport łączy dane z kilku systemów. Odbiorca raportu sprzedaży nie powinien przy okazji zobaczyć wynagrodzeń z raportu przepływów.</li>
+<li><strong>Zmiana definicji wskaźnika.</strong> Ktoś zmienia etapy lejka w CRM i porównanie z poprzednimi tygodniami traci sens. Wersjonuj definicje razem z kodem raportu.</li>
+<li><strong>Raport, którego nikt nie czyta.</strong> Mierz otwarcia albo pytaj odbiorców raz na kwartał, co z raportu wykorzystali. Usuwaj sekcje, których nikt nie potrzebuje.</li>
+</ul>
+<h2>Od czego zacząć automatyczne raportowanie</h2>
+<p>Pierwszy raport nie musi obejmować wszystkich systemów. Lepiej, żeby był mały, poprawny i czytany, niż rozbudowany i podważany na każdym spotkaniu.</p>
+<ol>
+<li><strong>Wybierz jeden raport i jednego właściciela.</strong> Osoba, która dziś składa go ręcznie, zna wyjątki i wie, które liczby budzą pytania zarządu.</li>
+<li><strong>Spisz definicje wskaźników.</strong> Co to jest „wygrana szansa”, od której daty liczysz przychód, czy faktury korygujące obniżają sprzedaż w tygodniu wystawienia. Ten dokument jest ważniejszy od promptu.</li>
+<li><strong>Zbuduj część bez AI.</strong> Pobranie danych, obliczenia i tabela wskaźników muszą działać samodzielnie. Jeśli model przestanie odpowiadać, raport nadal wychodzi, tylko bez komentarza.</li>
+<li><strong>Dodaj komentarz AI z ograniczonym zadaniem.</strong> Na początek wystarczy streszczenie w trzech zdaniach i opis anomalii wykrytych regułami.</li>
+<li><strong>Uruchom raport równolegle z ręcznym</strong> przez trzy, cztery tygodnie i porównuj wyniki liczba po liczbie.</li>
+<li><strong>Zbierz uwagi odbiorców</strong> i dopiero potem dokładaj kolejne źródła lub sekcje.</li>
+</ol>
+<p>Rozbieżności z etapu równoległego prawie zawsze pokazują różnice w definicjach, a nie błędy w kodzie. Wyjaśnij je, zanim ktokolwiek zacznie podejmować decyzje na podstawie nowej wersji. Więcej przykładów automatyzacji znajdziesz we wpisie <a href="/blog/automatyzacje-ai-2026-przyklady/">Automatyzacje AI w 2026</a>, a jeśli chcesz zlecić zbudowanie takiego raportu, zobacz <a href="/#uslugi">nasze usługi</a>.</p>

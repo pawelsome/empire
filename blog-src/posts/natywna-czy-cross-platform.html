@@ -1,0 +1,127 @@
+<!--META
+{
+  "slug": "natywna-czy-cross-platform",
+  "title": "Aplikacja natywna czy cross-platform? React Native, Flutter, KMP",
+  "metaTitle": "Aplikacja natywna czy cross-platform? Jak wybrać",
+  "description": "Aplikacja natywna czy cross-platform: React Native, Flutter i Kotlin Multiplatform w 2026. Wydajność, API urządzenia, UI, zespół, tabela i przewodnik wyboru.",
+  "category": "Aplikacje",
+  "tags": ["React Native", "Flutter", "Kotlin Multiplatform", "Swift", "aplikacje mobilne", "cross-platform"],
+  "primaryKeyword": "aplikacja natywna czy cross-platform",
+  "tldr": [
+    "Aplikacja natywna wygrywa, gdy wartość produktu leży w funkcjach urządzenia, najwyższej wydajności lub pełnej zgodności z wyglądem systemu.",
+    "Cross-platform zwykle skraca drogę do MVP w aplikacjach biznesowych, bo interfejs i logika są wspólne dla iOS i Androida.",
+    "React Native od wersji 0.82 działa wyłącznie na nowej architekturze i najlepiej pasuje do zespołów znających React i TypeScript.",
+    "Flutter rysuje interfejs własnym silnikiem, co daje spójny wygląd marki, ale nowości wizualne iOS, jak Liquid Glass, trafiają do niego z opóźnieniem.",
+    "Kotlin Multiplatform jest oficjalnie wspierany przez Google do współdzielenia logiki, a Compose Multiplatform na iOS jest stabilny od wersji 1.8.0 z maja 2025 r."
+  ],
+  "faq": [
+    {"q": "Czy React Native jest wolniejszy od aplikacji natywnej?", "a": "W typowych aplikacjach biznesowych, takich jak formularze, listy, płatności czy mapy, różnica zwykle nie jest odczuwalna dla użytkownika, jeśli zespół dobrze zna framework. Od wersji 0.82 React Native działa wyłącznie na nowej architekturze, która usprawnia komunikację z kodem natywnym. Przy intensywnym przetwarzaniu obrazu, AR czy złożonej pracy w tle kod natywny nadal daje więcej kontroli."},
+    {"q": "Flutter czy React Native w 2026 roku?", "a": "React Native wybierz, jeśli masz zespół webowy w React i TypeScripcie oraz chcesz współdzielić z webem typy i logikę. Flutter sprawdzi się, gdy interfejs ma wyglądać identycznie na obu platformach i zawiera dużo niestandardowych animacji. W obu przypadkach sprawdź dostępność bibliotek dla funkcji, których potrzebujesz."},
+    {"q": "Czy Kotlin Multiplatform nadaje się do produkcji?", "a": "Tak. Google opisuje Kotlin Multiplatform jako stabilny i gotowy do produkcji sposób współdzielenia logiki biznesowej między Androidem a iOS, a biblioteki Jetpack, takie jak Room czy DataStore, mają wersje multiplatformowe. Wspólny interfejs w Compose Multiplatform jest stabilny na iOS od wersji 1.8.0."},
+    {"q": "Czy da się zmienić technologię aplikacji później?", "a": "Da się, ale zwykle oznacza to przepisanie dużej części kodu, więc taka zmiana kosztuje dużo więcej niż staranny wybór na starcie. Wyjątkiem jest Kotlin Multiplatform, który można wprowadzać stopniowo do istniejącej aplikacji na Androida. Przed decyzją zbuduj prototyp najtrudniejszej funkcji."},
+    {"q": "Która technologia daje najmniejszy rozmiar aplikacji?", "a": "Najmniejsze są zwykle aplikacje natywne, bo nie zawierają dodatkowego silnika ani środowiska uruchomieniowego. React Native i Flutter dokładają własne komponenty do paczki. Przy aplikacjach z dużą liczbą grafik i bibliotek różnica traci na znaczeniu, więc jeśli rozmiar jest ważny, zmierz go na prototypie."}
+  ],
+  "sources": [
+    {"title": "React Native 0.82 – A New Era", "url": "https://reactnative.dev/blog/2025/10/08/react-native-0.82"},
+    {"title": "React Native Blog (wydania 0.84–0.87)", "url": "https://reactnative.dev/blog"},
+    {"title": "React Native: Get Started (rekomendacja frameworka Expo)", "url": "https://reactnative.dev/docs/environment-setup"},
+    {"title": "Flutter Blog: What’s new in Flutter 3.44", "url": "https://flutter.dev/blog/whats-new-in-flutter-3-44"},
+    {"title": "Flutter Blog: Flutter & Dart’s 2026 roadmap", "url": "https://flutter.dev/blog/flutter-darts-2026-roadmap"},
+    {"title": "GitHub flutter/flutter #170310: Liquid Glass w widżetach Cupertino", "url": "https://github.com/flutter/flutter/issues/170310"},
+    {"title": "JetBrains: Compose Multiplatform 1.8.0 – Compose for iOS is Stable", "url": "https://blog.jetbrains.com/kotlin/2025/05/compose-multiplatform-1-8-0-released-compose-multiplatform-for-ios-is-stable-and-production-ready/"},
+    {"title": "Android Developers: Kotlin Multiplatform", "url": "https://developer.android.com/kotlin/multiplatform"}
+  ],
+  "linkedin": "Natywna czy cross-platform? W 2026 roku to już nie jest wybór między „szybko” a „dobrze”, tylko między różnymi kompromisami.\n\nKilka faktów, które warto znać przed decyzją:\n- React Native od wersji 0.82 działa wyłącznie na nowej architekturze, a dokumentacja rekomenduje start z Expo,\n- Flutter 3.44 przeszedł na Swift Package Manager na iOS, ale nowy wygląd iOS 26 (Liquid Glass) nie trafił do rdzenia biblioteki Cupertino,\n- Kotlin Multiplatform jest oficjalnie wspierany przez Google, a Compose Multiplatform na iOS jest stabilny od maja 2025 r.,\n- Bluetooth, AR i praca w tle nadal oznaczają sporo kodu natywnego, niezależnie od frameworka.\n\nW artykule: tabela porównawcza i krótki przewodnik „wybierz X, jeśli…”.\n\n{url}\n\n#ReactNative #Flutter #KotlinMultiplatform #iOS #Android"
+}
+META-->
+<p>Aplikację natywną (Swift na iOS, Kotlin na Androida) wybierz, gdy produkt mocno korzysta z funkcji urządzenia, wymaga najwyższej wydajności albo pełnej zgodności z wyglądem systemu. Cross-platform (React Native, Flutter, Kotlin Multiplatform) zwykle lepiej sprawdza się w aplikacjach biznesowych, gdzie liczy się jeden zespół, wspólny kod i szybsze wejście na rynek.</p>
+
+<h2>Czym różni się aplikacja natywna od cross-platform</h2>
+<p>Aplikacja natywna powstaje osobno dla każdej platformy, w językach i narzędziach producenta: Swift i SwiftUI od Apple, Kotlin i Jetpack Compose od Google. Masz bezpośredni dostęp do wszystkich API systemu w dniu ich premiery.</p>
+<p>Cross-platform oznacza wspólny kod dla obu systemów. W 2026 roku liczą się trzy podejścia, które działają zupełnie inaczej:</p>
+<ul>
+<li><strong>React Native:</strong> kod w JavaScripcie lub TypeScripcie, a interfejs zbudowany z natywnych komponentów systemu.</li>
+<li><strong>Flutter:</strong> kod w Darcie, a interfejs rysowany przez własny silnik renderujący, niezależnie od kontrolek systemu.</li>
+<li><strong>Kotlin Multiplatform (KMP):</strong> wspólna logika w Kotlinie kompilowana do kodu natywnego, a interfejs natywny albo współdzielony w Compose Multiplatform.</li>
+</ul>
+
+<h2>React Native, Flutter i Kotlin Multiplatform w 2026 roku</h2>
+<h3>Swift, SwiftUI, Kotlin i Jetpack Compose</h3>
+<p>Narzędzia natywne są punktem odniesienia dla pozostałych. Nowości systemowe trafiają do nich od razu, jak język wizualny Liquid Glass wprowadzony w iOS 26. Wymagania sklepów dotyczą wszystkich: od 28 kwietnia 2026 r. aplikacje przesyłane do App Store Connect muszą być budowane w Xcode 26 z SDK iOS 26, niezależnie od użytego frameworka.</p>
+<h3>React Native</h3>
+<p>Nowa architektura stała się domyślna w wersji 0.76, a od wersji 0.82 z października 2025 r. jest jedyną dostępną. W 2026 r. doszły m.in. Hermes V1 jako domyślny silnik JavaScript (0.84) i nowy backend animacji (0.85), a w sierpniu 2026 r. ukazała się wersja 0.87. Dokumentacja React Native zaleca zaczynanie nowych projektów od frameworka i wskazuje Expo.</p>
+<h3>Flutter</h3>
+<p>Flutter 3.44 z maja 2026 r. ustawił Swift Package Manager jako domyślny menedżer zależności na iOS zamiast CocoaPods. W tym wydaniu zamrożono też biblioteki Material i Cupertino w rdzeniu frameworka przed ich przeniesieniem do osobnych pakietów. W roadmapie na 2026 r. zespół zapowiedział usunięcie starego backendu Skia na Androidzie 10 i nowszych na rzecz silnika Impeller.</p>
+<h3>Kotlin Multiplatform i Compose Multiplatform</h3>
+<p>Google oficjalnie wspiera Kotlin Multiplatform do współdzielenia logiki biznesowej między Androidem a iOS, a biblioteki Jetpack, np. Room, DataStore czy ViewModel, mają wersje multiplatformowe. JetBrains ogłosił stabilność Compose Multiplatform na iOS w wersji 1.8.0 w maju 2025 r., a w maju 2026 r. wydał wersję 1.11.0.</p>
+
+<h2>Wydajność i dostęp do funkcji urządzenia</h2>
+<p>W typowej aplikacji biznesowej (listy, formularze, płatności, mapa, powiadomienia) każda z tych technologii da płynny interfejs, jeśli zespół dobrze ją zna. Różnice wychodzą w wymagających scenariuszach.</p>
+<ul>
+<li><strong>Bluetooth i IoT.</strong> Połączenie z opaską czy czujnikiem zrobisz w każdej technologii dzięki bibliotekom lub modułom natywnym. Przy własnym protokole, pracy w tle i wielu urządzeniach naraz i tak powstaje sporo kodu natywnego.</li>
+<li><strong>Kamera i przetwarzanie obrazu.</strong> Zdjęcie czy skan kodu QR to gotowe pakiety. Analiza obrazu w czasie rzeczywistym albo modele ML uruchamiane na urządzeniu lepiej działają blisko natywnych API.</li>
+<li><strong>AR.</strong> ARKit i ARCore to frameworki natywne. W aplikacji cross-platform scena AR zwykle i tak trafia do modułu natywnego, więc zysk ze wspólnego kodu maleje.</li>
+<li><strong>Zadania w tle.</strong> iOS i Android mocno ograniczają pracę w tle, niezależnie od technologii. Lokalizacja w tle, synchronizacja czy odtwarzanie dźwięku wymagają znajomości zasad każdego systemu.</li>
+<li><strong>Grafika i animacje.</strong> Flutter dobrze radzi sobie z niestandardowym, bogato animowanym interfejsem, bo sam rysuje każdy piksel. Gry 3D to już raczej domena silników gier.</li>
+</ul>
+<p>Prosta zasada: jeśli główna wartość aplikacji leży w funkcjach urządzenia, a nie w ekranach i danych, zacznij analizę od wersji natywnej.</p>
+
+<h2>Wygląd, zgodność z systemem i rozmiar aplikacji</h2>
+<p>Użytkownicy iPhone’ów i Androidów są przyzwyczajeni do innych gestów, nawigacji i kontrolek. Aplikacja natywna dostaje je automatycznie, także po aktualizacji systemu.</p>
+<p>React Native korzysta z natywnych komponentów, więc zmiany systemowe przejmuje łatwiej, choć nowe efekty wizualne często wymagają dodatkowych bibliotek. Flutter rysuje interfejs samodzielnie: daje to identyczny wygląd na obu platformach, ale zmiany w stylu systemu musi odtworzyć zespół Fluttera lub społeczność. Dobrze pokazał to Liquid Glass. W czerwcu 2025 r. zespół Fluttera poinformował, że nie rozwija wyglądu iOS 26 w bibliotece Cupertino, a nowe prace mają trafić do wydzielonych pakietów.</p>
+<p>Rozmiar aplikacji: frameworki cross-platform dokładają do paczki własny silnik lub środowisko uruchomieniowe, więc najprostsza aplikacja natywna jest zwykle lżejsza. Przy aplikacjach z dużą ilością grafik i bibliotek ta różnica ma mniejsze znaczenie. Jeśli rozmiar jest dla Ciebie ważny, zmierz go na prototypie.</p>
+
+<h2>Zespół, czas wejścia na rynek i utrzymanie</h2>
+<p>Wybór technologii to w praktyce decyzja o ludziach. Odpowiedz sobie na trzy pytania.</p>
+<ol>
+<li><strong>Kto będzie to utrzymywać za trzy lata?</strong> Zespół webowy w React i TypeScripcie szybko wejdzie w React Native i współdzieli z webem typy, walidację i część logiki. Zespół androidowy piszący w Kotlinie naturalnie przejdzie na Kotlin Multiplatform.</li>
+<li><strong>Jak szybko potrzebujesz pierwszej wersji?</strong> Wspólny kod zwykle oznacza mniej pracy przy MVP, choć testować trzeba obie platformy.</li>
+<li><strong>Jak wygląda aktualizowanie zależności?</strong> W cross-platformie dochodzi warstwa frameworka i bibliotek, które muszą nadążać za nowymi wersjami iOS i Androida. W natywnym masz dwa kody, ale mniej pośredników. Wymagania sklepów obowiązują w obu przypadkach, o czym piszemy w poradniku <a href="/blog/publikacja-aplikacji-google-play/">publikacja aplikacji w Google Play</a>.</li>
+</ol>
+<p>Technologia mocno wpływa na budżet, więc przeczytaj też, <a href="/blog/ile-kosztuje-aplikacja-mobilna-2026/">ile kosztuje aplikacja mobilna w 2026</a>. Oceniając propozycję dostawcy, sprawdź, czy uzasadnił wybór technologii, a nie tylko wpisał tę, którą zna. Pomoże w tym tekst <a href="/blog/jak-ocenic-oferte-software-house/">jak ocenić ofertę software house’u</a>.</p>
+
+<h2>Porównanie: natywna, React Native, Flutter i Kotlin Multiplatform</h2>
+<table>
+<thead>
+<tr><th>Kryterium</th><th>Natywna</th><th>React Native</th><th>Flutter</th><th>Kotlin Multiplatform</th></tr>
+</thead>
+<tbody>
+<tr><td>Język</td><td>Swift, Kotlin</td><td>JavaScript, TypeScript</td><td>Dart</td><td>Kotlin, przy natywnym UI także Swift</td></tr>
+<tr><td>Wspólny kod</td><td>Brak, dwie aplikacje</td><td>Interfejs i logika</td><td>Interfejs i logika</td><td>Logika, opcjonalnie interfejs</td></tr>
+<tr><td>Sposób renderowania UI</td><td>Kontrolki systemu</td><td>Natywne komponenty</td><td>Własny silnik</td><td>Natywny UI lub Compose Multiplatform</td></tr>
+<tr><td>Dostęp do API urządzenia</td><td>Pełny, od premiery</td><td>Biblioteki i moduły natywne</td><td>Pluginy i kod natywny</td><td>Bezpośrednio z kodu platformowego</td></tr>
+<tr><td>Nowości wizualne systemu</td><td>Od razu</td><td>Zwykle szybko, czasem przez biblioteki</td><td>Z opóźnieniem, zależnie od pakietów</td><td>Od razu przy natywnym UI</td></tr>
+<tr><td>Reużycie kodu z aplikacją webową</td><td>Niskie</td><td>Wysokie przy zespołach React</td><td>Niskie</td><td>Średnie, w warstwie logiki</td></tr>
+<tr><td>Czas do MVP na dwie platformy</td><td>Najdłuższy</td><td>Krótki</td><td>Krótki</td><td>Średni</td></tr>
+<tr><td>Rozmiar aplikacji</td><td>Zwykle najmniejszy</td><td>Większy o środowisko JS</td><td>Większy o silnik</td><td>Zależy od udziału wspólnego UI</td></tr>
+<tr><td>Najlepiej pasuje do</td><td>Funkcji urządzenia, aplikacji premium</td><td>Zespołów webowych, e-commerce, aplikacji biznesowych</td><td>Mocno brandowanego UI z animacjami</td><td>Firm z aplikacją na Androida w Kotlinie</td></tr>
+</tbody>
+</table>
+
+<h2>Jak wybrać: wybierz X, jeśli…</h2>
+<h3>Aplikację natywną, jeśli</h3>
+<ul>
+<li>aplikacja opiera się na Bluetooth, AR, przetwarzaniu obrazu, dźwięku lub długiej pracy w tle,</li>
+<li>zgodność z wyglądem i zachowaniem systemu jest częścią produktu,</li>
+<li>masz budżet na dwa kody albo potrzebujesz tylko jednej platformy,</li>
+<li>chcesz korzystać z nowych funkcji iOS i Androida w dniu ich premiery.</li>
+</ul>
+<h3>React Native, jeśli</h3>
+<ul>
+<li>masz zespół webowy w React i TypeScripcie,</li>
+<li>chcesz współdzielić typy i logikę z aplikacją webową,</li>
+<li>budujesz aplikację biznesową lub e-commerce i zależy Ci na szybkim MVP.</li>
+</ul>
+<h3>Fluttera, jeśli</h3>
+<ul>
+<li>interfejs ma wyglądać identycznie na obu platformach i jest mocno podporządkowany marce,</li>
+<li>aplikacja ma dużo niestandardowych animacji i własnych komponentów,</li>
+<li>zespół zna Darta albo zaczyna od zera bez przywiązania do stosu webowego.</li>
+</ul>
+<h3>Kotlin Multiplatform, jeśli</h3>
+<ul>
+<li>masz aplikację na Androida w Kotlinie i chcesz przenieść logikę na iOS bez przepisywania wszystkiego,</li>
+<li>zależy Ci na natywnym interfejsie, ale nie chcesz dwa razy pisać logiki biznesowej, komunikacji z API i bazy danych,</li>
+<li>Twój zespół to programiści Androida gotowi poznać podstawy iOS.</li>
+</ul>
+<p>Jeśli po tej liście nadal masz remis, zbuduj prototyp najtrudniejszej funkcji w dwóch technologiach. Tydzień pracy nad prototypem kosztuje mniej niż zmiana technologii po roku rozwoju. Tworzymy zarówno aplikacje natywne, jak i cross-platform, więc przy wyborze pomożemy bez przywiązania do jednego narzędzia (zobacz <a href="/#uslugi">usługi</a>).</p>

@@ -1,0 +1,130 @@
+<!--META
+{
+  "slug": "ostrzezenie-google-strona-niebezpieczna",
+  "title": "Strona oznaczona jako niebezpieczna w Google: jak usunąć ostrzeżenie",
+  "metaTitle": "Strona oznaczona jako niebezpieczna Google: co zrobić",
+  "description": "Strona oznaczona jako niebezpieczna Google? Sprawdź przyczynę w Search Console, wyczyść witrynę, poproś o sprawdzenie i zobacz, ile trwa zdjęcie ostrzeżenia.",
+  "category": "Bezpieczeństwo",
+  "tags": ["Google Safe Browsing", "Search Console", "strona niebezpieczna", "włamanie na stronę", "SEO"],
+  "primaryKeyword": "strona oznaczona jako niebezpieczna Google",
+  "tldr": [
+    "Ostrzeżenie pojawia się, gdy Google Safe Browsing wykryje na stronie malware, phishing, treści wprowadzające w błąd, szkodliwe pliki albo ślady włamania.",
+    "Szczegóły i przykładowe adresy URL znajdziesz w Search Console, w raporcie „Problemy dotyczące bezpieczeństwa”.",
+    "Prośbę o sprawdzenie wysyłaj dopiero po usunięciu problemu z całej witryny i usunięciu przyczyny włamania, z opisem wykonanych działań.",
+    "Według dokumentacji Google phishing jest weryfikowany zwykle w około dobę, malware w kilka dni, a strony zhakowane spamem nawet kilka tygodni.",
+    "Przedwczesne lub powtarzane prośby wydłużają proces i mogą skończyć się statusem sprawcy wielokrotnych naruszeń z 30-dniową blokadą kolejnych próśb."
+  ],
+  "faq": [
+    {"q": "Czy mogę sam wyłączyć ostrzeżenie Google o niebezpiecznej stronie?", "a": "Nie. Ostrzeżenie zdejmuje Google po pozytywnej weryfikacji, o którą prosisz w Search Console. Nie da się go ominąć zmianą adresu, certyfikatu SSL ani blokadą robotów, a ukrycie stron przed Googlebotem tylko uniemożliwi sprawdzenie, że problem zniknął."},
+    {"q": "Czy ostrzeżenie Google obniża pozycje w wynikach wyszukiwania?", "a": "Samo ostrzeżenie odstrasza użytkowników, więc ruch spada niezależnie od pozycji. Jeśli włamanie dodało spamowe podstrony lub przekierowania, może to dodatkowo zaszkodzić widoczności strony. Po wyczyszczeniu i zdjęciu ostrzeżenia ruch zwykle zaczyna wracać, ale tempo zależy od skali infekcji."},
+    {"q": "Moja strona jest czysta, a ostrzeżenie nadal się wyświetla. Co robić?", "a": "Sprawdź, czy wysłałeś prośbę o sprawdzenie i czy nie została odrzucona. Upewnij się, że problem nie występuje na subdomenach, w starych instalacjach lub w skryptach zewnętrznych, np. reklamowych. Po zatwierdzeniu prośby usunięcie ostrzeżeń z przeglądarek i wyników może potrwać do 72 godzin."},
+    {"q": "Jak sprawdzić, czy cudza strona jest oznaczona jako niebezpieczna?", "a": "Użyj narzędzia stanu witryny w Raporcie przejrzystości Google (Safe Browsing site status). Wpisujesz adres i widzisz, czy Google aktualnie uznaje stronę za niebezpieczną. Nie wymaga to dostępu do Search Console."},
+    {"q": "Czy ostrzeżenie może być fałszywym alarmem?", "a": "Zdarza się, np. przy rzadko pobieranych plikach instalacyjnych albo gdy problem wynika ze skryptu reklamowego firmy trzeciej. Zanim uznasz to za pomyłkę, dokładnie sprawdź przykładowe adresy z raportu. W przypadku phishingu Google udostępnia też formularz zgłaszania błędów Safe Browsing."}
+  ],
+  "sources": [
+    {"title": "Search Console – pomoc: Raport Problemy dotyczące bezpieczeństwa", "url": "https://support.google.com/webmasters/answer/9044101?hl=pl"},
+    {"title": "Search Console – pomoc: Dlaczego moja witryna jest oznaczona w wyszukiwarce Google jako niebezpieczna?", "url": "https://support.google.com/webmasters/answer/6347750?hl=pl"},
+    {"title": "web.dev: Request a review", "url": "https://web.dev/articles/request-a-review"},
+    {"title": "Google Search Central: Google Safe Browsing Repeat Offenders Policy", "url": "https://developers.google.com/search/docs/monitor-debug/security/safe-browsing-repeat-offenders"},
+    {"title": "Google Chrome – pomoc: Zarządzanie ostrzeżeniami o niebezpiecznych stronach", "url": "https://support.google.com/chrome/answer/99020?hl=pl&co=GENIE.Platform%3DDesktop"},
+    {"title": "Google Transparency Report: Safe Browsing site status", "url": "https://transparencyreport.google.com/safe-browsing/search"}
+  ],
+  "linkedin": "Czerwony ekran „Niebezpieczna strona” w Chrome potrafi w jeden dzień wyzerować ruch z firmowej witryny.\n\nJak z tego wyjść:\n\n- Przyczynę sprawdzisz w Search Console, w raporcie „Problemy dotyczące bezpieczeństwa”. Są tam typ problemu i przykładowe adresy URL.\n- Najpierw wyczyść całą witrynę i usuń przyczynę włamania, dopiero potem kliknij „Poproś o sprawdzenie”.\n- W prośbie opisz, co znalazłeś, co usunąłeś i jak załatałeś lukę.\n- Według dokumentacji Google phishing jest weryfikowany zwykle w około dobę, malware w kilka dni, a spam po włamaniu nawet kilka tygodni.\n- Nie wysyłaj prośby na zapas. Powtarzane odrzucenia mogą zablokować kolejne próby na 30 dni.\n\nPełna instrukcja krok po kroku:\n\n{url}\n\n#SEO #cyberbezpieczeństwo #SearchConsole #WordPress"
+}
+META-->
+<p>Google oznacza stronę jako niebezpieczną, gdy mechanizm Bezpieczne przeglądanie (Safe Browsing) wykryje na niej złośliwe oprogramowanie, phishing, treści wprowadzające w błąd albo ślady włamania. Żeby zdjąć ostrzeżenie, sprawdź raport „Problemy dotyczące bezpieczeństwa” w Search Console, usuń przyczynę z całej witryny i kliknij „Poproś o sprawdzenie”.</p>
+
+<h2>Jak wygląda ostrzeżenie i gdzie się pojawia?</h2>
+<p>Ostrzeżenie ma kilka postaci, zależnie od miejsca, w którym użytkownik trafia na Twoją stronę:</p>
+<table>
+<thead><tr><th>Miejsce</th><th>Co widzi użytkownik</th></tr></thead>
+<tbody>
+<tr><td>Chrome</td><td>Czerwony pełnoekranowy komunikat „Niebezpieczna strona” przed wejściem na witrynę</td></tr>
+<tr><td>Wyniki wyszukiwania Google</td><td>Dopisek przy wyniku, np. „Odwiedzenie tej witryny może spowodować uszkodzenie komputera” lub „Ta strona mogła paść ofiarą ataku hakerów”</td></tr>
+<tr><td>Skrzynka właściciela</td><td>E-mail z Search Console dla zweryfikowanych właścicieli witryny</td></tr>
+<tr><td>Search Console</td><td>Wpis w raporcie „Problemy dotyczące bezpieczeństwa”</td></tr>
+</tbody>
+</table>
+<p>W sieci krążą też inne brzmienia, np. „Witryna, którą chcesz otworzyć, zawiera złośliwe oprogramowanie” albo „Strona wprowadzająca w błąd”. Treść zależy od przeglądarki, jej wersji i rodzaju problemu, ale źródło jest to samo: lista Google Safe Browsing. Z tej listy korzystają też inne przeglądarki, więc problem nie dotyczy wyłącznie użytkowników Chrome.</p>
+<p>Szybki test bez logowania daje narzędzie stanu witryny w Raporcie przejrzystości Google (Safe Browsing site status). Szczegóły zobaczysz jednak tylko w Search Console.</p>
+
+<h2>Dlaczego Google oznaczył moją stronę jako niebezpieczną?</h2>
+<p>Raport w Search Console dzieli problemy na trzy grupy: treści zmodyfikowane przez hakerów, złośliwe i niechciane oprogramowanie oraz inżynierię społeczną. W praktyce zobaczysz konkretny typ problemu. Oto najczęstsze z nich z typowymi przyczynami:</p>
+<table>
+<thead><tr><th>Typ problemu w Search Console</th><th>Typowa przyczyna</th></tr></thead>
+<tbody>
+<tr><td>Atak hakera: złośliwe oprogramowanie</td><td>Skrypty infekujące odwiedzających, np. fałszywe aktualizacje przeglądarki (opisuję je w tekście o <a href="/blog/socgholish-falszywa-aktualizacja-przegladarki/">SocGholish</a>)</td></tr>
+<tr><td>Atak hakerów: wstrzyknięty kod</td><td>JavaScript lub iframe dodany do plików albo bazy, np. przekierowania czy <a href="/blog/clickfix-falszywa-captcha/">fałszywa CAPTCHA typu ClickFix</a></td></tr>
+<tr><td>Atak hakerów: wstrzyknięta zawartość</td><td>Ukryte linki i teksty spamowe w istniejących podstronach</td></tr>
+<tr><td>Atak hakerów: wstrzyknięty URL</td><td>Nowe podstrony utworzone przez atakującego, często ze spamem SEO (więcej w tekście o <a href="/blog/japonski-spam-seo-przekierowania/">japońskim spamie SEO</a>)</td></tr>
+<tr><td>Strony wprowadzające w błąd</td><td>Phishing, fałszywe formularze logowania, podszywanie się pod banki lub urzędy</td></tr>
+<tr><td>Umieszczone zasoby wprowadzające w błąd</td><td>Zewnętrzny skrypt, reklama lub widżet z oszukańczą treścią osadzony na Twojej stronie</td></tr>
+<tr><td>Szkodliwe pliki do pobrania, Nietypowe pliki do pobrania</td><td>Pliki na serwerze lub linki do plików, które Google uznaje za szkodliwe albo zbyt rzadko pobierane, żeby je ocenić</td></tr>
+</tbody>
+</table>
+<p>Nie każde ostrzeżenie oznacza włamanie. Źródłem bywa sieć reklamowa, skrypt firmy trzeciej, zapomniana instalacja testowa na subdomenie albo plik wgrany przez użytkownika. Ostrzeżenie o włamaniu na WordPressa jest jednak na tyle częste, że warto od razu przejść przez objawy opisane w poradniku <a href="/blog/zainfekowany-wordpress-objawy/">zainfekowany WordPress: objawy i pierwsza godzina</a>.</p>
+
+<h2>Jak sprawdzić szczegóły w Google Search Console?</h2>
+<ol>
+<li><strong>Zweryfikuj własność witryny</strong>, jeśli jeszcze tego nie zrobiłeś. Usługa na poziomie domeny obejmuje wszystkie subdomeny i protokoły, więc lepiej widać w niej problemy spoza strony głównej.</li>
+<li><strong>Otwórz raport.</strong> W menu po lewej, w sekcji „Bezpieczeństwo i ręczne działania”, wybierz „Problemy dotyczące bezpieczeństwa”.</li>
+<li><strong>Rozwiń każdy problem.</strong> Zobaczysz jego typ i przykładowe adresy URL. To próbka, a nie pełna lista, więc nie ograniczaj sprzątania do wskazanych stron.</li>
+<li><strong>Sprawdź sąsiedni raport „Ręczne działania”.</strong> Spam po włamaniu może wywołać osobną karę za manipulowanie wynikami.</li>
+<li><strong>Obejrzyj stronę oczami Google.</strong> Narzędzie sprawdzania adresu URL pozwala przetestować opublikowaną wersję i zobaczyć kod, który pobrał Googlebot. Część infekcji pokazuje spam wyłącznie robotom.</li>
+</ol>
+<p>Z terminala możesz dodatkowo porównać, co widzi zwykły użytkownik, a co ruch z wyszukiwarki. Te polecenia tylko pobierają stronę:</p>
+<pre><code class="language-bash"># Skrypty z zewnętrznych domen ładowane na stronie głównej
+curl -sL -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" https://twojadomena.pl/ \
+  | grep -oiE 'src="https?://[^"]+"' | sort -u
+
+# Czy wejście z Google kończy się przekierowaniem
+curl -sI -e "https://www.google.com/" https://twojadomena.pl/ | grep -iE "^(HTTP|location)"
+
+# Czy robot Google dostaje inną treść (liczba trafień podejrzanych słów)
+curl -sL -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" https://twojadomena.pl/ \
+  | grep -ciE "casino|kasyno|viagra|replica"</code></pre>
+<p>Pamiętaj, że część złośliwych skryptów rozpoznaje prawdziwego Googlebota po adresie IP, więc podmiana nagłówka User-Agent nie zawsze pokaże spam.</p>
+
+<h2>Jak usunąć przyczynę ostrzeżenia Google?</h2>
+<p>Google wymaga, żeby problem został usunięty z całej witryny, a nie tylko z przykładowych adresów. Jeśli przyczyną jest włamanie, samo skasowanie złośliwego kodu nie wystarczy, bo atakujący wróci tą samą drogą.</p>
+<ul>
+<li>Zrób kopię plików i bazy w obecnym stanie, zanim zaczniesz cokolwiek usuwać.</li>
+<li>Znajdź wszystkie miejsca infekcji: pliki motywu i wtyczek, bazę danych, <code>.htaccess</code>, katalog uploads, subdomeny i stare instalacje w podkatalogach.</li>
+<li>Usuń przyczynę włamania: zaktualizuj podatne komponenty, usuń nieznane konta, zmień wszystkie hasła i klucze.</li>
+<li>Przejrzyj skrypty firm trzecich: reklamy, czaty, widżety, piksele. Usuń te, których nie potrzebujesz.</li>
+<li>Usuń lub zastąp pliki do pobrania wskazane w raporcie.</li>
+<li>Wyczyść cache wtyczek, serwera i CDN, żeby Google nie pobrał starej wersji.</li>
+</ul>
+<aside class="callout"><p>Nie ukrywaj zainfekowanych stron przed Google plikiem robots.txt ani tagiem noindex. Dokumentacja Google wymaga, żeby strony były dostępne dla Googlebota, bo tylko wtedy da się potwierdzić, że są czyste. Zablokowana strona nie przejdzie weryfikacji.</p></aside>
+
+<h2>Jak poprosić Google o ponowne sprawdzenie strony?</h2>
+<p>Gdy wszystkie problemy są usunięte, otwórz raport „Problemy dotyczące bezpieczeństwa” i kliknij „Poproś o sprawdzenie”. W formularzu opisz konkretnie, co zrobiłeś. Dokumentacja Google prosi o informacje, jak witryna została wyczyszczona i jak usunięto lukę, a przy spamie o opis dla każdego jego rodzaju. Przykładowy opis może wyglądać tak:</p>
+<blockquote><p>W plikach motywu i w tabeli wp_options znaleźliśmy wstrzyknięty JavaScript wyświetlający fałszywą weryfikację CAPTCHA. Usunęliśmy go, wgraliśmy ponownie rdzeń WordPressa i wszystkie wtyczki z oficjalnych źródeł, usunęliśmy nieznane konto administratora i zmieniliśmy wszystkie hasła. Przyczyną była nieaktualna wtyczka, którą zaktualizowaliśmy. Włączyliśmy uwierzytelnianie dwuskładnikowe i monitoring zmian plików.</p></blockquote>
+<p>Po wysłaniu nie wysyłaj kolejnej prośby, dopóki nie dostaniesz decyzji. Pomoc Search Console ostrzega wprost, że jeśli nie usuniesz problemu przed wysłaniem prośby, rozpatrzenie następnej może się wydłużyć, a Ty możesz nawet uzyskać status sprawcy wielokrotnych naruszeń. Zgodnie z zasadami Safe Browsing taki status obowiązuje przez 30 dni i w tym czasie nie da się wysyłać próśb o sprawdzenie.</p>
+<p>Jeśli ostrzeżenie o phishingu dotyczy strony, której nie masz w Search Console, Google udostępnia też formularz zgłaszania błędów Safe Browsing.</p>
+
+<h2>Ile trwa zdjęcie ostrzeżenia Google?</h2>
+<p>Pomoc Search Console mówi ogólnie, że sprawdzanie większości próśb trwa od kilku dni do kilku tygodni. Dokładniejsze widełki podaje przewodnik Google o prośbach o sprawdzenie:</p>
+<table>
+<thead><tr><th>Rodzaj problemu</th><th>Typowy czas weryfikacji według Google</th></tr></thead>
+<tbody>
+<tr><td>Phishing</td><td>około doby</td></tr>
+<tr><td>Złośliwe lub niechciane oprogramowanie</td><td>kilka dni</td></tr>
+<tr><td>Witryna zhakowana i wypełniona spamem</td><td>do kilku tygodni (weryfikacja ręczna)</td></tr>
+</tbody>
+</table>
+<p>Po zatwierdzeniu prośby ostrzeżenia w przeglądarkach i wynikach wyszukiwania powinny zniknąć w ciągu 72 godzin. Jeśli weryfikacja wypadnie negatywnie, raport pokaże kolejne przykładowe adresy z problemem.</p>
+<p>Ostrzeżenie Google to nie jedyna lista blokad. Microsoft Edge korzysta z własnego filtra SmartScreen, a programy antywirusowe prowadzą swoje bazy. Jeśli klienci nadal zgłaszają blokadę, sprawdź, który program ją pokazuje, i skorzystaj z formularza zgłoszeniowego jego producenta.</p>
+<p>Czas oczekiwania wykorzystaj rozsądnie. Nie wprowadzaj dużych zmian na stronie i codziennie sprawdzaj, czy infekcja nie wróciła: przejrzyj listę zmienionych plików, nowe konta i logi dostępu. Jeśli w trakcie weryfikacji na stronie znów pojawi się złośliwy kod, prośba zostanie odrzucona, a cały proces zacznie się od nowa. Strona musi przez cały ten czas pozostać dostępna dla Googlebota, więc zdejmij przerwę techniczną, jeśli ustawiłeś ją na czas sprzątania.</p>
+<p>Pomyśl też o klientach. Krótka informacja w mailu lub w mediach społecznościowych, że strona jest weryfikowana po incydencie i nie należy pobierać z niej plików, zmniejsza liczbę zapytań i buduje zaufanie. Jeśli prowadzisz kampanie reklamowe kierujące na oznaczoną stronę, sprawdź ich status w panelu reklamowym, bo linki do witryny z problemem bezpieczeństwa mogą zostać wstrzymane.</p>
+
+<h2>Jak nie dopuścić, żeby ostrzeżenie wróciło?</h2>
+<ul>
+<li>Upewnij się, że powiadomienia z Search Console trafiają na skrzynkę, którą ktoś czyta. Dodaj drugiego właściciela usługi.</li>
+<li>Aktualizuj WordPressa, wtyczki i motywy na bieżąco, a nieużywane usuwaj.</li>
+<li>Włącz MFA dla administratorów i ogranicz dostęp do panelu.</li>
+<li>Usuń stare instalacje testowe i nieużywane subdomeny, o których nikt już nie pamięta.</li>
+<li>Ogranicz zewnętrzne skrypty i ustaw nagłówek Content-Security-Policy z listą dozwolonych źródeł. Utrudni to ładowanie wstrzykniętego kodu z obcych domen.</li>
+<li>Monitoruj integralność plików i dostępność strony, np. codziennym porównaniem sum kontrolnych i alertem o zmianach.</li>
+</ul>
+<p>Pełną listę zabezpieczeń znajdziesz w <a href="/blog/zabezpieczenie-wordpress-checklista/">checkliście zabezpieczenia WordPressa</a>. Jeśli wolisz oddać czyszczenie strony i kontakt z Google w ręce specjalistów, zajmujemy się tym w ramach <a href="/#bezpieczenstwo">usług bezpieczeństwa</a>.</p>

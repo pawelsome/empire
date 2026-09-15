@@ -1,0 +1,122 @@
+<!--META
+{
+  "slug": "publikacja-aplikacji-google-play",
+  "title": "Publikacja aplikacji w Google Play w 2026: konto, weryfikacja i testy",
+  "metaTitle": "Publikacja aplikacji Google Play 2026: krok po kroku",
+  "description": "Publikacja aplikacji Google Play w 2026: konto developera, D-U-N-S, weryfikacja, test 12 testerów przez 14 dni, API 36, Data safety i checklista przed startem.",
+  "category": "Aplikacje",
+  "tags": ["Google Play", "Play Console", "publikacja aplikacji", "Android", "D-U-N-S", "App Store"],
+  "primaryKeyword": "publikacja aplikacji Google Play",
+  "tldr": [
+    "Konto w Play Console kosztuje jednorazowo 25 USD; firma zakłada konto organizacji z numerem D-U-N-S, którego uzyskanie może potrwać do 30 dni.",
+    "Konta osobiste założone po 13 listopada 2023 r. muszą przed produkcją przeprowadzić test zamknięty z co najmniej 12 testerami zapisanymi nieprzerwanie przez 14 dni.",
+    "Od 31 sierpnia 2026 r. nowe aplikacje i aktualizacje muszą celować w Androida 16 (API 36), z możliwą prolongatą do 1 listopada 2026 r.",
+    "Każda aplikacja poza ścieżką testów wewnętrznych wymaga formularza Data safety i linku do polityki prywatności, nawet jeśli nie zbiera danych.",
+    "Weryfikacja deweloperów Androida dla aplikacji instalowanych spoza sklepów rusza 30 września 2026 r. w Brazylii, Indonezji, Singapurze i Tajlandii, a globalnie od 2027 r."
+  ],
+  "faq": [
+    {"q": "Ile kosztuje konto developera Google Play?", "a": "Rejestracja konta w Google Play Console to jednorazowa opłata 25 USD, bez corocznych odnowień. Dla porównania Apple Developer Program kosztuje 99 USD za każdy rok członkostwa. Dodatkowo Google pobiera prowizję od sprzedaży cyfrowej w aplikacji."},
+    {"q": "Czy firma musi mieć numer D-U-N-S, żeby publikować w Google Play?", "a": "Tak, konto organizacji wymaga numeru D-U-N-S nadawanego przez Dun & Bradstreet, z wyjątkiem m.in. instytucji rządowych. Google uprzedza, że uzyskanie numeru może potrwać do 30 dni. Ten sam numer jest potrzebny przy zapisie organizacji do Apple Developer Program."},
+    {"q": "Czy konto organizacji musi robić test z 12 testerami?", "a": "Nie. Wymóg testu zamkniętego z co najmniej 12 testerami przez 14 dni dotyczy kont osobistych utworzonych po 13 listopada 2023 r. Konta organizacji i starsze konta osobiste mogą publikować w produkcji bez tego etapu, choć test zamknięty i tak warto przeprowadzić."},
+    {"q": "Jak długo Google sprawdza aplikację?", "a": "Według pomocy Play Console sprawdzenie może trwać od kilku godzin do siedmiu dni, a w wyjątkowych przypadkach dłużej, zwłaszcza przy nowych kontach i niektórych kategoriach aplikacji. Zaplanuj przynajmniej tydzień zapasu przed datą premiery i używaj publikacji zarządzanej, aby samodzielnie wybrać moment udostępnienia zatwierdzonej wersji."},
+    {"q": "Czy mogę opublikować aplikację jako plik APK?", "a": "Nowe aplikacje w Google Play publikuje się w formacie Android App Bundle (AAB), a korzystanie z niego wymaga Play App Signing. Pliki APK nadal są używane np. przy dystrybucji poza sklepem, ale tam od 2026 r. stopniowo wchodzą wymagania weryfikacji dewelopera."}
+  ],
+  "sources": [
+    {"title": "Play Console Help: App testing requirements for new personal developer accounts", "url": "https://support.google.com/googleplay/android-developer/answer/14151465"},
+    {"title": "Play Console Help: Required information to create a Play Console developer account", "url": "https://support.google.com/googleplay/android-developer/answer/13628312"},
+    {"title": "Play Console Help: Choose a developer account type", "url": "https://support.google.com/googleplay/android-developer/answer/13634885"},
+    {"title": "Play Console Help: Target API level requirements for Google Play apps", "url": "https://support.google.com/googleplay/android-developer/answer/11926878"},
+    {"title": "Play Console Help: Provide information for Google Play's Data safety section", "url": "https://support.google.com/googleplay/android-developer/answer/10787469"},
+    {"title": "Play Console Help: Publish your app", "url": "https://support.google.com/googleplay/android-developer/answer/9859751"},
+    {"title": "Android Developers: Android developer verification", "url": "https://developer.android.com/developer-verification"},
+    {"title": "Apple Developer: App Review", "url": "https://developer.apple.com/distribute/app-review/"}
+  ],
+  "linkedin": "Aplikacja gotowa, a publikacja w Google Play stoi tygodniami. Zwykle nie przez kod, tylko przez formalności, o których nikt nie pomyślał wcześniej.\n\nNa co zwrócić uwagę w 2026 r.:\n- konto firmowe wymaga numeru D-U-N-S, a jego uzyskanie może potrwać do 30 dni,\n- nowe konta osobiste muszą przed produkcją przeprowadzić test zamknięty: min. 12 testerów zapisanych nieprzerwanie przez 14 dni,\n- od 31 sierpnia 2026 r. nowe aplikacje i aktualizacje muszą celować w API 36 (Android 16),\n- Data safety i polityka prywatności są obowiązkowe nawet dla aplikacji, które nie zbierają danych,\n- sprawdzenie aplikacji może potrwać do 7 dni, więc zaplanuj zapas przed premierą.\n\nPełny poradnik z checklistą przed kliknięciem „Opublikuj”: {url}\n\n#GooglePlay #Android #aplikacjemobilne #PlayConsole"
+}
+META-->
+<p>Publikacja aplikacji w Google Play wymaga konta developera (jednorazowo 25 USD), weryfikacji tożsamości, a w przypadku firmy także numeru D-U-N-S i zweryfikowanej strony. Nowe konta osobiste przed wydaniem produkcyjnym muszą przeprowadzić test zamknięty z co najmniej 12 testerami przez 14 dni. Aplikację wysyłasz jako AAB, celując w Androida 16 (API 36).</p>
+<p>Poniżej znajdziesz cały proces w kolejności, w jakiej go realizujesz. Informacje sprawdziliśmy w pomocy Play Console i dokumentacji Android Developers we wrześniu 2026 r. Google regularnie zmienia te zasady, więc przed startem zajrzyj do podlinkowanych źródeł.</p>
+
+<h2>Jakie konto developera wybrać: osobiste czy organizacji</h2>
+<p>Play Console oferuje dwa typy kont. Oba mają te same funkcje i oba pozwalają zarabiać przez profil płatności. Różnią się danymi wymaganymi przy rejestracji i obowiązkami przed pierwszą publikacją.</p>
+<ul>
+<li><strong>Konto osobiste</strong> jest przeznaczone dla osób prywatnych: studentów, hobbystów, niezależnych twórców. Podajesz imię i nazwisko, adres, e-mail i telefon.</li>
+<li><strong>Konto organizacji</strong> zakładasz dla firmy. Podajesz nazwę i adres organizacji, numer D-U-N-S, telefon, stronę internetową oraz dane osoby kontaktowej.</li>
+</ul>
+<p>Konto organizacji jest obowiązkowe m.in. dla aplikacji z usługami finansowymi (w tym portfeli kryptowalut), aplikacji zdrowotnych, aplikacji VPN i aplikacji tworzonych dla instytucji rządowych. Jeśli aplikacja powstaje dla firmy, zakładaj konto na firmę. Aplikacja na prywatnym koncie pracownika lub wykonawcy to kłopot przy każdej zmianie współpracy.</p>
+<p>Opłata rejestracyjna wynosi jednorazowo 25 USD. Część danych konta jest widoczna publicznie w sklepie (m.in. nazwa, kraj i e-mail dewelopera, a przy organizacjach także telefon), więc używaj adresu i numeru przeznaczonych do kontaktu z użytkownikami.</p>
+
+<h2>Weryfikacja konta: dokumenty, D-U-N-S i strona internetowa</h2>
+<p>Google weryfikuje tożsamość każdego dewelopera. Przy koncie osobistym przygotuj dokument tożsamości; możesz zostać poproszony także o kartę płatniczą wystawioną na Twoje imię i nazwisko. Przy koncie organizacji dochodzi oficjalny dokument potwierdzający dane firmy.</p>
+<h3>Numer D-U-N-S</h3>
+<p>D-U-N-S to dziewięciocyfrowy identyfikator nadawany firmom przez Dun &amp; Bradstreet. Google wymaga go od organizacji (z wyjątkiem m.in. instytucji rządowych) i uprzedza, że jego uzyskanie może potrwać do 30 dni. Zamów go na początku projektu, a nie tydzień przed premierą. Ten sam numer przyda się przy zapisie firmy do Apple Developer Program.</p>
+<h3>Strona internetowa, e-mail i telefon</h3>
+<p>Od lutego 2024 r. nowe konta organizacji przechodzą weryfikację strony internetowej, w praktyce najczęściej przez potwierdzenie własności domeny w Google Search Console. Adres e-mail i numer telefonu potwierdzasz kodami jednorazowymi i muszą one działać przez cały czas istnienia konta.</p>
+<h3>Weryfikacja urządzenia</h3>
+<p>Nowe konta osobiste muszą dodatkowo potwierdzić dostęp do fizycznego urządzenia z Androidem przez aplikację Play Console na telefon.</p>
+
+<h2>Test zamknięty: 12 testerów przez 14 dni</h2>
+<p>Ten wymóg najczęściej zaskakuje twórców. Dotyczy kont osobistych utworzonych po 13 listopada 2023 r. Zanim wystąpisz o dostęp do produkcji, musisz przeprowadzić test zamknięty z co najmniej 12 testerami, którzy są zapisani do testu nieprzerwanie przez co najmniej 14 dni. Do tego czasu publikacja produkcyjna i przedrejestracja są niedostępne.</p>
+<p>Po wprowadzeniu reguły minimum wynosiło 20 testerów, później Google obniżył je do 12. Konta organizacji i konta osobiste założone przed 13 listopada 2023 r. tego wymogu nie mają.</p>
+<ul>
+<li>Testerzy, którzy się zapiszą, testują krócej niż 14 dni i się wypiszą, nie są liczeni. Osoba, która wraca po przerwie, zaczyna odliczanie od nowa.</li>
+<li>Zbierz więcej osób niż minimum, bo ktoś zawsze się wypisze lub zapomni zaakceptować zaproszenie.</li>
+<li>Traktuj test jak prawdziwy test: zbieraj uwagi, wydawaj poprawki, zapisuj, co zmieniłeś. Te informacje przydadzą się przy wniosku o dostęp do produkcji.</li>
+<li>Po spełnieniu warunków złóż wniosek o dostęp do produkcji na pulpicie w Play Console.</li>
+</ul>
+<aside class="callout"><p>Jeśli publikujesz aplikację dla firmy, nie obchodź testu zamkniętego, zakładając konto osobiste „na szybko”. Konto organizacji nie ma wymogu 12 testerów, a dodatkowo od razu jest właściwym właścicielem aplikacji. Czas oczekiwania na D-U-N-S jest zwykle mniejszym problemem niż późniejsze przenoszenie aplikacji.</p></aside>
+
+<h2>Formularze w Play Console: Data safety, polityka prywatności i klasyfikacja treści</h2>
+<p>Zanim wyślesz aplikację do sprawdzenia, uzupełnij sekcję treści aplikacji. To zwykle kilka godzin pracy, jeśli wiesz, jakie dane zbiera aplikacja i jakie SDK zawiera.</p>
+<ul>
+<li><strong>Data safety.</strong> Formularz muszą wypełnić wszyscy deweloperzy z aplikacjami na ścieżkach testów zamkniętych, otwartych i produkcji, także gdy aplikacja nie zbiera żadnych danych. Deklarujesz, jakie dane są zbierane i udostępniane, w jaki sposób są chronione i czy dotyczy to bibliotek zewnętrznych. Odpowiedzialność za poprawność deklaracji spoczywa na Tobie.</li>
+<li><strong>Polityka prywatności.</strong> Link do polityki jest wymagany do wypełnienia Data safety. Strona musi być publicznie dostępna i dotyczyć tej konkretnej aplikacji.</li>
+<li><strong>Klasyfikacja treści.</strong> Wypełniasz kwestionariusz IARC w Play Console, a na jego podstawie aplikacja otrzymuje oznaczenia od organizacji ratingowych.</li>
+<li><strong>Grupa docelowa.</strong> Deklarujesz wiek odbiorców. Aplikacje skierowane także do dzieci muszą spełniać zasady programu Families.</li>
+<li><strong>Reklamy i dostęp do aplikacji.</strong> Deklarujesz, czy aplikacja wyświetla reklamy, a jeśli wymaga logowania, podajesz recenzentom dane dostępowe i instrukcję.</li>
+<li><strong>Usuwanie konta.</strong> Jeśli aplikacja pozwala założyć konto, musi umożliwiać jego usunięcie w aplikacji oraz przez stronę internetową, bez ponownej instalacji.</li>
+</ul>
+<p>Jeśli aplikacja prosi o wrażliwe uprawnienia, np. do SMS-ów czy rejestru połączeń, przygotuj się na dodatkowy formularz deklaracji uprawnień.</p>
+
+<h2>Wymagania techniczne: AAB, Play App Signing i docelowy poziom API</h2>
+<p>Od sierpnia 2021 r. nowe aplikacje w Google Play publikuje się w formacie Android App Bundle (AAB). Z formatem wiąże się Play App Signing: Google przechowuje klucz podpisujący aplikację, a Ty podpisujesz przesyłane paczki kluczem przesyłania. Klucz przesyłania trzymaj w menedżerze sekretów lub w pipeline CI, nie na laptopie jednej osoby.</p>
+<p>Docelowy poziom API to wymóg, który wraca co roku:</p>
+<ul>
+<li>od 31 sierpnia 2026 r. nowe aplikacje i aktualizacje muszą celować w Androida 16 (API 36) lub nowszego, a dla Wear OS i Android Automotive OS w API 35,</li>
+<li>jeśli potrzebujesz więcej czasu, możesz wnioskować o przesunięcie terminu do 1 listopada 2026 r.,</li>
+<li>istniejące aplikacje, które nie celują co najmniej w API 35, przestają być dostępne dla nowych użytkowników na nowszych wersjach Androida.</li>
+</ul>
+<p>Podniesienie docelowego API to nie tylko zmiana liczby w pliku Gradle. Nowe wersje Androida zmieniają zachowanie uprawnień, pracy w tle i wyświetlania, więc zaplanuj testy regresji. Wybór technologii też ma tu znaczenie, bo framework cross-platform musi nadążać za tymi zmianami; więcej w tekście <a href="/blog/natywna-czy-cross-platform/">aplikacja natywna czy cross-platform</a>.</p>
+
+<h2>Ile trwa sprawdzanie aplikacji w Google Play</h2>
+<p>Według pomocy Play Console sprawdzenie może trwać od kilku godzin do siedmiu dni, a w wyjątkowych przypadkach dłużej. Dłuższe przeglądy dotyczą m.in. niektórych kont i kategorii aplikacji. Przy pierwszej publikacji zaplanuj co najmniej tydzień zapasu przed datą premiery.</p>
+<p>Włącz publikację zarządzaną. Zatwierdzona wersja czeka wtedy na Twoje kliknięcie, więc możesz zsynchronizować premierę z kampanią, wydaniem na iOS albo zmianami w backendzie.</p>
+<h3>A jak to wygląda w App Store?</h3>
+<p>W App Store konto dewelopera to Apple Developer Program za 99 USD rocznie, a organizacja również potrzebuje numeru D-U-N-S i działającej strony internetowej w swojej domenie. Apple nie ma odpowiednika wymogu 12 testerów, ale każdą wersję sprawdza zespół App Review. Według Apple średnio 90% zgłoszeń jest sprawdzanych w mniej niż 24 godziny.</p>
+
+<h2>Weryfikacja deweloperów Androida: co się zmienia poza Google Play</h2>
+<p>Google wprowadza weryfikację deweloperów dla aplikacji instalowanych na certyfikowanych urządzeniach z Androidem, także spoza Google Play. Aplikacja ma być powiązana ze zweryfikowanym deweloperem, inaczej jej instalacja wymaga dodatkowej, celowo utrudnionej ścieżki lub ADB.</p>
+<ul>
+<li>30 września 2026 r. ochrona zaczyna działać w Brazylii, Indonezji, Singapurze i Tajlandii,</li>
+<li>globalne wdrożenie Google zapowiada na 2027 r. i kolejne lata,</li>
+<li>według Google aplikacje deweloperów zweryfikowanych w Play Console są rejestrowane automatycznie (dotyczy to 99% aplikacji); pozostałe oraz aplikacje dystrybuowane poza Play rejestrujesz ręcznie w Play Console,</li>
+<li>deweloperzy dystrybuujący wyłącznie poza Google Play korzystają z Android Developer Console, a dla studentów i hobbystów jest konto z ograniczoną dystrybucją do 20 urządzeń, bez opłaty i dokumentu tożsamości.</li>
+</ul>
+<p>Jeśli rozsyłasz firmową aplikację jako APK, np. do pracowników lub partnerów, sprawdź już teraz, pod jakie konto ją zarejestrujesz. Zmiana ma ograniczyć instalowanie złośliwych aplikacji, które często kradną dane logowania, podobnie jak <a href="/blog/lumma-stealer-infostealery/">infostealery typu Lumma</a> na komputerach.</p>
+
+<h2>Checklista przed kliknięciem „Opublikuj”</h2>
+<ol>
+<li>Konto założone na właściwy podmiot (firma: konto organizacji z D-U-N-S i zweryfikowaną stroną).</li>
+<li>Zweryfikowane dane kontaktowe i, przy koncie osobistym, urządzenie.</li>
+<li>Przy nowym koncie osobistym: test zamknięty z co najmniej 12 testerami przez 14 dni i złożony wniosek o produkcję.</li>
+<li>Paczka AAB podpisana kluczem przesyłania, Play App Signing skonfigurowane, klucz przesyłania w bezpiecznym miejscu.</li>
+<li>Docelowe API 36 (lub przyznane przesunięcie terminu) i testy na najnowszej wersji Androida.</li>
+<li>Formularz Data safety zgodny z tym, co naprawdę robią aplikacja i jej SDK.</li>
+<li>Publiczna polityka prywatności dla tej aplikacji.</li>
+<li>Kwestionariusz klasyfikacji treści, grupa docelowa, deklaracja reklam.</li>
+<li>Dane logowania dla recenzentów, jeśli aplikacja wymaga konta.</li>
+<li>Usuwanie konta w aplikacji i przez stronę internetową.</li>
+<li>Karta sklepu: nazwa, opisy, ikona, zrzuty ekranu, kategoria, dane kontaktowe.</li>
+<li>Publikacja zarządzana włączona i tydzień zapasu w planie premiery.</li>
+</ol>
+<p>Publikacje w Google Play i App Store prowadzimy dla klientów jako część projektów mobilnych, więc jeśli wolisz oddać ten etap zespołowi, który zajmuje się tym na co dzień,<a href="/#kontakt">skontaktuj się z nami</a>. Jeśli dopiero planujesz budżet, zacznij od tekstu <a href="/blog/ile-kosztuje-aplikacja-mobilna-2026/">ile kosztuje aplikacja mobilna w 2026</a>.</p>

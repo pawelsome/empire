@@ -1,0 +1,180 @@
+<!--META
+{
+  "slug": "zabezpieczenie-wordpress-checklista",
+  "title": "Jak zabezpieczyć WordPress w 2026: checklista krok po kroku",
+  "metaTitle": "Zabezpieczenie WordPress w 2026: praktyczna checklista",
+  "description": "Zabezpieczenie WordPress w 2026: aktualizacje, 2FA, wersja PHP, uprawnienia plików, WAF, kopie 3-2-1 i monitoring. Checklista z poleceniami WP-CLI.",
+  "category": "Bezpieczeństwo",
+  "tags": ["WordPress", "zabezpieczenie WordPress", "WP-CLI", "hardening", "kopie zapasowe"],
+  "primaryKeyword": "zabezpieczenie wordpress",
+  "tldr": [
+    "Podstawą jest higiena rozszerzeń: aktualne wtyczki i motywy, usunięte nieużywane i żadnych nieoficjalnych kopii wtyczek premium.",
+    "Każde konto administratora powinno mieć 2FA, a administratorów powinno być jak najmniej.",
+    "WordPress.org zaleca PHP 8.3 lub nowsze; PHP 8.2 ma wsparcie bezpieczeństwa tylko do 31 grudnia 2026 roku.",
+    "W wp-config.php wyłącz edycję plików (DISALLOW_FILE_EDIT), a w katalogu uploads zablokuj wykonywanie PHP.",
+    "Kopia zapasowa ma sens tylko wtedy, gdy jedna jej wersja leży poza serwerem, a odtwarzanie jest regularnie testowane."
+  ],
+  "faq": [
+    {"q": "Czy wtyczka bezpieczeństwa wystarczy do zabezpieczenia WordPressa?", "a": "Nie. Wtyczka pomaga w ochronie logowania, skanowaniu i filtrowaniu ruchu, ale nie zaktualizuje za Ciebie PHP, nie ustawi uprawnień plików ani nie zrobi kopii poza serwerem. Działa też wewnątrz WordPressa, więc atakujący z dostępem do plików może ją wyłączyć. Traktuj ją jako jedną z warstw."},
+    {"q": "Czy wyłączyć XML-RPC w WordPressie?", "a": "Jeśli nie korzystasz z Jetpacka ani aplikacji, które łączą się przez xmlrpc.php, zablokuj ten plik w konfiguracji serwera. Filtr xmlrpc_enabled wyłącza tylko metody wymagające uwierzytelnienia, więc na przykład pingbacki nadal działają. Blokada na serwerze odcina całość, zanim żądanie dotrze do PHP."},
+    {"q": "Jak często aktualizować WordPressa i wtyczki?", "a": "Poprawki bezpieczeństwa instaluj jak najszybciej po wydaniu, najlepiej przez automatyczne aktualizacje dla zaufanych wtyczek. Większe aktualizacje funkcjonalne sprawdzaj najpierw na kopii strony. Raz w tygodniu przejrzyj listę zaległych aktualizacji poleceniem wp plugin list --update=available."},
+    {"q": "Czy zmiana adresu wp-admin poprawia bezpieczeństwo?", "a": "Zmniejsza szum w logach od automatów, ale nie chroni przed atakiem na podatną wtyczkę ani przed użyciem wykradzionego hasła. Jeśli już to robisz, traktuj to jako dodatek do 2FA i limitu prób logowania, a nie ich zamiennik."},
+    {"q": "Jakie uprawnienia plików ustawić w WordPressie?", "a": "Dokumentacja WordPressa zaleca 755 dla katalogów i 644 dla plików, a dla wp-config.php 440 lub 400, tak aby czytać go mogli tylko właściciel i serwer WWW. Dokładne wartości zależą od tego, pod jakim użytkownikiem hosting uruchamia PHP, więc sprawdź to przed zmianą."}
+  ],
+  "sources": [
+    {"title": "WordPress Developer Resources: Hardening WordPress", "url": "https://developer.wordpress.org/advanced-administration/security/hardening/"},
+    {"title": "WordPress.org: Requirements", "url": "https://wordpress.org/about/requirements/"},
+    {"title": "PHP: Supported Versions", "url": "https://www.php.net/supported-versions.php"},
+    {"title": "WordPress Developer Reference: filtr xmlrpc_enabled", "url": "https://developer.wordpress.org/reference/hooks/xmlrpc_enabled/"},
+    {"title": "WP-CLI: wp user session destroy", "url": "https://developer.wordpress.org/cli/commands/user/session/destroy/"},
+    {"title": "WP-CLI: wp plugin auto-updates enable", "url": "https://developer.wordpress.org/cli/commands/plugin/auto-updates/enable/"},
+    {"title": "CISA: Back Up Business Data", "url": "https://www.cisa.gov/audiences/small-and-medium-businesses/secure-your-business/back-up-business-data"}
+  ],
+  "linkedin": "Zabezpieczenie WordPressa to nie jedna wtyczka, tylko kilka nawyków, które sprawdzisz samodzielnie.\n\nNajważniejsze punkty z naszej checklisty na 2026:\n- PHP 8.1 i starsze nie dostają już poprawek, a 8.2 traci wsparcie 31 grudnia 2026,\n- 2FA dla każdego administratora i jak najmniej kont z tą rolą,\n- DISALLOW_FILE_EDIT w wp-config.php i blokada PHP w uploads,\n- kopie według zasady 3-2-1 z regularnym testem odtwarzania,\n- monitoring integralności plików i codzienna weryfikacja rdzenia przez WP-CLI.\n\nPełna lista z gotowymi poleceniami: {url}\n\n#WordPress #cyberbezpieczeństwo #webdev #PHP"
+}
+META-->
+<p>Zabezpieczenie WordPress w 2026 roku to kilka stałych nawyków: aktualne i nieliczne wtyczki, 2FA dla administratorów, wspierana wersja PHP, wyłączona edycja plików z panelu, firewall, kopie zapasowe z testem odtwarzania i monitoring zmian. Poniższa checklista sprawdzi się przy nowej stronie i po czyszczeniu z malware.</p>
+
+<h2>Aktualizacje i higiena wtyczek</h2>
+<p>Rdzeń WordPressa domyślnie sam instaluje drobne wydania z poprawkami bezpieczeństwa. Wtyczki i motywy wymagają już Twojej decyzji, a każda z nich to cudzy kod z własnym tempem łatania błędów.</p>
+<ul>
+<li>Włącz automatyczne aktualizacje dla wtyczek i motywów, którym ufasz. Resztę aktualizuj ręcznie, najpóźniej co tydzień.</li>
+<li>Usuń nieaktywne wtyczki i motywy. Wyłączona wtyczka nadal leży na serwerze, a jej pliki mogą dać się wywołać bezpośrednio.</li>
+<li>Zostaw jeden domyślny motyw jako zapasowy, pozostałe nieużywane usuń.</li>
+<li>Przed instalacją sprawdź, czy wtyczka jest rozwijana: datę ostatniej aktualizacji, zgodność z bieżącą wersją WordPressa, reakcje autora na zgłoszenia.</li>
+<li>Nie instaluj nieoficjalnych, „darmowych” kopii wtyczek premium. To prosty sposób, żeby samodzielnie wgrać sobie backdoor.</li>
+</ul>
+<pre><code class="language-bash"># Wtyczki i motywy z dostępną aktualizacją
+wp plugin list --update=available
+wp theme list --update=available
+
+# Automatyczne aktualizacje dla wszystkich wtyczek (albo podaj wybrane nazwy)
+wp plugin auto-updates enable --all
+
+# Rdzeń i wtyczki z WordPress.org zgodne z oficjalnymi sumami kontrolnymi
+wp core verify-checksums
+wp plugin verify-checksums --all</code></pre>
+<h3>Jak aktualizować bez strachu, że strona się rozsypie</h3>
+<p>Aktualizacje często zalegają z obawy przed awarią. Rozwiązaniem nie jest odkładanie, tylko proces. Trzymaj kopię strony na osobnej subdomenie lub lokalnie, aktualizuj najpierw tam i klikaj przez najważniejsze ścieżki: formularz kontaktowy, koszyk, logowanie klienta. Jeśli wszystko działa, powtórz to samo na produkcji zaraz po świeżej kopii zapasowej.</p>
+<p>Zwróć też uwagę na wtyczki, które zniknęły z repozytorium WordPress.org. Zamknięcie wtyczki bywa skutkiem niezałatanej luki albo porzucenia projektu przez autora. W obu przypadkach poszukaj zamiennika, zamiast czekać na poprawkę, która może nigdy nie przyjść.</p>
+
+<h2>Konta, role i uwierzytelnianie dwuskładnikowe</h2>
+<p>Konto administratora w WordPressie może instalować wtyczki, a więc wgrać na serwer dowolny kod PHP. Przejęcie takiego konta jest w praktyce równoznaczne z przejęciem strony, dlatego ta sekcja jest tak samo ważna jak aktualizacje.</p>
+<ul>
+<li>Każda osoba ma własne konto. Nie udostępniaj jednego loginu agencji, freelancerowi i pracownikom.</li>
+<li>Nadawaj najniższą rolę, która wystarcza: redaktor do treści, menedżer sklepu do zamówień. Administratorów powinno być tylu, ilu naprawdę zarządza stroną.</li>
+<li>Włącz 2FA dla wszystkich kont administratorów i redaktorów, korzystając ze sprawdzonej wtyczki lub mechanizmu hostingu.</li>
+<li>Trzymaj hasła w menedżerze haseł, a nie w przeglądarce. Hasła zapisane w przeglądarce to łatwy łup dla <a href="/blog/lumma-stealer-infostealery/">infostealerów</a>.</li>
+<li>Usuwaj konta byłych pracowników i podwykonawców zaraz po zakończeniu współpracy. Przejrzyj też hasła aplikacji w profilach użytkowników i skasuj nieużywane.</li>
+<li>Pamiętaj, że loginy autorów łatwo poznać, np. z archiwum autora. Login nie jest tajemnicą, więc całą ochronę opieraj na haśle i 2FA.</li>
+</ul>
+<pre><code class="language-bash"># Lista administratorów z datą rejestracji
+wp user list --role=administrator --fields=ID,user_login,user_email,user_registered
+
+# Wylogowanie wszystkich użytkowników ze wszystkich sesji (np. po incydencie)
+wp user list --field=ID | xargs -n 1 wp user session destroy --all
+
+# Nowe klucze i sole w wp-config.php (również unieważnia sesje)
+wp config shuffle-salts</code></pre>
+
+<h2>Hosting i wersja PHP</h2>
+<p>WordPress.org zaleca PHP w wersji 8.3 lub nowszej oraz MySQL 8.0+ albo MariaDB 10.11+, a HTTPS traktuje jako wymagany. Starsze wersje PHP nie dostają poprawek bezpieczeństwa, więc każda nowa luka w samym interpreterze zostaje otwarta na zawsze.</p>
+<table>
+<thead>
+<tr><th>Wersja PHP</th><th>Poprawki bezpieczeństwa do</th></tr>
+</thead>
+<tbody>
+<tr><td>8.1 i starsze</td><td>wsparcie zakończone</td></tr>
+<tr><td>8.2</td><td>31 grudnia 2026</td></tr>
+<tr><td>8.3</td><td>31 grudnia 2027</td></tr>
+<tr><td>8.4</td><td>31 grudnia 2028</td></tr>
+<tr><td>8.5</td><td>31 grudnia 2029</td></tr>
+</tbody>
+</table>
+<p>Jeśli panel hostingu pokazuje 7.4 czy 8.1, to pierwsza rzecz do zmiany. Przełącz wersję najpierw na kopii strony, bo stare wtyczki mogą nie działać z nowym PHP.</p>
+<ul>
+<li>Każdą stronę trzymaj na osobnym koncie hostingowym albo przynajmniej osobnym użytkowniku systemowym, żeby infekcja jednej nie przeszła na pozostałe.</li>
+<li>Łącz się przez SFTP lub SSH z kluczem. Zwykłe FTP przesyła hasło otwartym tekstem.</li>
+<li>Użytkownikowi bazy danych nadaj tylko potrzebne uprawnienia. Dokumentacja WordPressa wskazuje, że do codziennej pracy wystarczają SELECT, INSERT, UPDATE i DELETE, ale aktualizacje czasem potrzebują więcej, więc testuj to ostrożnie.</li>
+</ul>
+
+<h2>Uprawnienia plików i ustawienia wp-config.php</h2>
+<p>Dokumentacja WordPressa zaleca 755 dla katalogów i 644 dla plików, a dla <code>wp-config.php</code> 440 lub 400. Zanim zmienisz uprawnienia, sprawdź, pod jakim użytkownikiem działa PHP. Jeśli po zmianie strona przestanie się ładować, problemem jest zwykle właściciel pliku, a nie same uprawnienia.</p>
+<pre><code class="language-bash"># Uruchom w katalogu głównym WordPressa
+find . -type d -exec chmod 755 {} \;
+find . -type f -exec chmod 644 {} \;
+chmod 440 wp-config.php</code></pre>
+<p>W <code>wp-config.php</code> dodaj ustawienia, które odbierają atakującemu wygodne narzędzia:</p>
+<pre><code class="language-php">// Wyłącza edytor plików motywów i wtyczek w panelu
+define( 'DISALLOW_FILE_EDIT', true );
+
+// Wymusza HTTPS w panelu administracyjnym
+define( 'FORCE_SSL_ADMIN', true );
+
+// Nie pokazuje błędów PHP odwiedzającym
+define( 'WP_DEBUG', false );
+define( 'WP_DEBUG_DISPLAY', false );
+
+// Opcjonalnie: blokuje instalowanie i aktualizowanie wtyczek z poziomu WordPressa,
+// także automatyczne. Włącz tylko, jeśli aktualizujesz przez WP-CLI lub wdrożenia.
+// define( 'DISALLOW_FILE_MODS', true );</code></pre>
+<p>Katalog uploads służy do obrazków i dokumentów, więc zablokuj w nim wykonywanie PHP. Na Apache 2.4 wystarczy plik <code>wp-content/uploads/.htaccess</code>:</p>
+<pre><code class="language-apacheconf">&lt;FilesMatch "\.(php|phtml|phar)$"&gt;
+    Require all denied
+&lt;/FilesMatch&gt;</code></pre>
+
+<h2>Firewall, ochrona logowania i XML-RPC</h2>
+<ul>
+<li>Postaw firewall aplikacyjny (WAF). Usługa przed serwerem, np. w reverse proxy lub CDN, odrzuca złośliwe żądania, zanim dotrą do PHP. Wtyczka działa dopiero wewnątrz WordPressa, ale też jest lepsza niż nic.</li>
+<li>Ogranicz liczbę prób logowania i blokuj adresy, które zgadują hasła. Połączone z 2FA sprawia to, że atak słownikowy traci sens.</li>
+<li>Jeśli możesz, ogranicz dostęp do <code>wp-login.php</code> i <code>wp-admin</code> do znanych adresów IP lub VPN. To dobre rozwiązanie dla stron firmowych bez rejestracji klientów.</li>
+<li>Zablokuj <code>xmlrpc.php</code>, jeśli z niego nie korzystasz. Używają go m.in. Jetpack i część starszych aplikacji do publikacji. Filtr <code>xmlrpc_enabled</code> wyłącza tylko metody wymagające uwierzytelnienia, dlatego pewniejsza jest blokada na serwerze.</li>
+</ul>
+<pre><code class="language-apacheconf"># Apache 2.4, w głównym .htaccess
+&lt;Files "xmlrpc.php"&gt;
+    Require all denied
+&lt;/Files&gt;</code></pre>
+<pre><code class="language-nginx"># nginx, w bloku server
+location = /xmlrpc.php {
+    deny all;
+}</code></pre>
+<p>Po wprowadzeniu blokady sprawdź, czy wszystko nadal działa: publikacja z aplikacji mobilnej, integracje z usługami zewnętrznymi, formularze. Jeśli coś przestało działać, zamiast zdejmować blokadę w całości, zezwól na dostęp tylko z adresów IP tej konkretnej usługi, o ile dostawca je publikuje.</p>
+<p>Zajrzyj też do logów serwera. Setki żądań POST do <code>wp-login.php</code> z różnych adresów to zwykły szum internetu, ale udane logowanie z kraju, z którego nikt w firmie nie pracuje, to sygnał do natychmiastowej zmiany hasła i przeglądu konta.</p>
+
+<h2>Kopie zapasowe według zasady 3-2-1</h2>
+<p>CISA opisuje zasadę 3-2-1 tak: trzy kopie ważnych danych, na dwóch różnych rodzajach nośników, w tym jedna poza siedzibą. W przypadku strony oznacza to kopię poza serwerem i poza kontem hostingowym.</p>
+<ul>
+<li>Kopiuj pliki i bazę danych. Sklep lub serwis z częstymi zmianami potrzebuje kopii co najmniej codziennej.</li>
+<li>Kopia poza serwerem powinna być w miejscu, do którego strona nie ma prawa zapisu ani usuwania. Inaczej atakujący, który przejmie serwer, skasuje ją razem ze stroną.</li>
+<li>Szyfruj kopie zawierające dane osobowe klientów.</li>
+<li>Trzymaj kopie z odpowiednio długiego okresu. Infekcję często wykrywa się po czasie, a potrzebujesz wersji sprzed włamania.</li>
+<li>Testuj odtwarzanie na osobnym środowisku, np. raz na kwartał. CISA zaleca sprawdzanie, czy zespół potrafi szybko odtworzyć dane w całości i częściowo.</li>
+</ul>
+<pre><code class="language-bash"># Ręczna kopia przed większą zmianą, zapisywana poza katalogiem publicznym
+wp db export ../kopia-bazy-$(date +%F).sql
+tar -czf ../kopia-plikow-$(date +%F).tar.gz --exclude=wp-content/cache .</code></pre>
+<p>Nigdy nie zostawiaj zrzutu bazy w katalogu dostępnym z przeglądarki. Plik <code>backup.sql</code> w katalogu głównym strony to gotowy prezent dla każdego, kto zgadnie nazwę.</p>
+
+<h2>Monitoring: integralność plików, dostępność i Search Console</h2>
+<ul>
+<li>Monitoruj integralność plików. Nowy plik PHP w uploads albo zmiana w <code>wp-config.php</code> powinny wywołać alert. Możesz to zrobić wtyczką albo agentem na serwerze, np. w <a href="/blog/wazuh-wdrozenie-mala-firma/">Wazuhu wdrożonym w małej firmie</a>.</li>
+<li>Ustaw monitoring dostępności ze sprawdzaniem treści, np. obecności nazwy firmy na stronie głównej. Sam kod 200 nie wykryje podmienionej zawartości.</li>
+<li>Dodaj stronę do Google Search Console i upewnij się, że powiadomienia trafiają do czytanej skrzynki. Tam najszybciej zobaczysz problemy z bezpieczeństwem, a jeśli już się pojawią, pomoże wpis o <a href="/blog/ostrzezenie-google-strona-niebezpieczna/">ostrzeżeniu „strona niebezpieczna”</a>.</li>
+<li>Zbieraj logi logowania i zmian ról. Nowe konto administratora bez Twojej wiedzy to jeden z najpewniejszych sygnałów włamania.</li>
+</ul>
+<p>Codzienną weryfikację rdzenia ustawisz w cronie. Przy problemie WP-CLI wypisze błąd, a cron wyśle go mailem:</p>
+<pre><code class="language-bash"># crontab -e (podaj pełną ścieżkę do wp, jeśli cron jej nie znajduje)
+MAILTO=admin@twojadomena.pl
+30 6 * * * cd /sciezka/do/strony &amp;&amp; wp core verify-checksums --skip-plugins --skip-themes --quiet</code></pre>
+<p>Monitoring ma sens tylko wtedy, gdy ktoś reaguje na alerty. Ustal, kto dostaje powiadomienia, kto ma dostęp do serwera i co robi w pierwszej kolejności. Przy małej stronie wystarczy krótka notatka: gdzie są kopie zapasowe, jak włączyć tryb serwisowy, do kogo dzwonić w hostingu. Spisana wcześniej oszczędza nerwów w sytuacji, gdy klient pisze, że strona przekierowuje go na kasyno.</p>
+
+<h2>Zabezpieczenie WordPressa po usunięciu malware</h2>
+<p>Po infekcji sama checklista nie wystarczy, bo zakłada czysty punkt startowy. Zanim zaczniesz utwardzać stronę, upewnij się, że:</p>
+<ol>
+<li>rdzeń, wtyczki i motywy są zainstalowane od nowa z oficjalnych źródeł, a <code>wp core verify-checksums</code> nie zgłasza błędów,</li>
+<li>w <code>mu-plugins</code>, uploads i plikach <code>.user.ini</code> nie ma nic, czego nie rozumiesz, co szczegółowo opisujemy w artykule o <a href="/blog/backdoor-web-shell-php/">backdoorach i web shellach PHP</a>,</li>
+<li>wszystkie hasła, klucze w <code>wp-config.php</code> i klucze API zostały wymienione, a sesje unieważnione,</li>
+<li>wiesz, którędy wszedł atakujący, i ta droga jest zamknięta,</li>
+<li>masz nową kopię zapasową stanu po czyszczeniu, odłożoną osobno od kopii sprzed incydentu.</li>
+</ol>
+<p>Jeśli dopiero widzisz pierwsze objawy, zacznij od artykułu <a href="/blog/zainfekowany-wordpress-objawy/">zainfekowany WordPress: objawy i pierwsza godzina</a>. Audyt konfiguracji i utwardzenie strony możesz też zlecić nam w ramach <a href="/#bezpieczenstwo">usług bezpieczeństwa</a>.</p>

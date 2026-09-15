@@ -1,0 +1,144 @@
+<!--META
+{
+  "slug": "test-penetracyjny-jak-wyglada",
+  "title": "Test penetracyjny strony, aplikacji i API: jak wygląda krok po kroku",
+  "metaTitle": "Test penetracyjny: jak wygląda i jak się przygotować",
+  "description": "Test penetracyjny krok po kroku: różnica wobec skanu podatności, zakres, metodyka OWASP, raport i retest oraz co zmienia nowelizacja ustawy o KSC.",
+  "category": "Bezpieczeństwo",
+  "tags": ["test penetracyjny", "OWASP", "bezpieczeństwo aplikacji", "API", "NIS2", "KSC"],
+  "primaryKeyword": "test penetracyjny",
+  "tldr": [
+    "Test penetracyjny to kontrolowana próba włamania prowadzona przez człowieka; skan podatności to automatyczne wyszukiwanie znanych problemów bez sprawdzania logiki aplikacji.",
+    "Przed testem ustal na piśmie zakres, środowisko, konta testowe, okna czasowe, kontakty i warunki przerwania.",
+    "Typowe punkty odniesienia to OWASP WSTG (stabilna wersja 4.2) dla aplikacji webowych, MASVS 2.1.0 i MASTG 2.0.0 dla aplikacji mobilnych oraz OWASP API Security Top 10 2023 dla API.",
+    "Dobry raport zawiera ocenę ważności (np. CVSS 4.0) z kontekstem biznesowym, dowody, kroki odtworzenia, rekomendacje i retest poprawek.",
+    "Znowelizowana ustawa o KSC wdrażająca NIS2 obowiązuje od 3 kwietnia 2026 roku; wniosek o wpis do wykazu objęte nią firmy składają do 3 października 2026 roku."
+  ],
+  "faq": [
+    {"q": "Czy test penetracyjny może zepsuć działającą stronę?", "a": "Może obciążyć serwer albo zostawić dane testowe, dlatego zasady ustala się przed startem. Techniki ryzykowne, jak testy przeciążeniowe, stosuje się tylko za wyraźną zgodą, najlepiej na środowisku testowym. Przed testem na produkcji zrób kopię zapasową i wyznacz osobę do kontaktu w razie problemów."},
+    {"q": "Czy mogę zlecić test strony stojącej na zewnętrznym hostingu lub w chmurze?", "a": "Tak, ale zgodę na test daje właściciel systemu, a infrastruktura należy do dostawcy. Sprawdź regulamin hostingu lub chmury, bo dostawcy mogą wymagać zgłoszenia albo zakazywać niektórych technik. Zakres uzgodniony tylko z Tobą nie obejmuje usług firm trzecich."},
+    {"q": "Jak często robić testy penetracyjne?", "a": "Rozsądne minimum to test przed uruchomieniem nowego systemu, po każdej dużej zmianie (płatności, logowanie, uprawnienia, publiczne API) i okresowo, zwykle raz w roku. Niektóre standardy narzucają własny rytm, np. PCI DSS dla objętych nim środowisk wymaga testów co najmniej raz na 12 miesięcy i po istotnych zmianach."},
+    {"q": "Czym różni się test penetracyjny od audytu bezpieczeństwa?", "a": "Audyt sprawdza zgodność z wymaganiami: polityki, procesy, konfiguracje i dokumentację. Test penetracyjny praktycznie próbuje obejść zabezpieczenia konkretnego systemu. Audytor często korzysta z wyników testów jako dowodu, ale jedno nie zastępuje drugiego."},
+    {"q": "Czy automatyczny skaner zastąpi test penetracyjny?", "a": "Nie. Skaner dobrze wyłapuje znane podatności i błędy konfiguracji, ale słabo radzi sobie z logiką biznesową, np. dostępem do cudzych zamówień po zmianie identyfikatora w adresie. Taki błąd, opisany w OWASP API Security Top 10 jako Broken Object Level Authorization, wymaga testera, który rozumie aplikację."},
+    {"q": "Czy nowelizacja ustawy o KSC nakazuje testy penetracyjne?", "a": "Ustawa wymaga od objętych nią podmiotów zarządzania ryzykiem i wdrożenia środków bezpieczeństwa, a od części z nich także cyklicznych audytów. Test penetracyjny nie jest jedynym sposobem spełnienia tych obowiązków, ale daje twardy dowód, że zabezpieczenia działają. To, czy i jak ustawa dotyczy Twojej firmy, sprawdź z prawnikiem."}
+  ],
+  "sources": [
+    {"title": "OWASP Web Security Testing Guide: wydania (GitHub)", "url": "https://github.com/OWASP/wstg/releases"},
+    {"title": "OWASP MASTG v2.0.0 (GitHub)", "url": "https://github.com/OWASP/mastg/releases/tag/v2.0.0"},
+    {"title": "OWASP API Security Top 10 2023", "url": "https://api-security.owasp.org/editions/2023/en/0x11-t10"},
+    {"title": "FIRST: Common Vulnerability Scoring System v4.0", "url": "https://www.first.org/cvss/v4-0/"},
+    {"title": "NIST SP 800-115: Technical Guide to Information Security Testing and Assessment", "url": "https://csrc.nist.gov/pubs/sp/800/115/final"},
+    {"title": "Prawo.pl: Prezydent podpisał ustawę o krajowym systemie cyberbezpieczeństwa i skierował wniosek do TK", "url": "https://www.prawo.pl/biznes/prezydent-podpisal-ustawe-o-krajowym-systemie-cyberbezpieczenstwa-i-skierowal-wniosek-do-tk,1537069.html"},
+    {"title": "Tabletowo: Ustawa o Krajowym Systemie Cyberbezpieczeństwa zaktualizowana", "url": "https://www.tabletowo.pl/ustawa-o-krajowym-systemie-cyberbezpieczenstwa-nowelizacja-2026/"},
+    {"title": "LegalGeek: Zgłoszenie incydentu KSC: 24 h, 72 h, 1 miesiąc", "url": "https://legalgeek.pl/blog/nis2-ksc-zgloszenie-incydentu-24-72-miesiac/"}
+  ],
+  "linkedin": "Skan podatności i test penetracyjny to dwie różne usługi, a w ofertach często są mylone.\n\nSkaner znajdzie brakującą aktualizację. Nie znajdzie tego, że po zmianie numeru w adresie klient widzi cudze zamówienie. Co warto wiedzieć przed zleceniem testu:\n- zakres i zasady spisz przed pierwszym żądaniem testera,\n- grey box zwykle daje więcej konkretów w tym samym czasie niż black box,\n- pytaj o metodykę: OWASP WSTG, MASTG dla mobile, API Security Top 10 dla API,\n- raport bez dowodów, rekomendacji i retestu to tylko PDF,\n- znowelizowana ustawa o KSC obowiązuje od 3 kwietnia 2026, a termin wniosku o wpis do wykazu mija 3 października.\n\nJak wygląda test krok po kroku: {url}\n\n#pentest #cyberbezpieczeństwo #OWASP #NIS2"
+}
+META-->
+<p>Test penetracyjny to kontrolowana, uzgodniona z właścicielem próba włamania do strony, aplikacji webowej, mobilnej lub API. Tester szuka podatności, sprawdza, które da się realnie wykorzystać, i opisuje je w raporcie z dowodami oraz zaleceniami naprawy. Całość obejmuje ustalenie zakresu, testy, raport i retest poprawek.</p>
+
+<h2>Test penetracyjny a skan podatności: czym się różnią</h2>
+<p>Skan podatności wykonuje automat. Narzędzie porównuje wersje oprogramowania i odpowiedzi serwera z bazą znanych problemów. Jest szybkie, łatwe do powtarzania i dobrze nadaje się do regularnej kontroli, ale nie rozumie, jak działa Twoja aplikacja.</p>
+<p>Test penetracyjny prowadzi człowiek, który korzysta z narzędzi, ale myśli jak atakujący. Sprawdza, czy zwykły klient zobaczy cudze zamówienie po zmianie numeru w adresie, czy da się pominąć krok płatności albo nadać sobie uprawnienia administratora. Takich błędów logiki skaner zwykle nie znajdzie.</p>
+<table>
+<thead>
+<tr><th>Cecha</th><th>Skan podatności</th><th>Test penetracyjny</th></tr>
+</thead>
+<tbody>
+<tr><td>Kto wykonuje</td><td>Narzędzie; człowiek uruchamia je i filtruje wyniki</td><td>Tester wspierany narzędziami</td></tr>
+<tr><td>Co znajduje</td><td>Znane podatności, brakujące aktualizacje, błędy konfiguracji</td><td>To samo oraz błędy logiki, autoryzacji i łańcuchy kilku słabości</td></tr>
+<tr><td>Fałszywe alarmy</td><td>Częste, wymagają weryfikacji</td><td>Znaleziska potwierdzone dowodem</td></tr>
+<tr><td>Wynik</td><td>Lista z automatyczną oceną</td><td>Raport z opisem wpływu, dowodami i rekomendacjami</td></tr>
+<tr><td>Kiedy</td><td>Regularnie, np. po każdym wdrożeniu</td><td>Przed startem systemu, po dużych zmianach, okresowo</td></tr>
+</tbody>
+</table>
+<p>Oba podejścia się uzupełniają. NIST w publikacji SP 800-115 omawia je jako odrębne techniki oceny bezpieczeństwa, z własnymi zaletami i ograniczeniami.</p>
+
+<h2>Rodzaje testów: black box, grey box i white box</h2>
+<table>
+<thead>
+<tr><th>Rodzaj</th><th>Co wie tester</th><th>Kiedy wybrać</th></tr>
+</thead>
+<tbody>
+<tr><td>Black box</td><td>Tylko adres lub nazwę aplikacji, bez kont i dokumentacji</td><td>Gdy chcesz zobaczyć perspektywę anonimowego atakującego z zewnątrz</td></tr>
+<tr><td>Grey box</td><td>Konta testowe dla różnych ról, podstawową dokumentację, specyfikację API</td><td>Dobry kompromis w większości testów aplikacji webowych, mobilnych i API</td></tr>
+<tr><td>White box</td><td>Kod źródłowy, architekturę, konfigurację</td><td>Gdy zależy Ci na możliwie pełnym pokryciu, np. przed uruchomieniem systemu z płatnościami</td></tr>
+</tbody>
+</table>
+<p>Przy black boxie część czasu idzie na odkrywanie rzeczy, które możesz testerowi po prostu powiedzieć. Dlatego przy ograniczonym budżecie grey box zwykle daje więcej konkretnych wyników.</p>
+
+<h2>Zakres i zasady testu: co ustalić przed startem</h2>
+<p>Zakres i zasady prowadzenia testu (rules of engagement) spisz, zanim tester wyśle pierwsze żądanie. To także ochrona prawna obu stron: test bez zgody właściciela systemu technicznie niczym nie różni się od ataku.</p>
+<ul>
+<li><strong>Cele:</strong> domeny, adresy, aplikacje z numerami wersji dla Androida i iOS, endpointy API, a także to, co jest wyłączone z zakresu.</li>
+<li><strong>Środowisko:</strong> produkcja albo środowisko testowe, najlepiej wierna kopia produkcji.</li>
+<li><strong>Konta i dane:</strong> konta dla każdej roli, testowe karty płatnicze, zasady postępowania z danymi prawdziwych klientów.</li>
+<li><strong>Okna czasowe i adresy IP testera:</strong> żeby zespół odróżnił test od prawdziwego ataku i nie zablokował go w firewallu, chyba że testujesz także reakcję zespołu.</li>
+<li><strong>Techniki zabronione lub wymagające zgody:</strong> testy przeciążeniowe, socjotechnika, modyfikacja danych.</li>
+<li><strong>Kontakty i warunki przerwania:</strong> osoby po obu stronach i sytuacje, w których tester od razu przerywa i dzwoni, np. krytyczna luka albo ślady wcześniejszego włamania.</li>
+<li><strong>Zgody firm trzecich:</strong> hosting, chmura, dostawcy SaaS, jeśli ich usługi są w zakresie.</li>
+<li><strong>Raport i dane:</strong> sposób przekazania raportu i usunięcia danych zebranych podczas testu.</li>
+</ul>
+
+<h2>Metodyka: OWASP WSTG, MASTG i API Security Top 10</h2>
+<p>Zapytaj wykonawcę, na jakiej metodyce opiera test. Brak konkretnej odpowiedzi to sygnał ostrzegawczy. W testach aplikacji punktem odniesienia są zwykle otwarte projekty OWASP.</p>
+
+<h3>Aplikacje webowe: OWASP WSTG</h3>
+<p>Web Security Testing Guide opisuje testy w obszarach takich jak rozpoznanie, konfiguracja i wdrożenie, zarządzanie tożsamością, uwierzytelnianie, autoryzacja, sesje, walidacja danych wejściowych, obsługa błędów, kryptografia, logika biznesowa, strona klienta i API. Ostatnie stabilne wydanie to wersja 4.2, a wersja 5.0 jest w przygotowaniu. OWASP Top 10 (obecne wydanie z 2025 roku) to z kolei lista najważniejszych kategorii ryzyka, a nie metodyka testu.</p>
+
+<h3>Aplikacje mobilne: OWASP MASVS i MASTG</h3>
+<p>MASVS w wersji 2.1.0 to standard wymagań dla aplikacji mobilnych, podzielony na grupy: przechowywanie danych, kryptografia, uwierzytelnianie, komunikacja sieciowa, interakcja z platformą, jakość kodu, odporność na analizę i prywatność. MASTG to przewodnik z konkretnymi testami dla Androida i iOS. W czerwcu 2026 roku ukazało się MASTG 2.0.0, pierwsze stabilne wydanie po kilkuletniej przebudowie. Pamiętaj, że test samej aplikacji bez jej API to połowa pracy, bo dane i tak żyją na serwerze.</p>
+
+<h3>API: OWASP API Security Top 10 2023</h3>
+<p>Aktualna lista pochodzi z 2023 roku. Na pierwszym miejscu jest Broken Object Level Authorization, czyli dostęp do cudzych obiektów po podmianie identyfikatora. Dalej są m.in. błędy uwierzytelniania, autoryzacji na poziomie pól i funkcji, nieograniczone zużycie zasobów, SSRF i niebezpieczne korzystanie z cudzych API. Do testu przygotuj specyfikację OpenAPI lub kolekcję zapytań i tokeny dla różnych ról. Jeśli aplikacja korzysta z modeli językowych, dodaj do zakresu scenariusze opisane we wpisie o <a href="/blog/prompt-injection-bezpieczenstwo-agentow-ai/">prompt injection i bezpieczeństwie agentów AI</a>.</p>
+
+<h2>Co zawiera raport z testu penetracyjnego</h2>
+<ul>
+<li>podsumowanie dla zarządu: ogólny poziom ryzyka i najważniejsze problemy bez żargonu,</li>
+<li>zakres, metodykę, daty i ograniczenia testu, w tym to, czego nie sprawdzono,</li>
+<li>listę podatności z oceną ważności, zwykle w skali CVSS (aktualna wersja 4.0), uzupełnioną o wpływ na Twój biznes,</li>
+<li>dowody: zapytania, odpowiedzi, zrzuty ekranu i kroki pozwalające odtworzyć problem,</li>
+<li>rekomendacje naprawy dopasowane do Twojej technologii, a nie ogólne „zaktualizuj oprogramowanie”,</li>
+<li>wyniki retestu: po poprawkach tester sprawdza, czy luki faktycznie zamknięto, i aktualizuje ich status.</li>
+</ul>
+<p>CVSS opisuje techniczną wagę podatności. Ta sama luka ma jednak inne znaczenie w panelu dostępnym dla dwóch pracowników z sieci firmowej, a inne w publicznym formularzu zamówienia. CVSS 4.0 ma do tego metryki środowiskowe, a dobry raport z nich korzysta albo wprost opisuje kontekst.</p>
+
+<h2>Jak przygotować firmę do testu</h2>
+<ol>
+<li>Wybierz środowisko i upewnij się, że odpowiada produkcji: ta sama wersja kodu, konfiguracja i integracje.</li>
+<li>Zrób kopię zapasową i sprawdź, że potrafisz ją odtworzyć.</li>
+<li>Załóż konta testowe dla wszystkich ról, w tym po dwa konta tej samej roli do sprawdzania dostępu do cudzych danych.</li>
+<li>Przygotuj dokumentację: schemat architektury, listę integracji, specyfikację API, buildy aplikacji mobilnych.</li>
+<li>Uprzedź hosting, zespół IT i dostawcę monitoringu, podaj adresy IP i okna czasowe testera.</li>
+<li>Wyznacz osobę, która szybko odpowiada na pytania i podejmuje decyzje przy krytycznych znaleziskach.</li>
+<li>Zarezerwuj czas programistów na poprawki. Bez tego test kończy się raportem odłożonym do szuflady.</li>
+</ol>
+<p>Jeśli w firmie nie ma osoby, która przygotuje zakres, dogada szczegóły z wykonawcą i oceni raport, tę rolę może przejąć <a href="/blog/zewnetrzny-cto-kiedy-sie-oplaca/">zewnętrzny CTO</a>.</p>
+
+<h2>Od czego zależy koszt i czas testu penetracyjnego</h2>
+<p>Rzetelna wycena wymaga poznania systemu, dlatego wykonawca poprosi o informacje o zakresie. Koszt i czas zależą przede wszystkim od:</p>
+<ul>
+<li>wielkości zakresu: liczby ról użytkowników, formularzy, endpointów API i integracji,</li>
+<li>liczby platform: aplikacja webowa, Android, iOS i wspólne API to w praktyce kilka powiązanych testów,</li>
+<li>rodzaju testu: black box wymaga więcej czasu na rozpoznanie, white box na przegląd kodu,</li>
+<li>złożoności logiki biznesowej: płatności, procesy wieloetapowe, uprawnienia zależne od organizacji,</li>
+<li>ograniczeń środowiska: testy tylko nocą, na produkcji, z zakazem niektórych technik,</li>
+<li>wymagań formalnych: raport pod konkretny standard lub audyt, wersja w innym języku,</li>
+<li>liczby retestów i czasu, jaki Twój zespół potrzebuje na poprawki.</li>
+</ul>
+<p>Zbyt wąski zakres to prosty sposób na tani test, który niewiele mówi. Porównując oferty, sprawdź, co dokładnie jest w zakresie, jaka metodyka stoi za testem i czy retest jest wliczony. Podobne pułapki opisujemy przy <a href="/blog/jak-ocenic-oferte-software-house/">ocenie oferty software house’u</a>.</p>
+
+<h2>Jak często testować i co zmienia nowelizacja KSC</h2>
+<p>Testuj przed uruchomieniem nowego systemu, po każdej dużej zmianie (nowy moduł płatności, logowania, uprawnień, publiczne API) i okresowo, w praktyce zwykle raz w roku. Niektóre standardy wyznaczają własny rytm: PCI DSS dla objętych nim środowisk wymaga testów penetracyjnych co najmniej raz na 12 miesięcy i po istotnych zmianach. Sklep internetowy powinien przy okazji sprawdzić ochronę przed <a href="/blog/magecart-skimmer-kart-sklep/">skimmerami kart</a>.</p>
+
+<h3>NIS2 i ustawa o krajowym systemie cyberbezpieczeństwa</h3>
+<p>Ustawa z 23 stycznia 2026 roku nowelizująca ustawę o KSC wdraża dyrektywę NIS2. Prezydent podpisał ją 19 lutego 2026 roku i jednocześnie skierował do Trybunału Konstytucyjnego w trybie kontroli następczej. Ustawę opublikowano 2 marca, a obowiązuje od 3 kwietnia 2026 roku.</p>
+<p>Najważniejsze terminy dla podmiotów kluczowych i ważnych:</p>
+<ul>
+<li>do 3 października 2026 roku składają wniosek o wpis do wykazu,</li>
+<li>do 3 kwietnia 2027 roku dostosowują systemy i procedury do nowych obowiązków,</li>
+<li>podmioty z pierwszej z tych grup przeprowadzają pierwszy audyt bezpieczeństwa do 3 kwietnia 2028 roku, a potem co najmniej raz na trzy lata,</li>
+<li>incydenty poważne zgłaszają do właściwego CSIRT: wczesne ostrzeżenie w ciągu 24 godzin, zgłoszenie w ciągu 72 godzin i sprawozdanie końcowe w ciągu miesiąca.</li>
+</ul>
+<p>Ustawa obejmuje wybrane sektory i co do zasady średnie oraz duże firmy, z wyjątkami. Wiele mniejszych firm odczuje ją pośrednio, jako dostawcy objętych nią podmiotów, od których klienci zaczną wymagać dowodów bezpieczeństwa. Obowiązki opierają się na zarządzaniu ryzykiem i ocenie skuteczności zabezpieczeń. Test penetracyjny nie jest jedynym sposobem, żeby to wykazać, ale daje konkretny, sprawdzalny dowód. To, czy ustawa dotyczy Twojej firmy, potwierdź z prawnikiem.</p>
+<p>Jeśli potrzebujesz testu aplikacji webowej, mobilnej lub API, <a href="/#bezpieczenstwo">wykonujemy je w ramach usług bezpieczeństwa</a>.</p>

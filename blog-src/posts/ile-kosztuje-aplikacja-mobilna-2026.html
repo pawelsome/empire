@@ -1,0 +1,140 @@
+<!--META
+{
+  "slug": "ile-kosztuje-aplikacja-mobilna-2026",
+  "title": "Ile kosztuje aplikacja mobilna w 2026? Od czego zależy cena",
+  "metaTitle": "Ile kosztuje aplikacja mobilna w 2026? Czynniki ceny",
+  "description": "Ile kosztuje aplikacja mobilna w 2026: czynniki ceny, przykładowa wycena godziny × stawka, MVP oraz koszty po premierze, w tym opłaty i prowizje sklepów.",
+  "category": "Aplikacje",
+  "tags": ["koszt aplikacji mobilnej", "wycena aplikacji", "MVP", "App Store", "Google Play", "utrzymanie aplikacji"],
+  "primaryKeyword": "ile kosztuje aplikacja mobilna",
+  "tldr": [
+    "Cena aplikacji to liczba godzin zespołu pomnożona przez stawkę, a liczbę godzin wyznaczają funkcje, platformy, backend, panel i integracje.",
+    "Najbardziej podnoszą koszt płatności, tryb offline z synchronizacją, funkcje w czasie rzeczywistym, integracje ze starymi systemami i wymagania bezpieczeństwa.",
+    "Discovery i MVP pozwalają wycenić projekt na konkretach i przesuwać funkcje między etapami zamiast negocjować samą stawkę.",
+    "Po premierze płacisz za utrzymanie, hosting i aktualizacje pod wymagania sklepów: Apple wymaga budowania w Xcode 26 od 28 kwietnia 2026 r., a Google Play API 36 od 31 sierpnia 2026 r.",
+    "Apple Developer Program kosztuje 99 USD rocznie, konto Google Play 25 USD jednorazowo, a prowizje od sprzedaży cyfrowej zależą od programu, regionu i metody płatności."
+  ],
+  "faq": [
+    {"q": "Ile trwa stworzenie aplikacji mobilnej?", "a": "Czas zależy od zakresu tak samo jak cena. Proste MVP z kilkoma ekranami powstaje szybciej niż aplikacja z płatnościami, panelem i integracjami, ale do samego developmentu dolicz discovery, testy i publikację w sklepach. Nowe konto osobiste w Google Play wymaga też 14-dniowego testu zamkniętego przed produkcją."},
+    {"q": "Czy aplikacja cross-platform jest tańsza od natywnej?", "a": "Przy typowych aplikacjach biznesowych zwykle wymaga mniej godzin, bo interfejs i logika są wspólne dla iOS i Androida. Oszczędność maleje, gdy aplikacja mocno korzysta z funkcji urządzenia, takich jak Bluetooth, AR czy praca w tle, bo wtedy i tak powstaje kod natywny. Testować trzeba obie platformy niezależnie od technologii."},
+    {"q": "Ile kosztuje utrzymanie aplikacji mobilnej?", "a": "Na koszt utrzymania składają się hosting i usługi zewnętrzne, poprawki błędów, aktualizacje bibliotek, dostosowanie do nowych wymagań Apple i Google oraz opłaty za konta deweloperskie. Część usług rozlicza się od liczby użytkowników, więc koszt rośnie razem z aplikacją. Najlepiej ustalić to w osobnej umowie serwisowej z czasem reakcji."},
+    {"q": "Jaką prowizję pobiera App Store i Google Play?", "a": "App Store pobiera standardowo 30%, a 15% w ramach App Store Small Business Program; od 1 października 2026 r. w UE przy Apple In-App Purchase stawka ma wynosić 26% lub 15% w programie. Google Play pobiera 15% od pierwszego miliona USD rocznie i od subskrypcji, a w EOG, Wielkiej Brytanii i USA od 30 czerwca 2026 r. działa nowy model zależny od typu instalacji i metody płatności. Prowizje dotyczą sprzedaży cyfrowej, nie towarów fizycznych."},
+    {"q": "Co powinna zawierać dobra wycena aplikacji?", "a": "Rozbicie na moduły i role z liczbą godzin, założenia dotyczące platform i technologii, listę integracji, zakres testów, sposób obsługi zmian oraz informację, co nie jest wliczone, np. hosting czy utrzymanie. Powinna też określać, kto jest właścicielem kodu, kont w sklepach i infrastruktury."}
+  ],
+  "sources": [
+    {"title": "Apple Developer: Membership details (Apple Developer Program)", "url": "https://developer.apple.com/programs/whats-included/"},
+    {"title": "Apple Developer: App Store Small Business Program", "url": "https://developer.apple.com/app-store/small-business-program/"},
+    {"title": "Apple Newsroom: Apple announces changes for apps in the European Union (sierpień 2026)", "url": "https://www.apple.com/newsroom/2026/08/apple-announces-changes-for-apps-in-the-european-union/"},
+    {"title": "Apple Developer: Upcoming Requirements", "url": "https://developer.apple.com/news/upcoming-requirements/"},
+    {"title": "Play Console Help: Service fees", "url": "https://support.google.com/googleplay/android-developer/answer/112622"},
+    {"title": "Play Console Help: Get started with Play Console (opłata rejestracyjna)", "url": "https://support.google.com/googleplay/android-developer/answer/6112435"},
+    {"title": "Play Console Help: Target API level requirements for Google Play apps", "url": "https://support.google.com/googleplay/android-developer/answer/11926878"}
+  ],
+  "linkedin": "„Ile kosztuje aplikacja mobilna?” Uczciwa odpowiedź brzmi: tyle, ile godzin pracy wymaga zakres, pomnożone przez stawkę. Widełki bez zakresu niewiele mówią.\n\nCo najmocniej zmienia budżet:\n- jedna czy dwie platformy i wybór między natywną a cross-platform,\n- backend i panel administracyjny, o których klienci często zapominają,\n- płatności, tryb offline, funkcje w czasie rzeczywistym i integracje ze starymi systemami,\n- koszty po premierze: Apple Developer Program to 99 USD rocznie, Google Play 25 USD jednorazowo, do tego prowizje, hosting i coroczne dostosowanie do wymagań sklepów (np. API 36 w Google Play od 31 sierpnia 2026 r.).\n\nW artykule pokazuję przykładową wycenę krok po kroku (z wyraźnie założonymi liczbami) i tabelę: funkcja a wpływ na koszt.\n\n{url}\n\n#aplikacjemobilne #MVP #iOS #Android"
+}
+META-->
+<p>Nie ma jednej ceny aplikacji mobilnej: koszt to liczba godzin pracy zespołu pomnożona przez stawkę, a liczba godzin zależy od funkcji, liczby platform, backendu i integracji. Do budżetu doliczasz też wydatki po premierze, czyli utrzymanie, aktualizacje pod nowe wersje systemów, hosting oraz opłaty i prowizje sklepów.</p>
+<p>W tym tekście znajdziesz czynniki, które najmocniej zmieniają wycenę, przykładowe wyliczenie i listę kosztów, o których łatwo zapomnieć. Nie znajdziesz tu widełek „od… do…” bez zakresu, bo hasło „prosta aplikacja” oznacza dla różnych firm zupełnie inną pracę.</p>
+
+<h2>Od czego zależy cena aplikacji mobilnej</h2>
+<p>Każda funkcja to praca w kilku warstwach: projekt ekranów, kod aplikacji, logika na serwerze, testy i poprawki. Dlatego drobny z pozoru dodatek, jak logowanie przez konto Apple i Google, dotyka projektu, aplikacji, backendu i konfiguracji w obu sklepach.</p>
+<p>Najwięcej zmieniają:</p>
+<ul>
+<li>liczba platform i wybrana technologia,</li>
+<li>to, czy aplikacja potrzebuje własnego backendu i panelu administracyjnego,</li>
+<li>liczba i jakość integracji z systemami zewnętrznymi,</li>
+<li>złożoność interfejsu i animacji,</li>
+<li>wymagania dotyczące bezpieczeństwa i danych osobowych,</li>
+<li>zakres testów i liczba obsługiwanych urządzeń.</li>
+</ul>
+
+<h2>iOS, Android czy obie platformy</h2>
+<p>Jeśli kierujesz aplikację do szerokiego grona klientów, zwykle potrzebujesz obu platform. Masz wtedy trzy drogi.</p>
+<ul>
+<li><strong>Dwie aplikacje natywne</strong> (Swift na iOS, Kotlin na Androida). Najwięcej kontroli nad wydajnością i zgodnością z systemem, ale dwa kody źródłowe do napisania i utrzymania.</li>
+<li><strong>Cross-platform</strong> (React Native, Flutter). Wspólny interfejs i logika dla obu systemów, więc przy typowej aplikacji biznesowej mniej godzin. Funkcje mocno związane z urządzeniem nadal mogą wymagać kodu natywnego.</li>
+<li><strong>Kotlin Multiplatform.</strong> Wspólna logika biznesowa, a interfejs natywny albo współdzielony w Compose Multiplatform.</li>
+</ul>
+<p>Technologia zmienia też koszt utrzymania w kolejnych latach, więc nie wybieraj jej wyłącznie pod cenę pierwszej wersji. Szczegóły znajdziesz w porównaniu <a href="/blog/natywna-czy-cross-platform/">aplikacja natywna czy cross-platform</a>.</p>
+
+<h2>Backend, panel administracyjny i integracje</h2>
+<p>W myślach wycenia się zwykle tylko to, co widać na telefonie. Tymczasem aplikacja z kontami użytkowników, zamówieniami czy powiadomieniami potrzebuje serwera, bazy danych i API. Ktoś po Twojej stronie musi też zarządzać treściami, użytkownikami i zamówieniami, więc dochodzi panel administracyjny.</p>
+<p>Backend możesz zbudować od zera (np. w Laravelu lub Node.js), oprzeć na gotowych usługach typu Firebase albo połączyć z istniejącym systemem firmy. Gotowe usługi skracają start, ale przy nietypowych wymaganiach potrafią ograniczać, a ich rachunek rośnie razem z liczbą użytkowników.</p>
+<p>Integracje to osobna pozycja. Płatności, mapy, CRM, ERP, system magazynowy czy firmy kurierskie mają własne API, dokumentację i limity. Połączenie z nowoczesnym, dobrze opisanym API bywa kwestią dni, a ze starym systemem bez dokumentacji potrafi zająć tygodnie.</p>
+
+<h2>Które funkcje najbardziej podnoszą koszt aplikacji</h2>
+<p>Tabela pokazuje względny wpływ funkcji na liczbę godzin. To orientacja, nie cennik: ta sama funkcja może być prosta albo bardzo złożona w zależności od szczegółów.</p>
+<table>
+<thead>
+<tr><th>Funkcja</th><th>Wpływ na koszt</th><th>Skąd bierze się praca</th></tr>
+</thead>
+<tbody>
+<tr><td>Konta użytkowników i logowanie</td><td>Średni</td><td>Rejestracja, reset hasła, logowanie przez Apple i Google, usuwanie konta z poziomu aplikacji</td></tr>
+<tr><td>Role i uprawnienia</td><td>Średni do wysokiego</td><td>Osobne widoki dla klienta, pracownika i administratora, reguły dostępu w API, testy każdej roli</td></tr>
+<tr><td>Płatności i subskrypcje</td><td>Wysoki</td><td>Zakupy w aplikacji lub operator płatności, zwroty, faktury, zgodność z zasadami sklepów</td></tr>
+<tr><td>Mapy i geolokalizacja</td><td>Średni</td><td>Uprawnienia, lokalizacja w tle wymagająca uzasadnienia w sklepach, zużycie baterii</td></tr>
+<tr><td>Integracja z CRM lub ERP</td><td>Od niskiego do bardzo wysokiego</td><td>Jakość API, mapowanie danych, obsługa błędów i synchronizacji</td></tr>
+<tr><td>Tryb offline</td><td>Wysoki</td><td>Lokalna baza danych, kolejka zmian, rozwiązywanie konfliktów przy synchronizacji</td></tr>
+<tr><td>Funkcje w czasie rzeczywistym (czat, śledzenie)</td><td>Wysoki</td><td>WebSockety, skalowanie serwera, powiadomienia push, testy obciążeniowe</td></tr>
+<tr><td>Funkcje AI</td><td>Średni do bardzo wysokiego</td><td>Koszt API modeli, ochrona przed nadużyciami, ocena jakości odpowiedzi, wyszukiwanie w dokumentach (<a href="/blog/czym-jest-rag/">RAG</a>)</td></tr>
+<tr><td>Bluetooth i urządzenia IoT</td><td>Wysoki</td><td>Kod natywny, testy na fizycznych urządzeniach, praca w tle</td></tr>
+<tr><td>Niestandardowy design i animacje</td><td>Średni do wysokiego</td><td>Projekt i dopracowanie każdego ekranu, testy na różnych rozmiarach ekranów</td></tr>
+<tr><td>Bezpieczeństwo i zgodność (RODO, dane medyczne, finanse)</td><td>Wysoki</td><td>Szyfrowanie, logi audytowe, dokumentacja, testy penetracyjne</td></tr>
+<tr><td>Wiele wersji językowych</td><td>Niski do średniego</td><td>Niski, jeśli zaplanujesz je od początku; wyższy przy dokładaniu do gotowej aplikacji</td></tr>
+</tbody>
+</table>
+
+<h2>Jak wycenić aplikację mobilną: godziny razy stawka</h2>
+<p>Rzetelna wycena rozbija projekt na moduły i role: projektant UX/UI, developerzy mobilni, developer backendu, tester, osoba prowadząca projekt. Każdy moduł dostaje liczbę godzin, a sumę mnoży się przez stawkę. Stawki różnią się między firmami i poziomem doświadczenia zespołu, dlatego porównuj oferty także po liczbie godzin i zakresie, nie tylko po kwocie końcowej.</p>
+<aside class="callout"><p>Poniższe wyliczenie to przykład z założonymi liczbami, a nie cennik ani średnia rynkowa. Pokazuje strukturę wyceny. Liczba godzin i stawka w Twoim projekcie mogą być zupełnie inne.</p></aside>
+<p>Założenia przykładu: MVP aplikacji do rezerwacji wizyt na iOS i Androida w technologii cross-platform, z kontami użytkowników, płatnościami online, powiadomieniami push i prostym panelem administracyjnym. Przyjęta stawka dla całego zespołu: 200 zł netto za godzinę.</p>
+<table>
+<thead>
+<tr><th>Pozycja</th><th>Założone godziny</th><th>Kwota przy 200 zł/h</th></tr>
+</thead>
+<tbody>
+<tr><td>Warsztaty i specyfikacja (discovery)</td><td>40</td><td>8 000 zł</td></tr>
+<tr><td>Projekt UX/UI</td><td>80</td><td>16 000 zł</td></tr>
+<tr><td>Aplikacja mobilna (iOS i Android)</td><td>360</td><td>72 000 zł</td></tr>
+<tr><td>Backend i API</td><td>160</td><td>32 000 zł</td></tr>
+<tr><td>Panel administracyjny</td><td>80</td><td>16 000 zł</td></tr>
+<tr><td>Integracja płatności</td><td>40</td><td>8 000 zł</td></tr>
+<tr><td>Testy i poprawki</td><td>120</td><td>24 000 zł</td></tr>
+<tr><td>Zarządzanie projektem</td><td>80</td><td>16 000 zł</td></tr>
+<tr><td>Publikacja w sklepach i konfiguracja środowisk</td><td>20</td><td>4 000 zł</td></tr>
+<tr><td><strong>Razem</strong></td><td><strong>980</strong></td><td><strong>196 000 zł netto</strong></td></tr>
+</tbody>
+</table>
+<p>Do sumy dolicz rezerwę na zmiany i ryzyka. W przykładzie rezerwa 15% to 29 400 zł, co daje łącznie 225 400 zł netto. Gdyby z pierwszej wersji wypadły płatności i panel, bo klient zarządza danymi w istniejącym systemie, liczba godzin spadłaby o co najmniej 120, a kwota przed rezerwą o co najmniej 24 000 zł.</p>
+<p>Tak powinna wyglądać rozmowa o budżecie: przesuwasz funkcje między etapami, zamiast negocjować samą stawkę. Wyceny aplikacji mobilnych przygotowujemy właśnie w takim rozbiciu na moduły, więc jeśli chcesz porównać otrzymaną ofertę, <a href="/#kontakt">napisz do nas</a>.</p>
+
+<h2>Discovery i MVP: jak nie przepłacić</h2>
+<p>Najdroższe są zmiany wprowadzane późno, kiedy kod już istnieje. Etap discovery (warsztaty, mapa funkcji, makiety, specyfikacja) to niewielka część budżetu, a pozwala wycenić projekt na konkretach zamiast na ogólnym opisie.</p>
+<p>Po discovery zbuduj MVP: najmniejszą wersję, która rozwiązuje jeden główny problem użytkownika i pozwala sprawdzić, czy ludzie z niej korzystają. Dobre MVP ma krótką listę funkcji i jasne kryterium sukcesu, np. liczbę rezerwacji w pierwszych tygodniach.</p>
+<ul>
+<li>Podziel funkcje na „musi być”, „przyda się” i „później”.</li>
+<li>Poproś wykonawcę o wycenę w rozbiciu na moduły, żeby móc przesuwać funkcje między etapami.</li>
+<li>Ustal, kto jest właścicielem kodu, kont w sklepach i infrastruktury. Konta deweloperskie zakładaj na firmę, nie na wykonawcę.</li>
+</ul>
+<p>Specyfikację i user stories przygotujesz szybciej z pomocą AI, o czym piszemy w tekście <a href="/blog/specyfikacja-i-user-stories-z-ai/">specyfikacje i user stories z AI</a>. Otrzymaną ofertę sprawdź z poradnikiem <a href="/blog/jak-ocenic-oferte-software-house/">jak ocenić ofertę software house’u</a>.</p>
+
+<h2>Koszty po premierze: utrzymanie, sklepy i prowizje</h2>
+<p>Publikacja otwiera kolejną część wydatków. Zaplanuj budżet na poniższe pozycje.</p>
+<h3>Aktualizacje pod nowe wersje systemów</h3>
+<p>Apple i Google regularnie podnoszą wymagania. Od 28 kwietnia 2026 r. aplikacje przesyłane do App Store Connect muszą być zbudowane w Xcode 26 z SDK dla iOS 26. W Google Play od 31 sierpnia 2026 r. nowe aplikacje i aktualizacje muszą celować w Androida 16 (API 36), z możliwością wnioskowania o przesunięcie terminu do 1 listopada 2026 r. Aplikacja, której nikt nie aktualizuje, z czasem traci możliwość wydania nawet drobnej poprawki.</p>
+<h3>Hosting, usługi zewnętrzne i monitoring</h3>
+<p>Serwer, baza danych, wysyłka powiadomień, e-maili i SMS-ów, mapy, API modeli AI, narzędzia do raportowania błędów. Wiele z tych usług rozlicza się od liczby użytkowników lub zapytań, więc rachunek rośnie razem z popularnością aplikacji.</p>
+<h3>Konta deweloperskie</h3>
+<ul>
+<li><strong>Apple Developer Program:</strong> 99 USD za rok członkostwa lub równowartość w lokalnej walucie.</li>
+<li><strong>Google Play Console:</strong> jednorazowa opłata rejestracyjna 25 USD. Proces zakładania konta i wymagane testy opisujemy w poradniku <a href="/blog/publikacja-aplikacji-google-play/">publikacja aplikacji w Google Play</a>.</li>
+</ul>
+<h3>Prowizje sklepów</h3>
+<p>Prowizje dotyczą sprzedaży treści i funkcji cyfrowych w aplikacji, np. subskrypcji premium. Sprzedaż towarów fizycznych i usług realizowanych poza aplikacją obsługujesz zwykłym operatorem płatności.</p>
+<ul>
+<li><strong>App Store:</strong> standardowo 30%, a 15% dla uczestników App Store Small Business Program, do którego mogą dołączyć deweloperzy nowi w App Store lub z przychodami do 1 mln USD w poprzednim roku kalendarzowym. Apple ogłosił, że od 1 października 2026 r. w UE prowizja przy zakupach przez Apple In-App Purchase wyniesie 26%, a dla uczestników programu 15%.</li>
+<li><strong>Google Play:</strong> 15% od pierwszego 1 mln USD rocznych przychodów (po zapisaniu się do tego progu), 30% powyżej tej kwoty i 15% od subskrypcji. W EOG, Wielkiej Brytanii i USA od 30 czerwca 2026 r. obowiązuje nowy model, w którym stawka zależy m.in. od tego, czy instalacja jest nowa, i od metody płatności. Dla nowych instalacji to np. 10% plus 5% opłaty rozliczeniowej przy płatności przez Google Play Billing.</li>
+</ul>
+<p>Zasady prowizji zmieniają się często, więc przed zaplanowaniem modelu przychodów sprawdź aktualne tabele opłat w dokumentacji obu sklepów.</p>
+<h3>Utrzymanie i rozwój</h3>
+<p>Poprawki błędów, aktualizacje bibliotek, łatki bezpieczeństwa, reakcja na awarie i drobne zmiany. Ustal to w osobnej umowie serwisowej z określonym czasem reakcji, zamiast zamawiać każdą poprawkę jako nowy projekt.</p>

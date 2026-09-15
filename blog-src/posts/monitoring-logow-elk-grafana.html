@@ -1,0 +1,155 @@
+<!--META
+{
+  "slug": "monitoring-logow-elk-grafana",
+  "title": "Monitoring logów: Elastic Stack, OpenSearch czy Grafana z Loki",
+  "metaTitle": "Monitoring logów: ELK, OpenSearch czy Grafana?",
+  "description": "Monitoring logów w firmie: Elastic Stack, OpenSearch i Grafana (Loki, Prometheus) w porównaniu, klaster 3 węzłów, retencja, koszty, alerty i co logować.",
+  "category": "Bezpieczeństwo",
+  "tags": ["monitoring logów", "Elasticsearch", "OpenSearch", "Grafana Loki", "Prometheus", "observability"],
+  "primaryKeyword": "monitoring logów",
+  "tldr": [
+    "Elastic Stack i OpenSearch indeksują pełną treść logów, co ułatwia wyszukiwanie i analitykę bezpieczeństwa, ale kosztuje dysk i pamięć.",
+    "Loki indeksuje tylko etykiety i trzyma logi w tanim object storage; Prometheus służy do metryk, nie do logów.",
+    "Produkcyjny klaster Elasticsearch lub OpenSearch potrzebuje co najmniej trzech węzłów uprawnionych do wyboru mastera, bo decyzje wymagają większości głosów.",
+    "Koszty napędzają wolumen danych, liczba replik, retencja i kardynalność etykiet, a nie sama liczba serwerów.",
+    "Alert ma sens tylko wtedy, gdy ktoś wie, co z nim zrobić; alarmuj też o braku logów z ważnego źródła."
+  ],
+  "faq": [
+    {"q": "Czy Elasticsearch jest znowu open source?", "a": "Tak, w 2024 roku Elastic dodał licencję AGPLv3 jako trzecią opcję dla darmowej części kodu Elasticsearch i Kibany, obok SSPL i Elastic License 2.0. Domyślna dystrybucja binarna nadal jest na Elastic License 2.0. OpenSearch pozostaje na licencji Apache 2.0."},
+    {"q": "Czy do monitoringu logów wystarczy jeden serwer Elasticsearch?", "a": "Do testów i małych instalacji tak, ale dokumentacja Elastic nie zaleca klastrów jednowęzłowych na produkcji, bo nie są odporne na żadną awarię. Jeśli logi są ci potrzebne do wykrywania incydentów, planuj trzy węzły albo dwa węzły z dodatkowym węzłem rozstrzygającym."},
+    {"q": "Czym się różni Loki od Prometheusa?", "a": "Prometheus zbiera i przechowuje metryki, czyli liczby w czasie, np. obciążenie procesora czy liczbę błędów HTTP. Loki przechowuje logi, czyli tekstowe zdarzenia, indeksując tylko etykiety. Oba pracują z Grafaną i zwykle używa się ich razem."},
+    {"q": "Jak długo przechowywać logi?", "a": "Nie ma jednej liczby dla wszystkich. Ustal retencję osobno dla logów bezpieczeństwa, logów aplikacyjnych i metryk, biorąc pod uwagę wymagania prawne i umowne, czas potrzebny na wykrycie incydentu oraz koszty. Starsze dane przenoś do tańszego magazynu zamiast trzymać wszystko na szybkich dyskach."},
+    {"q": "Czy logi mogą zawierać dane osobowe?", "a": "Mogą i często zawierają, np. adresy IP, e-maile czy identyfikatory użytkowników, więc podlegają RODO. Nie loguj haseł, tokenów sesji, kluczy ani danych kart, a dane osobowe ogranicz do niezbędnego minimum lub pseudonimizuj. Dostęp do systemu logów nadawaj tylko osobom, które go potrzebują."}
+  ],
+  "sources": [
+    {"title": "Elastic Docs: Quorum-based decision making", "url": "https://www.elastic.co/docs/deploy-manage/distributed-architecture/discovery-cluster-formation/modules-discovery-quorums"},
+    {"title": "Elastic Docs: Resilience in small clusters", "url": "https://www.elastic.co/docs/deploy-manage/production-guidance/availability-and-resilience/resilience-in-small-clusters"},
+    {"title": "Elastic: FAQ on Software Licensing", "url": "https://www.elastic.co/pricing/faq/licensing"},
+    {"title": "Grafana Loki documentation: Promtail agent (koniec życia)", "url": "https://grafana.com/docs/loki/latest/send-data/promtail/"},
+    {"title": "Linux Foundation: OpenSearch Software Foundation", "url": "https://www.linuxfoundation.org/press/linux-foundation-announces-opensearch-software-foundation-to-foster-open-collaboration-in-search-and-analytics"},
+    {"title": "Grafana Loki documentation: Overview i retencja", "url": "https://grafana.com/docs/loki/latest/get-started/overview/"},
+    {"title": "Prometheus documentation: Storage", "url": "https://prometheus.io/docs/prometheus/latest/storage/"},
+    {"title": "OWASP Logging Cheat Sheet", "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"}
+  ],
+  "linkedin": "Dwuwęzłowy klaster Elasticsearch wygląda na bezpieczniejszy od jednego serwera. W praktyce nie przetrwa awarii żadnego z węzłów.\n\nKilka rzeczy, które warto wiedzieć przed wyborem systemu do monitoringu logów:\n- Elastic i OpenSearch indeksują pełną treść logów, Loki tylko etykiety, co mocno zmienia koszty dysku,\n- klaster wymaga większości głosów węzłów master, dlatego minimum to trzy (albo dwa plus węzeł rozstrzygający),\n- od 2024 roku kod Elasticsearch jest dostępny także na AGPLv3, OpenSearch pozostaje na Apache 2.0,\n- koszty rosną z wolumenem, replikami, retencją i kardynalnością etykiet,\n- najważniejszy alert to często ten o braku logów z krytycznego źródła.\n\nPorównanie z tabelą i przykładami konfiguracji:\n{url}\n\n#observability #Elasticsearch #Grafana #OpenSearch #DevOps"
+}
+META-->
+<p>Monitoring logów to zbieranie logów z serwerów, aplikacji i urządzeń sieciowych w jednym miejscu, z wyszukiwaniem, retencją i alertami. Elastic Stack i OpenSearch dają pełnotekstowe przeszukiwanie i analitykę bezpieczeństwa. Grafana z Loki i Prometheusem jest zwykle tańsza w utrzymaniu przy dużych wolumenach i świetnie radzi sobie z metrykami.</p>
+
+<h2>Po co centralny monitoring logów i czym różni się od metryk</h2>
+<p>Gdy logi leżą na każdym serwerze osobno, analiza incydentu zaczyna się od logowania po SSH na kolejne maszyny i szukania grepem. Część logów zdążyła się już zrotować, a jeśli atakujący przejął serwer, mógł je wyczyścić. Centralny system rozwiązuje trzy problemy naraz: masz jedno miejsce wyszukiwania, kopię logów poza monitorowanym hostem i możliwość alertowania.</p>
+<p>Warto rozróżnić dwa rodzaje danych:</p>
+<ul>
+<li><strong>Logi</strong> to zdarzenia: „użytkownik X zalogował się z adresu Y”, „zapytanie zwróciło błąd 500”. Są duże, różnorodne i odpowiadają na pytanie, co dokładnie się stało.</li>
+<li><strong>Metryki</strong> to liczby w czasie: obciążenie CPU, liczba żądań na sekundę, wolne miejsce na dysku. Są tanie w przechowywaniu i dobrze nadają się do alertów i trendów.</li>
+</ul>
+<p>Dobre środowisko ma jedno i drugie. Metryka mówi, że od 14:05 rośnie liczba błędów, a logi pokazują, który endpoint i dlaczego.</p>
+
+<h2>Elastic Stack, OpenSearch i Grafana: czym się różnią</h2>
+<h3>Elastic Stack (ELK)</h3>
+<p>Elasticsearch przechowuje i indeksuje dane, Kibana służy do wyszukiwania i wizualizacji, a dane zbierasz przez Elastic Agent zarządzany z Fleet, lekkie Beats albo Logstash, gdy potrzebujesz złożonego przetwarzania. Elastic ma rozbudowany moduł Elastic Security i gotowe integracje dla setek źródeł, m.in. Suricaty.</p>
+<p>Licencja zmieniała się kilka razy. Obecnie, według FAQ Elastic, darmowa część kodu Elasticsearch i Kibany jest dostępna na wybranej przez ciebie licencji: SSPL 1.0, AGPLv3 (dodana w 2024 roku) lub Elastic License 2.0. Domyślna dystrybucja binarna jest na Elastic License 2.0. Część funkcji wymaga płatnej subskrypcji, więc przed wyborem sprawdź, czy to, czego potrzebujesz, jest w wersji darmowej.</p>
+<h3>OpenSearch</h3>
+<p>OpenSearch powstał w 2021 roku jako fork Elasticsearch i Kibany na licencji Apache 2.0. We wrześniu 2024 roku projekt przeszedł pod OpenSearch Software Foundation w ramach Linux Foundation. Architektura i sposób pracy są bardzo podobne do Elasticsearch. Moduł Security Analytics korzysta z reguł Sigma. Na OpenSearch opiera się też indexer Wazuh, o którym więcej w tekście <a href="/blog/wazuh-wdrozenie-mala-firma/">o wdrożeniu Wazuh w małej firmie</a>.</p>
+<h3>Grafana, Loki i Prometheus</h3>
+<p>Loki według dokumentacji nie indeksuje treści logów, tylko zestaw etykiet (np. <code>app</code>, <code>env</code>, <code>host</code>). Same logi trafiają skompresowane do object storage, np. S3 lub GCS. Prometheus zbiera metryki, a Grafana wizualizuje jedno i drugie oraz obsługuje alerty. Grafana i Loki są na licencji AGPLv3, Prometheus na Apache 2.0.</p>
+<p>Do zbierania logów Grafana Labs rozwija Grafana Alloy. Promtail, przez lata domyślny kolektor Loki, osiągnął koniec życia 2 marca 2026 roku, więc nowe wdrożenia buduj na Alloy lub kolektorze OpenTelemetry.</p>
+
+<h2>Porównanie: ELK, OpenSearch i Grafana Loki w tabeli</h2>
+<table>
+<thead>
+<tr><th>Kryterium</th><th>Elastic Stack</th><th>OpenSearch</th><th>Grafana + Loki + Prometheus</th></tr>
+</thead>
+<tbody>
+<tr><td>Licencja</td><td>Kod: SSPL, AGPLv3 lub ELv2; dystrybucja domyślna: ELv2</td><td>Apache 2.0</td><td>Grafana i Loki: AGPLv3; Prometheus: Apache 2.0</td></tr>
+<tr><td>Indeksowanie logów</td><td>Pełnotekstowe</td><td>Pełnotekstowe</td><td>Tylko etykiety, treść filtrowana przy zapytaniu</td></tr>
+<tr><td>Magazyn danych</td><td>Dyski węzłów, snapshoty do object storage</td><td>Dyski węzłów, snapshoty do object storage</td><td>Object storage lub system plików</td></tr>
+<tr><td>Zbieranie danych</td><td>Elastic Agent, Beats, Logstash</td><td>Data Prepper, Fluent Bit, OpenTelemetry</td><td>Grafana Alloy, OpenTelemetry</td></tr>
+<tr><td>Analityka bezpieczeństwa</td><td>Elastic Security</td><td>Security Analytics (reguły Sigma)</td><td>Brak dedykowanego SIEM, zwykle łączony z innym narzędziem</td></tr>
+<tr><td>Metryki</td><td>Tak, przez integracje</td><td>Możliwe, rzadziej stosowane</td><td>Prometheus, naturalne środowisko</td></tr>
+<tr><td>Mocna strona</td><td>Wyszukiwanie ad hoc, gotowe integracje</td><td>Otwarta licencja, zgodność z ekosystemem Wazuh</td><td>Niski koszt przechowywania logów, metryki i alerty</td></tr>
+<tr><td>Słabsza strona</td><td>Zapotrzebowanie na RAM i dysk, funkcje zależne od subskrypcji</td><td>Podobne wymagania sprzętowe jak Elasticsearch</td><td>Wolniejsze przeszukiwanie treści na dużych zakresach czasu</td></tr>
+</tbody>
+</table>
+<p>Uproszczona reguła: jeśli logi mają służyć głównie wykrywaniu zagrożeń i śledztwom, bliżej ci do Elastic lub OpenSearch. Jeśli głównie diagnostyce aplikacji i infrastruktury, Grafana z Loki i Prometheusem zwykle wystarczy i będzie tańsza.</p>
+
+<h2>Dlaczego klaster Elasticsearch i OpenSearch potrzebuje trzech węzłów master</h2>
+<p>Klaster musi w każdej chwili wiedzieć, który węzeł jest masterem (w OpenSearch: cluster manager) i jaki jest aktualny stan klastra. Dokumentacja Elastic opisuje to wprost: decyzja zapada dopiero wtedy, gdy odpowie więcej niż połowa węzłów z konfiguracji głosującej, czyli węzłów uprawnionych do wyboru mastera.</p>
+<p>Z tej zasady wynikają konkretne liczby:</p>
+<ul>
+<li><strong>Jeden węzeł</strong>: brak odporności na jakąkolwiek awarię. Elastic nie zaleca takich klastrów na produkcji.</li>
+<li><strong>Dwa węzły</strong>: większość z dwóch to dwa, więc oba muszą działać. Utrata jednego zatrzymuje wybór mastera. Dwa węzły nie są więc bezpieczniejsze od jednego, a dokumentacja również odradza ten układ.</li>
+<li><strong>Trzy węzły</strong>: większość to dwa, więc klaster przetrwa awarię jednego węzła.</li>
+</ul>
+<p>Kworum chroni przed <strong>split brain</strong>. Gdy sieć podzieli klaster na dwie części, tylko ta z większością może wybrać mastera i przyjmować zmiany. Bez tego obie połowy mogłyby niezależnie zapisywać dane i powstałyby dwie niespójne wersje prawdy. OpenSearch działa według tej samej zasady.</p>
+<p>Najmniejszy układ produkcyjny według Elastic to dwa węzły danych plus trzeci węzeł rozstrzygający (voting-only), który głosuje, ale nie zostanie masterem i nie potrzebuje dużych zasobów. Przy trzech pełnych węzłach konfiguracja startowa wygląda tak (Elasticsearch 8.x i 9.x):</p>
+<pre><code class="language-yaml"># elasticsearch.yml na węźle es-1 (analogicznie es-2 i es-3)
+cluster.name: logi-prod
+node.name: es-1
+node.roles: [ master, data ]
+discovery.seed_hosts: ["10.0.1.11", "10.0.1.12", "10.0.1.13"]
+cluster.initial_master_nodes: ["es-1", "es-2", "es-3"]</code></pre>
+<p>Ustawienie <code>cluster.initial_master_nodes</code> służy tylko do pierwszego uruchomienia klastra. Po jego utworzeniu usuń je z konfiguracji. Pamiętaj też o co najmniej jednej replice każdego indeksu, bo trzy węzły bez replik nadal tracą dane razem z dyskiem jednego z nich.</p>
+
+<h2>Co logować, a czego nie zapisywać w logach</h2>
+<p>OWASP Logging Cheat Sheet to dobra lista kontrolna. Zawsze loguj:</p>
+<ul>
+<li>udane i nieudane uwierzytelnienia oraz błędy autoryzacji,</li>
+<li>błędy walidacji danych wejściowych i błędy aplikacji,</li>
+<li>start, zatrzymanie i inicjalizację usług,</li>
+<li>operacje wysokiego ryzyka: zarządzanie użytkownikami, dostęp uprzywilejowany, eksport danych, przesyłanie plików,</li>
+<li>zmiany konfiguracji.</li>
+</ul>
+<p>Nie zapisuj w logach haseł, identyfikatorów sesji, tokenów dostępowych, kluczy, connection stringów do baz ani danych kart płatniczych. Dane osobowe ogranicz do minimum lub pseudonimizuj, bo system logów też podlega RODO.</p>
+<p>Zadbaj o format. Logi strukturalne w JSON z polami <code>timestamp</code> (ze strefą czasową), <code>host</code>, <code>service</code>, <code>level</code>, <code>request_id</code>, <code>user_id</code> i <code>src_ip</code> dają się filtrować i korelować bez wyrażeń regularnych. Wszystkie serwery synchronizuj z NTP, inaczej odtworzenie kolejności zdarzeń będzie zgadywaniem. Przy analizie włamania, np. na <a href="/blog/zainfekowany-wordpress-objawy/">zainfekowany WordPress</a>, dobrze ustawione logi serwera WWW oszczędzają godziny pracy.</p>
+
+<h2>Retencja i koszty monitoringu logów</h2>
+<p>Rachunek za system logów rzadko zależy od liczby serwerów. Zależy od danych. Główne czynniki kosztowe:</p>
+<ul>
+<li><strong>Wolumen dzienny.</strong> Logi debug w produkcji, pełne logi przepływów z sensora sieciowego czy access logi CDN potrafią zdominować całą resztę.</li>
+<li><strong>Repliki.</strong> W Elasticsearch i OpenSearch każda replika to kolejna pełna kopia danych na dysku.</li>
+<li><strong>Retencja na szybkich dyskach.</strong> Starsze dane przenoś do tańszych warstw. W Elastic służy do tego Index Lifecycle Management, w OpenSearch Index State Management, a do archiwum nadają się snapshoty w object storage.</li>
+<li><strong>Kardynalność.</strong> W Loki etykieta z identyfikatorem użytkownika czy adresem IP tworzy ogromną liczbę strumieni. Dokumentacja zaleca etykiety statyczne (aplikacja, środowisko, host), a wartości zmienne filtruj w zapytaniu. Ta sama zasada dotyczy etykiet metryk w Prometheusie.</li>
+</ul>
+<p>Prometheus podaje prosty wzór na dysk: czas retencji w sekundach razy liczba próbek na sekundę razy 1-2 bajty na próbkę. Domyślna retencja to 15 dni, a lokalny magazyn nie jest replikowany, więc do długiego przechowywania potrzebujesz zewnętrznego rozwiązania. W Loki retencję włącza kompaktor:</p>
+<pre><code class="language-yaml"># fragment konfiguracji Loki (schemat TSDB, indeks 24h)
+compactor:
+  working_directory: /data/retention
+  retention_enabled: true
+  delete_request_store: s3
+limits_config:
+  retention_period: 744h   # 31 dni</code></pre>
+<p>Ustal retencję osobno dla logów bezpieczeństwa, aplikacyjnych i metryk. Logi uwierzytelnień często trzyma się dłużej niż logi debug, bo incydent wykrywa się czasem po wielu tygodniach.</p>
+
+<h2>Alerty, które mają sens</h2>
+<p>Najczęstszy problem nie polega na braku alertów, tylko na ich nadmiarze. Po miesiącu zespół ignoruje kanał z powiadomieniami i przeocza ten jeden ważny. Kilka zasad:</p>
+<ul>
+<li><strong>Każdy alert ma właściciela i instrukcję.</strong> Jeśli nie wiesz, co zrobić po jego otrzymaniu, to nie jest alert, tylko wykres.</li>
+<li><strong>Alarmuj o objawach.</strong> Wzrost błędów 5xx, rosnący czas odpowiedzi, nieudana kopia zapasowa, wygasający certyfikat mówią więcej niż chwilowy skok CPU.</li>
+<li><strong>Rozdziel pilne od reszty.</strong> Powiadomienie na telefon tylko dla rzeczy wymagających reakcji teraz, pozostałe jako zgłoszenia do przejrzenia w godzinach pracy.</li>
+<li><strong>Grupuj i wyciszaj.</strong> Alertmanager i Grafana potrafią łączyć powiązane alerty i tłumić zależne, żeby awaria jednego switcha nie wygenerowała stu wiadomości.</li>
+<li><strong>Alarmuj o ciszy.</strong> Źródło, które przestało wysyłać logi, bywa ważniejsze niż źródło, które krzyczy. W Loki pomaga funkcja <code>absent_over_time</code>.</li>
+</ul>
+<p>Przykład reguły Prometheusa, która ostrzega z wyprzedzeniem, zamiast budzić, gdy dysk jest już pełny:</p>
+<pre><code class="language-yaml">groups:
+  - name: dyski
+    rules:
+      - alert: DyskZapelniSieW24h
+        expr: predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"}[6h], 24 * 3600) &lt; 0
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Dysk {{ $labels.mountpoint }} na {{ $labels.instance }} zapełni się w ciągu doby"</code></pre>
+<p>Alerty bezpieczeństwa (seria nieudanych logowań, nowe konto administratora, alert z <a href="/blog/suricata-ids-ips-poradnik/">sensora Suricata</a>) kieruj do osoby, która potrafi je ocenić, a nie na ogólny kanał zespołu.</p>
+
+<h2>Od czego zacząć monitoring logów w małej firmie</h2>
+<ol>
+<li><strong>Spisz źródła.</strong> Serwery, aplikacje, firewall, VPN, poczta, usługi chmurowe. Zaznacz, które są krytyczne.</li>
+<li><strong>Zdefiniuj pytania.</strong> Co chcesz wiedzieć: kto logował się do panelu administracyjnego, dlaczego sklep zwalnia, czy kopie się wykonują. Od tego zależy wybór narzędzia.</li>
+<li><strong>Zacznij od metryk i kilku alertów.</strong> Prometheus z node_exporter i Grafana dają szybki efekt przy małym nakładzie.</li>
+<li><strong>Dołóż logi krytycznych źródeł.</strong> Najpierw uwierzytelnienia i logi aplikacji produkcyjnych, potem reszta.</li>
+<li><strong>Zapisz konfigurację w kodzie.</strong> Reguły alertów, dashboardy i konfigurację kolektorów trzymaj w Git i wdrażaj automatycznie, np. Ansible. Porządek w tej warstwie to część szerszego tematu, który opisuje tekst <a href="/blog/chaos-w-it-jak-opanowac/">o opanowaniu chaosu w IT</a>.</li>
+<li><strong>Przeglądaj co kwartał.</strong> Usuń alerty, na które nikt nie reaguje, i sprawdź, czy rachunek za przechowywanie zgadza się z tym, czego faktycznie używasz.</li>
+</ol>
+<p>Jeśli wolisz, żeby ktoś zaprojektował i postawił taki stos razem z automatyzacją wdrożeń, znajdziesz to w naszych <a href="/#uslugi">usługach</a>.</p>

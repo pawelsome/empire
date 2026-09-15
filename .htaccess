@@ -2,10 +2,10 @@ Options -Indexes
 
 RewriteEngine On
 
-# www -> bez www, http -> https (MyDevil przekazuje protokół w X-Forwarded-Proto)
+# www -> bez www, http -> https (SSL kończy się na proxy MyDevil, port 443 widać w SERVER_PORT)
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
-RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteCond %{SERVER_PORT} !^443$
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
 # pliki repozytorium nie są częścią strony

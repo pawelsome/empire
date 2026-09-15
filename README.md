@@ -1,6 +1,6 @@
 # Empire Corporation — strona firmowa
 
-Statyczna strona firmy **Empire Corporation Paweł Głowacz** (NIP 6642140734), dostępna pod https://empirecorporation.eu/ (hosting MyDevil, kopia na GitHub Pages).
+Statyczna strona firmy **Empire Corporation Paweł Głowacz** (NIP 6642140734), dostępna pod https://empirecorporation.eu/ (hosting MyDevil).
 
 - `index.html` — wersja polska
 - `en.html` — wersja angielska

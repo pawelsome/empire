@@ -10,7 +10,7 @@ RewriteCond %{SERVER_PORT} !^443$
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
 # pliki repozytorium nie są częścią strony
-RewriteRule ^(README\.md|\.nojekyll|ec_korona\.png)$ - [F,L]
+RewriteRule ^(README\.md|ec_korona\.png)$ - [F,L]
 
 <IfModule mod_headers.c>
   Header always set Strict-Transport-Security "max-age=31536000"

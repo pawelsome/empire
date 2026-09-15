@@ -85,7 +85,7 @@ p { margin: 0; }
   letter-spacing: -0.01em;
   white-space: nowrap;
 }
-.brand img { width: 26px; height: 26px; }
+.brand img { width: 32px; height: 32px; }
 .brand:hover { color: var(--ink); }
 
 .nav { display: flex; align-items: center; gap: 28px; font-size: 15px; }
@@ -200,6 +200,9 @@ p { margin: 0; }
 .service .num { font-family: var(--mono); font-size: 13px; color: var(--accent); padding-top: 5px; }
 .service h3 { font-size: 22px; }
 .service p { color: var(--ink-2); }
+.service .sublist { list-style: none; margin: 12px 0 0; padding: 0; }
+.service .sublist li { position: relative; padding: 3px 0 3px 20px; font-size: 15.5px; color: var(--ink-2); }
+.service .sublist li::before { content: ""; position: absolute; left: 1px; top: 15px; width: 8px; height: 2px; background: var(--accent); }
 .service .tags { margin-top: 12px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
 
 @media (max-width: 760px) {
@@ -328,9 +331,9 @@ p { margin: 0; }
 }
 .contact h2 { font-size: clamp(30px, 4vw, 48px); margin: 12px 0 20px; }
 .contact .lead { color: var(--ink-2); max-width: 44ch; }
+.contact-links { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; margin-top: 28px; }
 .mail {
   display: inline-block;
-  margin-top: 28px;
   font-size: clamp(20px, 2.4vw, 28px);
   font-weight: 500;
   letter-spacing: -0.01em;
